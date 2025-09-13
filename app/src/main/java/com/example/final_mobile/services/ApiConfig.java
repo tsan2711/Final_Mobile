@@ -17,27 +17,31 @@ public class ApiConfig {
     // Option 4: Node.js với custom port
     // public static final String BASE_URL = "http://10.0.2.2:3000/api/";
     
-    // API Endpoints
+    // API Endpoints - Updated to match Node.js backend
     public static final String LOGIN = "auth/login";
     public static final String REGISTER = "auth/register";
     public static final String LOGOUT = "auth/logout";
-    public static final String REFRESH_TOKEN = "auth/refresh";
+    public static final String REFRESH_TOKEN = "auth/refresh-token";  // Updated
     public static final String VERIFY_OTP = "auth/verify-otp";
     public static final String SEND_OTP = "auth/send-otp";
     
-    // User endpoints
-    public static final String USER_PROFILE = "user/profile";
+    // User endpoints - Updated to match Node.js backend
+    public static final String USER_PROFILE = "auth/me";  // Updated
     public static final String UPDATE_PROFILE = "user/update";
     
-    // Account endpoints
+    // Account endpoints - Match Node.js backend
     public static final String GET_ACCOUNTS = "accounts";
+    public static final String GET_ACCOUNT_SUMMARY = "accounts/summary";  // Added
+    public static final String GET_PRIMARY_ACCOUNT = "accounts/primary";  // Added
     public static final String GET_ACCOUNT_BALANCE = "accounts/{id}/balance";
+    public static final String GET_ACCOUNT_BY_NUMBER = "accounts/number/{accountNumber}";  // Added
     public static final String CREATE_ACCOUNT = "accounts/create";
     
-    // Transaction endpoints
-    public static final String GET_TRANSACTIONS = "transactions";
+    // Transaction endpoints - Updated to match Node.js backend
+    public static final String GET_TRANSACTIONS = "transactions/history";  // Updated
     public static final String CREATE_TRANSACTION = "transactions/create";
     public static final String TRANSFER_MONEY = "transactions/transfer";
+    public static final String VERIFY_TRANSFER_OTP = "transactions/verify-otp";  // Added
     public static final String GET_TRANSACTION_DETAIL = "transactions/{id}";
     
     // Utility endpoints

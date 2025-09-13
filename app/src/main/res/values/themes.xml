@@ -1,8 +1,34 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.Final_Mobile" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!-- Primary Colors -->
+        <item name="colorPrimary">@color/primary_color</item>
+        <item name="colorOnPrimary">@color/text_on_primary</item>
+        
+        <!-- Secondary Colors -->
+        <item name="colorSecondary">@color/secondary_color</item>
+        <item name="colorOnSecondary">@color/text_on_primary</item>
+        
+        <!-- Background Colors -->
+        <item name="android:colorBackground">@color/background_color</item>
+        <item name="colorSurface">@color/surface_color</item>
+        <item name="colorOnSurface">@color/primary_text_color</item>
+        
+        <!-- Text Colors -->
+        <item name="colorOnBackground">@color/primary_text_color</item>
+        <item name="android:textColorPrimary">@color/primary_text_color</item>
+        <item name="android:textColorSecondary">@color/secondary_text_color</item>
+        
+        <!-- Status Bar -->
+        <item name="android:statusBarColor">@color/background_color</item>
+        <item name="android:windowLightStatusBar">true</item>
+        
+        <!-- Navigation Bar -->
+        <item name="android:navigationBarColor">@color/surface_color</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        
+        <!-- Ripple Colors -->
+        <item name="colorControlHighlight">@color/ripple_color</item>
     </style>
 
     <style name="Theme.Final_Mobile" parent="Base.Theme.Final_Mobile" />

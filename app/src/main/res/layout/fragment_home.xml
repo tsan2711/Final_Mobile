@@ -35,10 +35,12 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp"
-            app:cardBackgroundColor="@color/primary_color">
+            android:layout_marginBottom="32dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/primary_color"
+            app:strokeColor="@color/card_border"
+            app:strokeWidth="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -46,30 +48,47 @@
                 android:orientation="vertical"
                 android:padding="20dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Tài khoản chính"
-                    android:textColor="@color/white"
-                    android:textSize="16sp"
-                    android:alpha="0.9" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Tài khoản chính"
+                        android:textColor="@color/text_on_primary"
+                        android:textSize="16sp"
+                        android:alpha="0.9" />
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_arrow_right"
+                        android:tint="@color/text_on_primary"
+                        android:alpha="0.7" />
+
+                </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="250,000,000 VNĐ"
-                    android:textColor="@color/white"
+                    android:textColor="@color/text_on_primary"
                     android:textSize="32sp"
                     android:textStyle="bold"
-                    android:layout_marginTop="8dp" />
+                    android:layout_marginTop="16dp"
+                    android:letterSpacing="0.02" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="**** **** **** 1234"
-                    android:textColor="@color/white"
+                    android:textColor="@color/text_on_primary"
                     android:textSize="14sp"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="8dp"
                     android:alpha="0.8" />
 
             </LinearLayout>
@@ -82,45 +101,53 @@
             android:layout_height="wrap_content"
             android:text="Thao tác nhanh"
             android:textColor="@color/primary_text_color"
-            android:textSize="18sp"
+            android:textSize="20sp"
             android:textStyle="bold"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="20dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="24dp">
+            android:layout_marginBottom="32dp">
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"
-                android:layout_height="100dp"
+                android:layout_height="120dp"
                 android:layout_weight="1"
-                android:layout_marginEnd="8dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/surface_color">
+                android:layout_marginEnd="12dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/surface_color"
+                app:strokeColor="@color/card_border"
+                app:strokeWidth="1dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:padding="12dp">
+                    android:padding="16dp">
 
                     <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:src="@drawable/ic_transactions"
-                        android:layout_marginBottom="8dp"
-                        app:tint="@color/primary_color" />
+                        android:layout_marginBottom="12dp"
+                        android:background="@drawable/circle_background"
+                        android:padding="8dp"
+                        app:tint="@color/white" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Chuyển tiền"
                         android:textColor="@color/primary_text_color"
-                        android:textSize="12sp"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
                         android:textAlignment="center" />
 
                 </LinearLayout>
@@ -129,34 +156,41 @@
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"
-                android:layout_height="100dp"
+                android:layout_height="120dp"
                 android:layout_weight="1"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/surface_color">
+                android:layout_marginHorizontal="6dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/surface_color"
+                app:strokeColor="@color/card_border"
+                app:strokeWidth="1dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:padding="12dp">
+                    android:padding="16dp">
 
                     <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:src="@drawable/ic_utilities"
-                        android:layout_marginBottom="8dp"
-                        app:tint="@color/primary_color" />
+                        android:layout_marginBottom="12dp"
+                        android:background="@drawable/circle_background_green"
+                        android:padding="8dp"
+                        app:tint="@color/white" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Thanh toán"
                         android:textColor="@color/primary_text_color"
-                        android:textSize="12sp"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
                         android:textAlignment="center" />
 
                 </LinearLayout>
@@ -165,33 +199,41 @@
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"
-                android:layout_height="100dp"
+                android:layout_height="120dp"
                 android:layout_weight="1"
-                android:layout_marginStart="8dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/surface_color">
+                android:layout_marginStart="12dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/surface_color"
+                app:strokeColor="@color/card_border"
+                app:strokeWidth="1dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:padding="12dp">
+                    android:padding="16dp">
 
                     <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:src="@drawable/ic_profile"
-                        android:layout_marginBottom="8dp"
-                        app:tint="@color/primary_color" />
+                        android:layout_marginBottom="12dp"
+                        android:background="@drawable/circle_background"
+                        android:padding="8dp"
+                        app:tint="@color/white" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Tài khoản"
                         android:textColor="@color/primary_text_color"
-                        android:textSize="12sp"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
                         android:textAlignment="center" />
 
                 </LinearLayout>
@@ -201,23 +243,49 @@
         </LinearLayout>
 
         <!-- Recent Transactions -->
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Giao dịch gần đây"
-            android:textColor="@color/primary_text_color"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="16dp" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="20dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Giao dịch gần đây"
+                android:textColor="@color/primary_text_color"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Xem tất cả"
+                android:textColor="@color/primary_color"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?android:attr/selectableItemBackground"
+                android:padding="8dp" />
+
+        </LinearLayout>
 
         <!-- Transaction Item 1 -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/surface_color">
+            android:layout_marginBottom="12dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/surface_color"
+            app:strokeColor="@color/card_border"
+            app:strokeWidth="1dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -262,8 +330,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="-500,000 VNĐ"
-                    android:textColor="#F44336"
-                    android:textSize="14sp"
+                    android:textColor="@color/withdrawal_color"
+                    android:textSize="16sp"
                     android:textStyle="bold" />
 
             </LinearLayout>
@@ -274,10 +342,15 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/surface_color">
+            android:layout_marginBottom="12dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/surface_color"
+            app:strokeColor="@color/card_border"
+            app:strokeWidth="1dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -322,8 +395,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="+2,000,000 VNĐ"
-                    android:textColor="#4CAF50"
-                    android:textSize="14sp"
+                    android:textColor="@color/deposit_color"
+                    android:textSize="16sp"
                     android:textStyle="bold" />
 
             </LinearLayout>

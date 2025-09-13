@@ -1,22 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Base Colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     
-    <!-- Primary Colors -->
-    <color name="primary_color">#1976D2</color>
-    <color name="primary_dark_color">#1565C0</color>
-    <color name="primary_light_color">#BBDEFB</color>
+    <!-- Balanced Monochrome Palette -->
+    <color name="primary_color">#1A1A1A</color>
+    <color name="primary_dark_color">#000000</color>
+    <color name="primary_light_color">#404040</color>
+    
+    <!-- Secondary Colors -->
+    <color name="secondary_color">#666666</color>
+    <color name="secondary_light">#808080</color>
+    <color name="accent_color">#333333</color>
     
     <!-- Background Colors -->
-    <color name="background_color">#F5F5F5</color>
+    <color name="background_color">#FFFFFF</color>
+    <color name="background_secondary">#FAFAFA</color>
+    <color name="background_tertiary">#F5F5F5</color>
     <color name="surface_color">#FFFFFF</color>
+    <color name="surface_variant">#F8F8F8</color>
+    <color name="surface_elevated">#FFFFFF</color>
     
     <!-- Text Colors -->
-    <color name="primary_text_color">#212121</color>
-    <color name="secondary_text_color">#757575</color>
+    <color name="primary_text_color">#1A1A1A</color>
+    <color name="secondary_text_color">#666666</color>
+    <color name="tertiary_text_color">#999999</color>
+    <color name="text_on_primary">#FFFFFF</color>
+    <color name="text_on_surface">#1A1A1A</color>
+    <color name="text_disabled">#CCCCCC</color>
+    
+    <!-- Status Colors -->
+    <color name="success_color">#2E7D32</color>
+    <color name="success_light">#E8F5E9</color>
+    <color name="error_color">#D32F2F</color>
+    <color name="error_light">#FFEBEE</color>
+    <color name="warning_color">#F57C00</color>
+    <color name="warning_light">#FFF3E0</color>
+    <color name="info_color">#1976D2</color>
+    <color name="info_light">#E3F2FD</color>
+    
+    <!-- Card Colors -->
+    <color name="card_background">#FFFFFF</color>
+    <color name="card_shadow">#1A000000</color>
+    <color name="card_border">#E0E0E0</color>
+    <color name="card_border_dark">#BDBDBD</color>
     
     <!-- Bottom Navigation Colors -->
     <color name="bottom_nav_background">#FFFFFF</color>
     <color name="bottom_nav_item_color">@color/bottom_nav_item_selector</color>
+    
+    <!-- Gradient Colors -->
+    <color name="gradient_start">#1A1A1A</color>
+    <color name="gradient_end">#404040</color>
+    <color name="gradient_light_start">#FFFFFF</color>
+    <color name="gradient_light_end">#F5F5F5</color>
+    
+    <!-- Transaction Type Colors -->
+    <color name="transfer_color">#1976D2</color>
+    <color name="deposit_color">#2E7D32</color>
+    <color name="withdrawal_color">#D32F2F</color>
+    <color name="payment_color">#F57C00</color>
+    
+    <!-- Interactive States -->
+    <color name="ripple_color">#1A000000</color>
+    <color name="focus_color">#1A1A1A</color>
+    <color name="hover_color">#F5F5F5</color>
+    <color name="pressed_color">#E0E0E0</color>
+    
+    <!-- Divider Colors -->
+    <color name="divider_color">#E0E0E0</color>
+    <color name="divider_dark">#BDBDBD</color>
+    
+    <!-- Shadow Colors -->
+    <color name="shadow_light">#0D000000</color>
+    <color name="shadow_medium">#1A000000</color>
+    <color name="shadow_dark">#33000000</color>
 </resources>

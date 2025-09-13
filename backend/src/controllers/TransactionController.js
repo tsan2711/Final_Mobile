@@ -219,8 +219,8 @@ class TransactionController {
         await transaction.markAsCompleted();
 
         // Reload accounts for updated balances
-        await transaction.fromAccountId.reload();
-        await transaction.toAccountId.reload();
+        await transaction.fromAccountId.save();
+        await transaction.toAccountId.save();
 
         res.status(200).json({
           success: true,
@@ -276,6 +276,9 @@ class TransactionController {
         endDate 
       } = req.query;
 
+      // Get user account IDs
+      const userAccountIds = await TransactionController.getUserAccountIds(userId);
+      
       // Build query
       const query = {
         $or: [
@@ -284,8 +287,8 @@ class TransactionController {
             $and: [
               {
                 $or: [
-                  { fromAccountId: { $in: await this.getUserAccountIds(userId) } },
-                  { toAccountId: { $in: await this.getUserAccountIds(userId) } }
+                  { fromAccountId: { $in: userAccountIds } },
+                  { toAccountId: { $in: userAccountIds } }
                 ]
               }
             ]
@@ -362,6 +365,8 @@ class TransactionController {
       const { transactionId } = req.params;
       const userId = req.userId;
 
+      const userAccountIds = await TransactionController.getUserAccountIds(userId);
+      
       const transaction = await Transaction.findOne({
         transactionId,
         $or: [
@@ -370,8 +375,8 @@ class TransactionController {
             $and: [
               {
                 $or: [
-                  { fromAccountId: { $in: await this.getUserAccountIds(userId) } },
-                  { toAccountId: { $in: await this.getUserAccountIds(userId) } }
+                  { fromAccountId: { $in: userAccountIds } },
+                  { toAccountId: { $in: userAccountIds } }
                 ]
               }
             ]
