@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Allow cleartext traffic for development -->
+    <domain-config cleartextTrafficPermitted="true">
+        <!-- Android Emulator localhost -->
+        <domain includeSubdomains="true">10.0.2.2</domain>
+        
+        <!-- Local machine IP (thay đổi theo IP máy tính của bạn) -->
+        <domain includeSubdomains="true">192.168.1.100</domain>
+        <domain includeSubdomains="true">192.168.1.101</domain>
+        <domain includeSubdomains="true">192.168.1.102</domain>
+        <domain includeSubdomains="true">192.168.1.103</domain>
+        <domain includeSubdomains="true">192.168.1.104</domain>
+        <domain includeSubdomains="true">192.168.1.105</domain>
+        
+        <!-- Standard localhost -->
+        <domain includeSubdomains="true">localhost</domain>
+        <domain includeSubdomains="true">127.0.0.1</domain>
+        
+        <!-- Laravel Valet domains -->
+        <domain includeSubdomains="true">test</domain>
+        <domain includeSubdomains="true">banking-app.test</domain>
+    </domain-config>
+    
+    <!-- ⚠️ WARNING: Remove this in production! Only for development -->
+    <!-- In production, use HTTPS only -->
+</network-security-config>

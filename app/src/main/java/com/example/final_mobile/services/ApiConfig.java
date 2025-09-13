@@ -1,9 +1,21 @@
 package com.example.final_mobile.services;
 
 public class ApiConfig {
-    // Base URL for Laravel API
-    public static final String BASE_URL = "http://10.0.2.2:8000/api/"; // For Android Emulator
-    // public static final String BASE_URL = "http://192.168.1.100:8000/api/"; // For real device
+    // ⚠️ IMPORTANT: Thay đổi URL này thành Node.js server của bạn
+    
+    // 🟢 NODE.JS DEVELOPMENT ENVIRONMENT (Chọn 1 trong các option dưới đây):
+    
+    // Option 1: Android Emulator kết nối Node.js local
+    public static final String BASE_URL = "http://10.0.2.2:8000/api/";
+    
+    // Option 2: Real Device kết nối Node.js local (thay IP của máy tính)
+    // public static final String BASE_URL = "http://192.168.1.100:8000/api/";
+    
+    // Option 3: Production Node.js server
+    // public static final String BASE_URL = "https://yourdomain.com/api/";
+    
+    // Option 4: Node.js với custom port
+    // public static final String BASE_URL = "http://10.0.2.2:3000/api/";
     
     // API Endpoints
     public static final String LOGIN = "auth/login";
