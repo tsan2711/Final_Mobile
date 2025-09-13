@@ -1,3 +1,24 @@
 <resources>
-    <string name="app_name">Final_Mobile</string>
+    <string name="app_name">Banking App</string>
+    
+    <!-- Login Screen -->
+    <string name="app_logo">App Logo</string>
+    <string name="welcome_title">Chào mừng</string>
+    <string name="login_subtitle">Đăng nhập vào tài khoản của bạn</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Mật khẩu</string>
+    <string name="forgot_password">Quên mật khẩu?</string>
+    <string name="btn_login">Đăng nhập</string>
+    
+    <!-- Bottom Navigation -->
+    <string name="nav_home">Trang chủ</string>
+    <string name="nav_transactions">Giao dịch</string>
+    <string name="nav_utilities">Tiện ích</string>
+    <string name="nav_profile">Cá nhân</string>
+    
+    <!-- Fragment Labels -->
+    <string name="home_fragment_label">Trang chủ</string>
+    <string name="transaction_fragment_label">Giao dịch</string>
+    <string name="utilities_fragment_label">Tiện ích</string>
+    <string name="profile_fragment_label">Cá nhân</string>
 </resources>
