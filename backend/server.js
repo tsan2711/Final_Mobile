@@ -16,11 +16,44 @@ app.use(cors({
   credentials: true
 }));
 
-// Ensure all API responses are JSON
+// CRITICAL: Override res.send globally to prevent HTML responses
+// This must be before all other middleware
 app.use((req, res, next) => {
-  if (req.path.startsWith('/api/') || req.path.startsWith('/health') || req.path.startsWith('/api/test')) {
-    res.setHeader('Content-Type', 'application/json');
-  }
+  const originalSend = res.send;
+  const originalStatus = res.status.bind(res);
+  
+  // Override res.send to catch HTML and convert to JSON
+  res.send = function(data) {
+    // Force JSON for API routes
+    if (req.path.startsWith('/api/') || req.path.startsWith('/health') || req.path.startsWith('/api/test')) {
+      res.setHeader('Content-Type', 'application/json');
+      
+      // If HTML response, convert to JSON error
+      if (typeof data === 'string') {
+        const trimmed = data.trim();
+        if (trimmed.startsWith('<!') || trimmed.startsWith('<html') || trimmed.startsWith('<!DOCTYPE')) {
+          return res.json({
+            success: false,
+            message: 'Route not found',
+            path: req.path,
+            method: req.method,
+            error: 'Server returned HTML instead of JSON'
+          });
+        }
+      }
+    }
+    
+    return originalSend.call(this, data);
+  };
+  
+  // Also override res.status to ensure JSON
+  res.status = function(code) {
+    if (req.path.startsWith('/api/') || req.path.startsWith('/health') || req.path.startsWith('/api/test')) {
+      res.setHeader('Content-Type', 'application/json');
+    }
+    return originalStatus(code);
+  };
+  
   next();
 });
 
@@ -167,22 +200,15 @@ app.use('/api/transactions', transactionRoutes);
 app.use('/api/utilities', utilityRoutes);
 app.use('/api/admin', adminRoutes);
 
-// 404 handler - must come before error handler and catch all routes
-app.use((req, res, next) => {
-  // Only handle API routes with JSON, ignore static files
-  if (req.path.startsWith('/api/')) {
-    return res.status(404).json({
-      success: false,
-      message: 'API route not found',
-      path: req.path,
-      method: req.method
-    });
-  }
-  // For non-API routes, continue to default handler or return 404 JSON
+// Final catch-all 404 handler - must be after all routes
+// This will catch any route that doesn't match above
+app.use((req, res) => {
+  // Ensure we always return JSON for API routes
   res.status(404).json({
     success: false,
     message: 'Route not found',
-    path: req.path
+    path: req.path,
+    method: req.method
   });
 });
 

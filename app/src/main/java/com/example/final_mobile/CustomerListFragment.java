@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,14 +17,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.final_mobile.models.Account;
 import com.example.final_mobile.services.AdminService;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class CustomerListFragment extends Fragment {
 
@@ -196,6 +200,12 @@ public class CustomerListFragment extends Fragment {
         TextView tvPhone = cardView.findViewById(R.id.tv_customer_phone);
         TextView tvAccountCount = cardView.findViewById(R.id.tv_account_count);
         MaterialButton btnCreateAccount = cardView.findViewById(R.id.btn_create_account_for_customer);
+        
+        // Account type buttons
+        LinearLayout llAccountButtons = cardView.findViewById(R.id.ll_account_buttons);
+        MaterialButton btnChecking = cardView.findViewById(R.id.btn_checking_accounts);
+        MaterialButton btnSaving = cardView.findViewById(R.id.btn_saving_accounts);
+        MaterialButton btnMortgage = cardView.findViewById(R.id.btn_mortgage_accounts);
 
         // Set customer info with null checks
         tvName.setText(customer.getFullName() != null && !customer.getFullName().isEmpty() 
@@ -207,6 +217,54 @@ public class CustomerListFragment extends Fragment {
         tvAccountCount.setText(customer.getAccountCount() + " tài khoản");
 
         btnCreateAccount.setOnClickListener(v -> showCreateAccountDialog(customer));
+
+        // Setup account type buttons
+        boolean hasChecking = customer.getCheckingAccounts() != null && !customer.getCheckingAccounts().isEmpty();
+        boolean hasSaving = customer.getSavingAccounts() != null && !customer.getSavingAccounts().isEmpty();
+        boolean hasMortgage = customer.getMortgageAccounts() != null && !customer.getMortgageAccounts().isEmpty();
+
+        // Debug logging
+        android.util.Log.d("CustomerListFragment", "Customer: " + customer.getFullName());
+        android.util.Log.d("CustomerListFragment", "  - Checking: " + (customer.getCheckingAccounts() != null ? customer.getCheckingAccounts().size() : "null"));
+        android.util.Log.d("CustomerListFragment", "  - Saving: " + (customer.getSavingAccounts() != null ? customer.getSavingAccounts().size() : "null"));
+        android.util.Log.d("CustomerListFragment", "  - Mortgage: " + (customer.getMortgageAccounts() != null ? customer.getMortgageAccounts().size() : "null"));
+
+        if (hasChecking || hasSaving || hasMortgage) {
+            llAccountButtons.setVisibility(View.VISIBLE);
+            android.util.Log.d("CustomerListFragment", "Showing account buttons for: " + customer.getFullName());
+            
+            // Setup checking button
+            if (hasChecking) {
+                btnChecking.setVisibility(View.VISIBLE);
+                int count = customer.getCheckingAccounts().size();
+                btnChecking.setText("CHECKING (" + count + ")");
+                btnChecking.setOnClickListener(v -> showAccountListDialog(customer, "CHECKING", customer.getCheckingAccounts()));
+            } else {
+                btnChecking.setVisibility(View.GONE);
+            }
+            
+            // Setup saving button
+            if (hasSaving) {
+                btnSaving.setVisibility(View.VISIBLE);
+                int count = customer.getSavingAccounts().size();
+                btnSaving.setText("SAVING (" + count + ")");
+                btnSaving.setOnClickListener(v -> showAccountListDialog(customer, "SAVING", customer.getSavingAccounts()));
+            } else {
+                btnSaving.setVisibility(View.GONE);
+            }
+            
+            // Setup mortgage button
+            if (hasMortgage) {
+                btnMortgage.setVisibility(View.VISIBLE);
+                int count = customer.getMortgageAccounts().size();
+                btnMortgage.setText("MORTGAGE (" + count + ")");
+                btnMortgage.setOnClickListener(v -> showAccountListDialog(customer, "MORTGAGE", customer.getMortgageAccounts()));
+            } else {
+                btnMortgage.setVisibility(View.GONE);
+            }
+        } else {
+            llAccountButtons.setVisibility(View.GONE);
+        }
 
         cardView.setOnClickListener(v -> {
             // TODO: Show customer details
@@ -316,6 +374,77 @@ public class CustomerListFragment extends Fragment {
                     }
                 }
             });
+    }
+
+    private void showAccountListDialog(AdminService.CustomerInfo customer, String accountType, List<Account> accounts) {
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_account_list, null);
+        
+        TextView tvDialogTitle = dialogView.findViewById(R.id.tv_dialog_title);
+        ImageButton btnClose = dialogView.findViewById(R.id.btn_close_dialog);
+        LinearLayout llAccountList = dialogView.findViewById(R.id.ll_account_list);
+        TextView tvEmptyAccounts = dialogView.findViewById(R.id.tv_empty_accounts);
+        
+        // Set title
+        String customerName = customer.getFullName() != null ? customer.getFullName() : "Khách hàng";
+        tvDialogTitle.setText(customerName + " - " + accountType);
+        
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
+            .setView(dialogView)
+            .setCancelable(true)
+            .create();
+        
+        btnClose.setOnClickListener(v -> dialog.dismiss());
+        
+        // Display accounts
+        if (accounts == null || accounts.isEmpty()) {
+            tvEmptyAccounts.setVisibility(View.VISIBLE);
+            llAccountList.setVisibility(View.GONE);
+        } else {
+            tvEmptyAccounts.setVisibility(View.GONE);
+            llAccountList.setVisibility(View.VISIBLE);
+            llAccountList.removeAllViews();
+            
+            NumberFormat currencyFormat = NumberFormat.getNumberInstance(Locale.getDefault());
+            
+            for (Account account : accounts) {
+                View accountView = createAccountDetailView(account, currencyFormat);
+                llAccountList.addView(accountView);
+            }
+        }
+        
+        dialog.show();
+    }
+    
+    private View createAccountDetailView(Account account, NumberFormat currencyFormat) {
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        MaterialCardView cardView = (MaterialCardView) inflater.inflate(R.layout.item_account_detail, null);
+        
+        TextView tvAccountNumber = cardView.findViewById(R.id.tv_account_number);
+        TextView tvBalance = cardView.findViewById(R.id.tv_account_balance);
+        TextView tvInterestRate = cardView.findViewById(R.id.tv_account_interest_rate);
+        TextView tvCurrency = cardView.findViewById(R.id.tv_account_currency);
+        
+        // Set account number
+        String accountNumber = account.getAccountNumber() != null && !account.getAccountNumber().isEmpty()
+            ? account.getAccountNumber() : "N/A";
+        tvAccountNumber.setText("Số tài khoản: " + accountNumber);
+        
+        // Set balance
+        BigDecimal balance = account.getBalance() != null ? account.getBalance() : BigDecimal.ZERO;
+        String balanceStr = currencyFormat.format(balance) + " " + (account.getCurrency() != null ? account.getCurrency() : "VND");
+        tvBalance.setText(balanceStr);
+        
+        // Set interest rate
+        if (account.getInterestRate() != null) {
+            tvInterestRate.setText(account.getInterestRate() + "%");
+        } else {
+            tvInterestRate.setText("0%");
+        }
+        
+        // Set currency
+        tvCurrency.setText(account.getCurrency() != null ? account.getCurrency() : "VND");
+        
+        return cardView;
     }
 
     @Override

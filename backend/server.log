@@ -1,148 +1,122 @@
-
-> backend@1.0.0 start
-> node server.js
-
-[dotenv@17.2.2] injecting env (12) from .env -- tip: ⚙️  override existing env vars with { override: true }
-(node:18237) [MONGOOSE] Warning: Duplicate schema index on {"transactionId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+[dotenv@17.2.2] injecting env (12) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+(node:50695) [MONGOOSE] Warning: Duplicate schema index on {"transactionId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
 (Use `node --trace-warnings ...` to show where the warning was created)
 🚀 Server running on http://0.0.0.0:8000
 📱 Android app can connect to: http://YOUR_IP:8000/api/
 🔗 Health check: http://0.0.0.0:8000/health
 ✅ MongoDB Connected: localhost
 📊 Database: banking_app
-🔐 LOGIN OTP for admin@bank.com: 902487
-🔐 LOGIN OTP for admin@bank.com: 815516
-🔐 LOGIN OTP for user2@example.com: 692360
-Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
-    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
-    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
-    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
-    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
-    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
-    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
-    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
-    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-🔐 LOGIN OTP for user2@example.com: 890260
-Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
-    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
-    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
-    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
-    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
-    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
-    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
-    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
-    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-🔐 TRANSACTION OTP for user2@example.com: 992183
-🔐 TRANSACTION OTP for user2@example.com: 435531
-🔐 LOGIN OTP for user2@example.com: 250619
-Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
-    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
-    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
-    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
-    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
-    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
-    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
-    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
-    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-🔐 TRANSACTION OTP for user2@example.com: 083328
-Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
-    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
-    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
-    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
-    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
-    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
-    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
-    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
-    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
-    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
-    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
-    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
-    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
-    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
-    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
-    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
-    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
-    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
-    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
-    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
-    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-🔐 LOGIN OTP for user2@example.com: 188990
+2025-11-16T07:13:50.387Z - GET /api/admin/dashboard
+2025-11-16T07:13:55.353Z - GET /api/admin/dashboard
+2025-11-16T07:13:58.198Z - GET /api/admin/dashboard
+2025-11-16T07:13:58.623Z - GET /api/nonexistent
 ⚠️  MongoDB disconnected
 🔄 MongoDB reconnected
-🔐 LOGIN OTP for user2@example.com: 103450
+2025-11-16T08:38:48.135Z - POST /api/auth/login
+  Auth header present
+🔐 LOGIN OTP for admin@bank.com: 546440
+2025-11-16T08:39:03.536Z - POST /api/auth/verify-otp
+  Auth header present
+2025-11-16T08:39:04.164Z - GET /api/admin/dashboard
+  Auth header present
+2025-11-16T08:39:04.182Z - GET /api/admin/dashboard
+  Auth header present
+2025-11-16T08:39:18.943Z - GET /api/accounts
+  Auth header present
+2025-11-16T08:39:18.960Z - GET /api/transactions/history
+  Auth header present
+2025-11-16T08:39:18.974Z - GET /api/accounts
+  Auth header present
+2025-11-16T08:39:18.989Z - GET /api/transactions/history
+  Auth header present
+2025-11-16T08:39:21.684Z - GET /api/admin/dashboard
+  Auth header present
+2025-11-16T08:39:21.764Z - GET /api/admin/dashboard
+  Auth header present
+2025-11-16T08:39:24.744Z - GET /api/transactions/history
+  Auth header present
+2025-11-16T08:39:24.757Z - GET /api/accounts
+  Auth header present
+2025-11-16T08:39:24.789Z - GET /api/transactions/history
+  Auth header present
+2025-11-16T08:39:24.825Z - GET /api/accounts
+  Auth header present
+2025-11-16T08:41:36.804Z - POST /api/auth/login
+  Auth header present
+🔐 LOGIN OTP for admin@bank.com: 512339
+2025-11-16T08:41:44.560Z - POST /api/auth/verify-otp
+  Auth header present
+2025-11-16T08:41:45.967Z - GET /api/admin/dashboard
+  Auth header present
+2025-11-16T08:41:46.006Z - GET /api/admin/dashboard
+  Auth header present
+2025-11-16T08:41:50.107Z - GET /api/accounts
+  Auth header present
+2025-11-16T08:41:50.116Z - GET /api/transactions/history
+  Auth header present
+2025-11-16T08:41:50.149Z - GET /api/transactions/history
+  Auth header present
+2025-11-16T08:41:50.151Z - GET /api/accounts
+  Auth header present
+2025-11-16T08:41:54.769Z - GET /api/admin/customers
+  Auth header present
+2025-11-16T08:41:59.020Z - GET /api/auth/me
+  Auth header present
+2025-11-16T08:41:59.065Z - GET /api/auth/me
+  Auth header present
+2025-11-16T08:41:59.673Z - GET /api/auth/me
+  Auth header present
+2025-11-16T08:41:59.693Z - GET /api/auth/me
+  Auth header present
+2025-11-16T08:42:00.284Z - GET /api/admin/customers
+  Auth header present
+2025-11-16T08:42:19.200Z - GET /api/admin/customers
+  Auth header present
+2025-11-16T08:42:23.503Z - GET /api/admin/customers/search
+  Auth header present
+2025-11-16T08:42:24.230Z - GET /api/admin/customers/search
+  Auth header present
+2025-11-16T08:42:28.226Z - GET /api/admin/customers/search
+  Auth header present
+2025-11-16T08:42:32.008Z - GET /api/admin/customers
+  Auth header present
+2025-11-16T08:42:54.357Z - POST /api/admin/accounts/create
+  Auth header present
+2025-11-16T08:47:02.665Z - POST /api/auth/login
+  Auth header present
+🔐 LOGIN OTP for admin@bank.com: 607846
+2025-11-16T08:47:11.722Z - POST /api/auth/verify-otp
+  Auth header present
+2025-11-16T08:47:12.228Z - GET /api/admin/dashboard
+  Auth header present
+2025-11-16T08:47:12.243Z - GET /api/admin/dashboard
+  Auth header present
+2025-11-16T08:47:14.945Z - GET /api/transactions/history
+  Auth header present
+2025-11-16T08:47:14.948Z - GET /api/accounts
+  Auth header present
+2025-11-16T08:47:14.966Z - GET /api/accounts
+  Auth header present
+2025-11-16T08:47:14.974Z - GET /api/transactions/history
+  Auth header present
+2025-11-16T08:47:17.190Z - GET /api/admin/customers
+  Auth header present
+2025-11-16T08:47:28.053Z - POST /api/admin/accounts/create
+  Auth header present
+2025-11-16T08:47:48.139Z - POST /api/admin/accounts/create
+  Auth header present
+2025-11-16T08:48:01.587Z - POST /api/admin/accounts/create
+  Auth header present
+2025-11-16T08:48:02.094Z - GET /api/admin/customers
+  Auth header present
+2025-11-16T08:48:06.090Z - GET /api/accounts
+  Auth header present
+2025-11-16T08:48:06.123Z - GET /api/accounts
+  Auth header present
+2025-11-16T08:48:06.140Z - GET /api/transactions/history
+  Auth header present
+2025-11-16T08:48:06.149Z - GET /api/transactions/history
+  Auth header present
 Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
     at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
     at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
@@ -165,6 +139,85 @@ Get transaction history error: TypeError: Cannot read properties of undefined (r
     at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
     at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
     at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
+2025-11-16T08:48:06.796Z - GET /api/accounts
+  Auth header present
+2025-11-16T08:48:06.799Z - GET /api/transactions/history
+  Auth header present
+Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
+    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
+    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
+    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
+    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
+    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
+    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
+    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
+    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
+    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
+    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
+2025-11-16T08:48:06.848Z - GET /api/accounts
+  Auth header present
+2025-11-16T08:48:06.881Z - GET /api/transactions/history
+  Auth header present
+Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
+    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
+    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
+    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
+    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
+    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
+    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
+    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
+    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
+    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
+    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
+2025-11-16T08:48:53.241Z - POST /api/auth/login
+  Auth header present
+🔐 LOGIN OTP for admin@bank.com: 027786
+2025-11-16T08:49:02.145Z - POST /api/auth/verify-otp
+  Auth header present
+2025-11-16T08:49:03.045Z - GET /api/admin/dashboard
+  Auth header present
+2025-11-16T08:49:03.086Z - GET /api/admin/dashboard
+  Auth header present
+2025-11-16T08:49:06.278Z - GET /api/accounts
+  Auth header present
+2025-11-16T08:49:06.282Z - GET /api/transactions/history
+  Auth header present
+Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
+    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
+    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
+    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
+    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
+    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
+    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
+    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
+    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
+    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
+    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
+2025-11-16T08:49:06.318Z - GET /api/accounts
+  Auth header present
+2025-11-16T08:49:06.322Z - GET /api/transactions/history
+  Auth header present
+Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
+    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
+    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
+    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
+    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
+    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
+    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
+    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
+    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
+    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
+    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
+2025-11-16T08:49:07.701Z - GET /api/admin/customers
+  Auth header present
+2025-11-16T08:49:44.317Z - GET /api/transactions/history
+  Auth header present
+2025-11-16T08:49:44.326Z - GET /api/accounts
+  Auth header present
+2025-11-16T08:49:44.334Z - GET /api/accounts
+  Auth header present
+2025-11-16T08:49:44.337Z - GET /api/transactions/history
+  Auth header present
 Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
     at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
     at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
@@ -187,6 +240,18 @@ Get transaction history error: TypeError: Cannot read properties of undefined (r
     at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
     at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
     at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
+2025-11-16T08:49:45.103Z - GET /api/auth/me
+  Auth header present
+2025-11-16T08:49:45.115Z - GET /api/auth/me
+  Auth header present
+2025-11-16T08:49:46.436Z - GET /api/accounts
+  Auth header present
+2025-11-16T08:49:46.439Z - GET /api/transactions/history
+  Auth header present
+2025-11-16T08:49:46.447Z - GET /api/accounts
+  Auth header present
+2025-11-16T08:49:46.450Z - GET /api/transactions/history
+  Auth header present
 Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
     at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
     at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
@@ -209,6 +274,110 @@ Get transaction history error: TypeError: Cannot read properties of undefined (r
     at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
     at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
     at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
+2025-11-16T08:49:47.228Z - GET /api/admin/dashboard
+  Auth header present
+2025-11-16T08:49:47.241Z - GET /api/admin/dashboard
+  Auth header present
+2025-11-16T08:49:48.137Z - GET /api/accounts
+  Auth header present
+2025-11-16T08:49:48.139Z - GET /api/transactions/history
+  Auth header present
+Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
+    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
+    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
+    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
+    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
+    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
+    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
+    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
+    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
+    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
+    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
+2025-11-16T08:49:48.159Z - GET /api/transactions/history
+  Auth header present
+2025-11-16T08:49:48.160Z - GET /api/accounts
+  Auth header present
+Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
+    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
+    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
+    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
+    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
+    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
+    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
+    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
+    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
+    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
+    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
+2025-11-16T08:49:48.908Z - GET /api/admin/customers
+  Auth header present
+2025-11-16T08:59:59.233Z - POST /api/auth/login
+  Auth header present
+🔐 LOGIN OTP for admin@bank.com: 111887
+2025-11-16T09:00:12.514Z - POST /api/auth/verify-otp
+  Auth header present
+2025-11-16T09:00:18.200Z - GET /api/admin/dashboard
+  Auth header present
+2025-11-16T09:00:19.153Z - GET /api/admin/dashboard
+  Auth header present
+2025-11-16T09:00:30.677Z - GET /api/accounts
+  Auth header present
+2025-11-16T09:00:30.704Z - GET /api/transactions/history
+  Auth header present
+Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
+    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
+    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
+    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
+    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
+    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
+    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
+    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
+    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
+    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
+    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
+2025-11-16T09:00:30.846Z - GET /api/transactions/history
+  Auth header present
+Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
+    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
+    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
+    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
+    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
+    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
+    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
+    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
+    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
+    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
+    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
+2025-11-16T09:00:30.876Z - GET /api/accounts
+  Auth header present
+2025-11-16T09:00:35.755Z - GET /api/admin/customers
+  Auth header present
+2025-11-16T09:00:51.338Z - GET /api/auth/me
+  Auth header present
+2025-11-16T09:00:51.357Z - GET /api/auth/me
+  Auth header present
+2025-11-16T09:00:51.936Z - GET /api/auth/me
+  Auth header present
+2025-11-16T09:00:51.948Z - GET /api/auth/me
+  Auth header present
+2025-11-16T09:04:46.297Z - POST /api/auth/login
+  Auth header present
+2025-11-16T09:04:51.884Z - POST /api/auth/login
+  Auth header present
+🔐 LOGIN OTP for admin@bank.com: 699821
+2025-11-16T09:04:57.596Z - POST /api/auth/verify-otp
+  Auth header present
+2025-11-16T09:05:00.086Z - GET /api/admin/dashboard
+  Auth header present
+2025-11-16T09:05:00.170Z - GET /api/admin/dashboard
+  Auth header present
+2025-11-16T09:05:17.251Z - GET /api/accounts
+  Auth header present
+2025-11-16T09:05:17.257Z - GET /api/transactions/history
+  Auth header present
+2025-11-16T09:05:17.261Z - GET /api/accounts
+  Auth header present
+2025-11-16T09:05:17.269Z - GET /api/transactions/history
+  Auth header present
 Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
     at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
     at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
@@ -231,192 +400,5 @@ Get transaction history error: TypeError: Cannot read properties of undefined (r
     at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
     at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
     at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
-    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
-    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
-    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
-    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
-    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
-    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
-    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
-    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-🔐 LOGIN OTP for user2@example.com: 500459
-Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
-    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
-    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
-    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
-    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
-    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
-    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
-    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
-    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
-    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
-    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
-    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
-    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
-    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
-    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
-    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
-    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-🔐 LOGIN OTP for user2@example.com: 356536
-Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
-    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
-    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
-    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
-    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
-    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
-    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
-    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
-    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-🔐 TRANSACTION OTP for user2@example.com: 390110
-Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
-    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
-    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
-    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
-    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-🔐 LOGIN OTP for user2@example.com: 894236
-Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
-    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
-    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
-    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
-    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
-    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
-    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
-    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
-    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
-    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
-    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
-    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
-    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
-    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
-    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
-    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
-    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-🔐 LOGIN OTP for user2@example.com: 926080
-Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
-    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
-    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
-    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
-    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
-    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
-    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
-    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
-    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-🔐 TRANSACTION OTP for user2@example.com: 208346
-Get transaction history error: TypeError: Cannot read properties of undefined (reading 'toLocaleString')
-    at model.<anonymous> (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/src/models/Account.js:54:26)
-    at VirtualType.applyGetters (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/virtualType.js:152:16)
-    at applyVirtuals (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4198:26)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3926:5)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:69:17)
-    at cloneObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:159:17)
-    at clone (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/helpers/clone.js:80:16)
-    at Document.$toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:3904:11)
-    at Document.toObject (/Users/tsangcuteso1/Documents/GitHub/CKSOA/My project/Final_Mobile/backend/node_modules/mongoose/lib/document.js:4137:15)
-🔐 LOGIN OTP for admin@bank.com: 055581
-🔐 LOGIN OTP for admin@bank.com: 811396
-🔐 LOGIN OTP for admin@bank.com: 538912
-🔐 LOGIN OTP for admin@bank.com: 290324
-🔐 LOGIN OTP for admin@bank.com: 381329
-🔐 LOGIN OTP for admin@bank.com: 531892
-🔐 LOGIN OTP for admin@bank.com: 194353
+2025-11-16T09:05:18.088Z - GET /api/admin/customers
+  Auth header present

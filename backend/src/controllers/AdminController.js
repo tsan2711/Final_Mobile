@@ -20,7 +20,7 @@ class AdminController {
 
       const total = await User.countDocuments({ customerType: 'CUSTOMER' });
 
-      // Get account counts for each customer
+      // Get account details for each customer by type
       const customersWithAccounts = await Promise.all(
         customers.map(async (customer) => {
           const accountCount = await Account.countDocuments({ 
@@ -28,19 +28,55 @@ class AdminController {
             isActive: true 
           });
           
-          const accountData = await Account.findOne({ 
+          // Get all accounts grouped by type
+          const checkingAccounts = await Account.find({ 
             userId: customer._id, 
             accountType: 'CHECKING',
             isActive: true 
-          }).select('accountNumber balance');
+          }).select('accountNumber balance interestRate currency createdAt').sort({ createdAt: -1 });
+
+          const savingAccounts = await Account.find({ 
+            userId: customer._id, 
+            accountType: 'SAVING',
+            isActive: true 
+          }).select('accountNumber balance interestRate currency createdAt').sort({ createdAt: -1 });
+
+          const mortgageAccounts = await Account.find({ 
+            userId: customer._id, 
+            accountType: 'MORTGAGE',
+            isActive: true 
+          }).select('accountNumber balance interestRate currency createdAt').sort({ createdAt: -1 });
+
+          // Format accounts
+          const formatAccounts = (accounts) => {
+            return accounts.map(acc => ({
+              account_number: acc.accountNumber ? String(acc.accountNumber) : '',
+              balance: (acc.balance !== null && acc.balance !== undefined) ? Number(acc.balance) : 0,
+              interest_rate: (acc.interestRate !== null && acc.interestRate !== undefined) ? Number(acc.interestRate) : 0,
+              currency: acc.currency || 'VND',
+              created_at: acc.createdAt ? acc.createdAt.toISOString() : null
+            }));
+          };
 
           const customerFormatted = formatUser(customer);
+          const formattedChecking = formatAccounts(checkingAccounts);
+          const formattedSaving = formatAccounts(savingAccounts);
+          const formattedMortgage = formatAccounts(mortgageAccounts);
+          
+          console.log(`Customer ${customer.email}: Checking=${formattedChecking.length}, Saving=${formattedSaving.length}, Mortgage=${formattedMortgage.length}`);
+          
           return {
             ...customerFormatted,
             account_count: accountCount || 0,
-            primary_account: accountData ? {
-              account_number: accountData.accountNumber ? String(accountData.accountNumber) : '',
-              balance: (accountData.balance !== null && accountData.balance !== undefined) ? Number(accountData.balance) : 0
+            accounts_by_type: {
+              checking: formattedChecking,
+              saving: formattedSaving,
+              mortgage: formattedMortgage
+            },
+            // Keep primary_account for backward compatibility
+            primary_account: checkingAccounts.length > 0 ? {
+              account_number: checkingAccounts[0].accountNumber ? String(checkingAccounts[0].accountNumber) : '',
+              balance: (checkingAccounts[0].balance !== null && checkingAccounts[0].balance !== undefined) ? Number(checkingAccounts[0].balance) : 0
             } : null
           };
         })
@@ -206,19 +242,7 @@ class AdminController {
         });
       }
 
-      // Check if account type already exists for this customer
-      const existingAccount = await Account.findOne({
-        userId: customerId,
-        accountType: accountType,
-        isActive: true
-      });
-
-      if (existingAccount) {
-        return res.status(400).json({
-          success: false,
-          message: `Customer already has an active ${accountType} account`
-        });
-      }
+      // Allow multiple accounts of the same type - removed restriction
 
       // Create account
       const account = new Account({

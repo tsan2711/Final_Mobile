@@ -48,6 +48,9 @@ public class AdminService {
         private String phone;
         private int accountCount;
         private Account primaryAccount;
+        private List<Account> checkingAccounts;
+        private List<Account> savingAccounts;
+        private List<Account> mortgageAccounts;
 
         public String getId() { return id; }
         public void setId(String id) { this.id = id; }
@@ -61,6 +64,12 @@ public class AdminService {
         public void setAccountCount(int accountCount) { this.accountCount = accountCount; }
         public Account getPrimaryAccount() { return primaryAccount; }
         public void setPrimaryAccount(Account primaryAccount) { this.primaryAccount = primaryAccount; }
+        public List<Account> getCheckingAccounts() { return checkingAccounts; }
+        public void setCheckingAccounts(List<Account> checkingAccounts) { this.checkingAccounts = checkingAccounts; }
+        public List<Account> getSavingAccounts() { return savingAccounts; }
+        public void setSavingAccounts(List<Account> savingAccounts) { this.savingAccounts = savingAccounts; }
+        public List<Account> getMortgageAccounts() { return mortgageAccounts; }
+        public void setMortgageAccounts(List<Account> mortgageAccounts) { this.mortgageAccounts = mortgageAccounts; }
     }
 
     // Dashboard stats model
@@ -270,8 +279,11 @@ public class AdminService {
                                 CustomerInfo customer = parseCustomerInfo(customerJson);
                                 customers.add(customer);
                                 android.util.Log.d("AdminService", "Parsed customer " + (i+1) + ": " + customer.getFullName());
+                                android.util.Log.d("AdminService", "  - Checking accounts: " + (customer.getCheckingAccounts() != null ? customer.getCheckingAccounts().size() : 0));
+                                android.util.Log.d("AdminService", "  - Saving accounts: " + (customer.getSavingAccounts() != null ? customer.getSavingAccounts().size() : 0));
+                                android.util.Log.d("AdminService", "  - Mortgage accounts: " + (customer.getMortgageAccounts() != null ? customer.getMortgageAccounts().size() : 0));
                             } catch (Exception e) {
-                                android.util.Log.e("AdminService", "Error parsing customer " + i + ": " + e.getMessage());
+                                android.util.Log.e("AdminService", "Error parsing customer " + i + ": " + e.getMessage(), e);
                                 // Continue with next customer
                             }
                         }
@@ -509,7 +521,79 @@ public class AdminService {
             customer.setPrimaryAccount(primaryAccount);
         }
 
+        // Initialize lists first
+        customer.setCheckingAccounts(new ArrayList<>());
+        customer.setSavingAccounts(new ArrayList<>());
+        customer.setMortgageAccounts(new ArrayList<>());
+        
+        // Parse accounts by type
+        if (json.has("accounts_by_type") && !json.isNull("accounts_by_type")) {
+            try {
+                JSONObject accountsByType = json.getJSONObject("accounts_by_type");
+                android.util.Log.d("AdminService", "Found accounts_by_type for customer: " + customer.getFullName());
+                
+                // Parse checking accounts
+                if (accountsByType.has("checking") && !accountsByType.isNull("checking")) {
+                    JSONArray checkingArray = accountsByType.getJSONArray("checking");
+                    customer.setCheckingAccounts(parseAccountArray(checkingArray));
+                    android.util.Log.d("AdminService", "  - Parsed " + customer.getCheckingAccounts().size() + " checking accounts");
+                }
+                
+                // Parse saving accounts
+                if (accountsByType.has("saving") && !accountsByType.isNull("saving")) {
+                    JSONArray savingArray = accountsByType.getJSONArray("saving");
+                    customer.setSavingAccounts(parseAccountArray(savingArray));
+                    android.util.Log.d("AdminService", "  - Parsed " + customer.getSavingAccounts().size() + " saving accounts");
+                }
+                
+                // Parse mortgage accounts
+                if (accountsByType.has("mortgage") && !accountsByType.isNull("mortgage")) {
+                    JSONArray mortgageArray = accountsByType.getJSONArray("mortgage");
+                    customer.setMortgageAccounts(parseAccountArray(mortgageArray));
+                    android.util.Log.d("AdminService", "  - Parsed " + customer.getMortgageAccounts().size() + " mortgage accounts");
+                }
+            } catch (Exception e) {
+                android.util.Log.e("AdminService", "Error parsing accounts_by_type: " + e.getMessage(), e);
+            }
+        } else {
+            android.util.Log.d("AdminService", "No accounts_by_type found for customer: " + customer.getFullName());
+        }
+
         return customer;
+    }
+
+    // Helper method to parse account array
+    private List<Account> parseAccountArray(JSONArray accountArray) throws JSONException {
+        List<Account> accounts = new ArrayList<>();
+        for (int i = 0; i < accountArray.length(); i++) {
+            JSONObject accountJson = accountArray.getJSONObject(i);
+            Account account = new Account();
+            account.setAccountNumber(accountJson.optString("account_number", ""));
+            
+            // Handle balance
+            if (accountJson.has("balance")) {
+                if (accountJson.get("balance") instanceof Number) {
+                    account.setBalance(BigDecimal.valueOf(accountJson.getDouble("balance")));
+                } else {
+                    account.setBalance(new BigDecimal(accountJson.getString("balance")));
+                }
+            } else {
+                account.setBalance(BigDecimal.ZERO);
+            }
+            
+            // Handle interest_rate
+            if (accountJson.has("interest_rate") && !accountJson.isNull("interest_rate")) {
+                if (accountJson.get("interest_rate") instanceof Number) {
+                    account.setInterestRate(BigDecimal.valueOf(accountJson.getDouble("interest_rate")));
+                } else {
+                    account.setInterestRate(new BigDecimal(accountJson.getString("interest_rate")));
+                }
+            }
+            
+            account.setCurrency(accountJson.optString("currency", "VND"));
+            accounts.add(account);
+        }
+        return accounts;
     }
 }
 

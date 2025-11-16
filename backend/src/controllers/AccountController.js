@@ -13,43 +13,44 @@ class AccountController {
         isActive: true 
       }).sort({ accountType: 1, createdAt: -1 });
 
-      if (!accounts || accounts.length === 0) {
-        return res.status(404).json({
-          success: false,
-          message: 'No accounts found'
-        });
-      }
-
-      // Calculate totals
+      // Initialize totals
       const totals = {
         totalBalance: 0,
         checkingBalance: 0,
         savingBalance: 0,
         mortgageBalance: 0,
-        accountCount: accounts.length
+        accountCount: accounts ? accounts.length : 0
       };
 
-      accounts.forEach(account => {
-        totals.totalBalance += account.balance;
-        
-        switch (account.accountType) {
-          case 'CHECKING':
-            totals.checkingBalance += account.balance;
-            break;
-          case 'SAVING':
-            totals.savingBalance += account.balance;
-            break;
-          case 'MORTGAGE':
-            totals.mortgageBalance += account.balance;
-            break;
-        }
-      });
+      // Calculate totals if accounts exist
+      if (accounts && accounts.length > 0) {
+        accounts.forEach(account => {
+          totals.totalBalance += account.balance || 0;
+          
+          switch (account.accountType) {
+            case 'CHECKING':
+              totals.checkingBalance += account.balance || 0;
+              break;
+            case 'SAVING':
+              totals.savingBalance += account.balance || 0;
+              break;
+            case 'MORTGAGE':
+              totals.mortgageBalance += account.balance || 0;
+              break;
+          }
+        });
+      }
 
-      const formattedAccounts = accounts.map(formatAccount);
+      const formattedAccounts = accounts && accounts.length > 0 
+        ? accounts.map(formatAccount) 
+        : [];
 
+      // Always return 200 with empty array if no accounts
       res.status(200).json({
         success: true,
-        message: 'Accounts retrieved successfully',
+        message: accounts && accounts.length > 0 
+          ? 'Accounts retrieved successfully' 
+          : 'No accounts found',
         data: formattedAccounts,
         meta: {
           totals
@@ -240,36 +241,32 @@ class AccountController {
         isActive: true 
       });
 
-      if (!accounts || accounts.length === 0) {
-        return res.status(404).json({
-          success: false,
-          message: 'No accounts found'
-        });
-      }
-
-      // Group accounts by type
+      // Initialize summary structure
       const summary = {
-        checking: accounts.filter(acc => acc.accountType === 'CHECKING'),
-        saving: accounts.filter(acc => acc.accountType === 'SAVING'),
-        mortgage: accounts.filter(acc => acc.accountType === 'MORTGAGE')
+        checking: accounts ? accounts.filter(acc => acc.accountType === 'CHECKING') : [],
+        saving: accounts ? accounts.filter(acc => acc.accountType === 'SAVING') : [],
+        mortgage: accounts ? accounts.filter(acc => acc.accountType === 'MORTGAGE') : []
       };
 
       // Calculate totals
       const totals = {
-        totalAssets: summary.checking.reduce((sum, acc) => sum + acc.balance, 0) +
-                    summary.saving.reduce((sum, acc) => sum + acc.balance, 0),
-        totalLiabilities: summary.mortgage.reduce((sum, acc) => sum + acc.balance, 0),
+        totalAssets: summary.checking.reduce((sum, acc) => sum + (acc.balance || 0), 0) +
+                    summary.saving.reduce((sum, acc) => sum + (acc.balance || 0), 0),
+        totalLiabilities: summary.mortgage.reduce((sum, acc) => sum + (acc.balance || 0), 0),
         netWorth: 0
       };
 
       totals.netWorth = totals.totalAssets - totals.totalLiabilities;
 
       // Get primary account for quick access
-      const primaryAccount = summary.checking[0] || null;
+      const primaryAccount = summary.checking.length > 0 ? summary.checking[0] : null;
 
+      // Always return 200 even if no accounts
       res.status(200).json({
         success: true,
-        message: 'Account summary retrieved successfully',
+        message: accounts && accounts.length > 0
+          ? 'Account summary retrieved successfully'
+          : 'No accounts found',
         data: {
           summary: {
             checking: summary.checking.map(formatAccount),
@@ -282,7 +279,7 @@ class AccountController {
             checking: summary.checking.length,
             saving: summary.saving.length,
             mortgage: summary.mortgage.length,
-            total: accounts.length
+            total: accounts ? accounts.length : 0
           }
         }
       });
