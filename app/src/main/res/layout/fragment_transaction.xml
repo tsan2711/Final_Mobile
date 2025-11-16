@@ -41,7 +41,8 @@
         android:padding="16dp"
         android:paddingTop="0dp">
 
-        <com.google.android.material.button.MaterialButton
+        <Button
+            android:id="@+id/btn_transfer"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_weight="1"
@@ -50,16 +51,13 @@
             android:textSize="14sp"
             android:textColor="@color/text_on_primary"
             android:textStyle="bold"
-            android:letterSpacing="0.01"
-            app:backgroundTint="@color/primary_color"
-            app:cornerRadius="12dp"
-            app:elevation="0dp"
-            app:icon="@drawable/ic_transfer_money"
-            app:iconTint="@color/text_on_primary"
-            app:iconSize="20dp"
-            app:rippleColor="@color/ripple_color" />
+            android:drawableLeft="@drawable/ic_transfer_money"
+            android:drawablePadding="8dp"
+            android:background="@drawable/button_monochrome"
+            android:backgroundTint="@color/primary_color" />
 
-        <com.google.android.material.button.MaterialButton
+        <Button
+            android:id="@+id/btn_deposit"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_weight="1"
@@ -68,16 +66,11 @@
             android:textSize="14sp"
             android:textColor="@color/primary_color"
             android:textStyle="bold"
-            android:letterSpacing="0.01"
-            app:backgroundTint="@color/surface_color"
-            app:cornerRadius="12dp"
-            app:strokeColor="@color/primary_color"
-            app:strokeWidth="2dp"
-            app:elevation="0dp"
-            app:icon="@drawable/ic_credit_card"
-            app:iconTint="@color/primary_color"
-            app:iconSize="20dp"
-            app:rippleColor="@color/ripple_color" />
+            android:drawableLeft="@drawable/ic_credit_card"
+            android:drawablePadding="8dp"
+            android:drawableTint="@color/primary_color"
+            android:background="@drawable/button_outline_monochrome"
+            android:backgroundTint="@color/surface_color" />
 
     </LinearLayout>
 
@@ -98,21 +91,19 @@
             android:textSize="20sp"
             android:textStyle="bold" />
 
-        <com.google.android.material.button.MaterialButton
+        <Button
+            android:id="@+id/btn_filter"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:text="Bộ lọc"
             android:textSize="12sp"
             android:textColor="@color/primary_color"
             android:textStyle="bold"
-            app:backgroundTint="@color/surface_color"
-            app:cornerRadius="20dp"
-            app:strokeColor="@color/primary_color"
-            app:strokeWidth="1dp"
-            app:icon="@drawable/ic_filter"
-            app:iconTint="@color/primary_color"
-            app:iconSize="16dp"
-            app:iconPadding="4dp" />
+            android:drawableLeft="@drawable/ic_filter"
+            android:drawablePadding="4dp"
+            android:drawableTint="@color/primary_color"
+            android:background="@drawable/button_outline_monochrome"
+            android:backgroundTint="@color/surface_color" />
 
     </LinearLayout>
 
@@ -140,16 +131,14 @@
                 android:layout_marginTop="8dp" />
 
             <!-- Transaction Item 1 -->
-            <com.google.android.material.card.MaterialCardView
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="4dp"
-                app:cardBackgroundColor="@color/surface_color"
                 android:clickable="true"
                 android:focusable="true"
-                android:foreground="?android:attr/selectableItemBackground">
+                android:foreground="?android:attr/selectableItemBackground"
+                android:background="@color/surface_color">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -210,16 +199,23 @@
 
                 </LinearLayout>
 
-            </com.google.android.material.card.MaterialCardView>
+            </androidx.cardview.widget.CardView>
 
             <!-- Transaction Item 2 -->
-            <LinearLayout
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/surface_color"
-                android:orientation="horizontal"
-                android:padding="16dp"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="12dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:background="@color/surface_color">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
 
                 <ImageView
                     android:layout_width="40dp"
@@ -272,7 +268,9 @@
                     android:textStyle="bold"
                     android:layout_gravity="center_vertical" />
 
-            </LinearLayout>
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
 
             <!-- Yesterday Section -->
             <TextView
@@ -286,13 +284,20 @@
                 android:layout_marginTop="16dp" />
 
             <!-- Transaction Item 3 -->
-            <LinearLayout
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/surface_color"
-                android:orientation="horizontal"
-                android:padding="16dp"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="12dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:background="@color/surface_color">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
 
                 <ImageView
                     android:layout_width="40dp"
@@ -345,16 +350,25 @@
                     android:textStyle="bold"
                     android:layout_gravity="center_vertical" />
 
-            </LinearLayout>
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
 
             <!-- Transaction Item 4 -->
-            <LinearLayout
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/surface_color"
-                android:orientation="horizontal"
-                android:padding="16dp"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="12dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:background="@color/surface_color">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
 
                 <ImageView
                     android:layout_width="40dp"
@@ -407,7 +421,9 @@
                     android:textStyle="bold"
                     android:layout_gravity="center_vertical" />
 
-            </LinearLayout>
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
 
             <!-- This Week Section -->
             <TextView
@@ -421,13 +437,20 @@
                 android:layout_marginTop="16dp" />
 
             <!-- Transaction Item 5 -->
-            <LinearLayout
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/surface_color"
-                android:orientation="horizontal"
-                android:padding="16dp"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="12dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:background="@color/surface_color">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
 
                 <ImageView
                     android:layout_width="40dp"
@@ -480,16 +503,25 @@
                     android:textStyle="bold"
                     android:layout_gravity="center_vertical" />
 
-            </LinearLayout>
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
 
             <!-- Transaction Item 6 -->
-            <LinearLayout
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/surface_color"
-                android:orientation="horizontal"
-                android:padding="16dp"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="12dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:background="@color/surface_color">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
 
                 <ImageView
                     android:layout_width="40dp"
@@ -542,7 +574,9 @@
                     android:textStyle="bold"
                     android:layout_gravity="center_vertical" />
 
-            </LinearLayout>
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
 
             <!-- Load More Button -->
             <Button

@@ -35,6 +35,7 @@
                 android:layout_marginStart="16dp">
 
                 <TextView
+                    android:id="@+id/tv_user_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Nguyễn Văn A"
@@ -43,6 +44,7 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/tv_user_email"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="nguyenvana@email.com"
@@ -51,6 +53,7 @@
                     android:layout_marginTop="4dp" />
 
                 <TextView
+                    android:id="@+id/tv_user_phone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0123 456 789"
@@ -80,12 +83,15 @@
             android:layout_marginBottom="16dp">
 
             <LinearLayout
+                android:id="@+id/btn_personal_info"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 android:padding="16dp"
-                android:background="?attr/selectableItemBackground">
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
 
                 <ImageView
                     android:layout_width="24dp"
@@ -115,12 +121,15 @@
                 android:layout_marginStart="52dp" />
 
             <LinearLayout
+                android:id="@+id/btn_security"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 android:padding="16dp"
-                android:background="?attr/selectableItemBackground">
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
 
                 <ImageView
                     android:layout_width="24dp"
@@ -163,12 +172,15 @@
             android:layout_marginBottom="24dp">
 
             <LinearLayout
+                android:id="@+id/btn_support"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 android:padding="16dp"
-                android:background="?attr/selectableItemBackground">
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
 
                 <ImageView
                     android:layout_width="24dp"
@@ -198,12 +210,15 @@
                 android:layout_marginStart="52dp" />
 
             <LinearLayout
+                android:id="@+id/btn_about"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 android:padding="16dp"
-                android:background="?attr/selectableItemBackground">
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
 
                 <ImageView
                     android:layout_width="24dp"
@@ -230,6 +245,7 @@
 
         <!-- Logout Button -->
         <Button
+            android:id="@+id/btn_logout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Đăng xuất"

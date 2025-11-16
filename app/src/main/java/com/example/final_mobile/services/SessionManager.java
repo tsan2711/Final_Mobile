@@ -70,18 +70,27 @@ public class SessionManager {
     public boolean isLoggedIn() {
         boolean isLoggedIn = pref.getBoolean(KEY_IS_LOGGED_IN, false);
         
-        // Check if session is expired (24 hours)
+        Log.d(TAG, "Checking login status: " + isLoggedIn);
+        
+        // Check if session is expired (7 days for development)
         if (isLoggedIn) {
             long lastActivity = pref.getLong(KEY_LAST_ACTIVITY, 0);
             long currentTime = System.currentTimeMillis();
             long timeDiff = currentTime - lastActivity;
-            long maxInactiveTime = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+            long maxInactiveTime = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds (was 24 hours)
+
+            Log.d(TAG, "Last activity: " + lastActivity);
+            Log.d(TAG, "Current time: " + currentTime);
+            Log.d(TAG, "Time diff: " + timeDiff + " ms (" + (timeDiff / 1000 / 60) + " minutes)");
+            Log.d(TAG, "Max inactive time: " + maxInactiveTime + " ms");
 
             if (timeDiff > maxInactiveTime) {
-                Log.d(TAG, "Session expired due to inactivity");
+                Log.w(TAG, "Session expired due to inactivity");
                 logoutUser();
                 return false;
             }
+            
+            Log.d(TAG, "Session is valid");
         }
 
         return isLoggedIn;

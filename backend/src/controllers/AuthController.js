@@ -1,7 +1,9 @@
 const User = require('../models/User');
+const Account = require('../models/Account');
 const OtpCode = require('../models/OtpCode');
 const JWTUtils = require('../utils/jwt');
 const OTPUtils = require('../utils/otp');
+const { formatUser } = require('../utils/responseFormatter');
 
 class AuthController {
   // Register new user
@@ -40,6 +42,38 @@ class AuthController {
 
       await user.save();
 
+      // Auto-create default accounts for new user
+      try {
+        // Create checking account with initial balance
+        const checkingAccount = new Account({
+          userId: user._id,
+          accountNumber: Account.generateAccountNumber(),
+          accountType: 'CHECKING',
+          balance: 100000, // Starting balance: 100,000 VND
+          interestRate: 0.5,
+          currency: 'VND'
+        });
+        await checkingAccount.save();
+
+        // Create savings account
+        const savingsAccount = new Account({
+          userId: user._id,
+          accountNumber: Account.generateAccountNumber(),
+          accountType: 'SAVING',
+          balance: 0,
+          interestRate: 5.5,
+          currency: 'VND'
+        });
+        await savingsAccount.save();
+
+        console.log(`✅ Auto-created accounts for new user: ${user.email}`);
+        console.log(`   - Checking: ${checkingAccount.accountNumber}`);
+        console.log(`   - Savings: ${savingsAccount.accountNumber}`);
+      } catch (accountError) {
+        console.error('Failed to create default accounts:', accountError);
+        // Continue with registration even if account creation fails
+      }
+
       // Generate tokens
       const { accessToken, refreshToken } = JWTUtils.generateTokenPair(user);
 
@@ -51,9 +85,12 @@ class AuthController {
         success: true,
         message: 'User registered successfully',
         data: {
-          user: user.toJSON(),
+          user: formatUser(user),
           accessToken,
-          refreshToken
+          refreshToken,
+          token: accessToken,
+          access_token: accessToken,
+          refresh_token: refreshToken
         }
       });
 
@@ -125,6 +162,10 @@ class AuthController {
 
       await otpCode.save();
 
+      // Generate a temporary token for OTP verification session
+      // This token will be replaced with a real token after OTP verification
+      const tempToken = JWTUtils.generateTokenPair(user).accessToken;
+
       // In real app, send OTP via SMS/Email
       console.log(`🔐 LOGIN OTP for ${user.email}: ${otp}`);
 
@@ -132,11 +173,14 @@ class AuthController {
         success: true,
         message: 'OTP sent to your registered email/phone',
         data: {
-          userId: user._id,
+          user_id: user._id.toString(),
           email: user.email,
-          requiresOTP: true,
+          otp_required: true,
+          token: tempToken,  // Temporary token for Android compatibility
+          user: formatUser(user),
           // FOR DEVELOPMENT ONLY - Remove in production
-          developmentOTP: otp
+          developmentOTP: otp,
+          development_otp: otp
         }
       });
 
@@ -152,10 +196,23 @@ class AuthController {
   // Verify OTP and complete login
   static async verifyLoginOTP(req, res) {
     try {
-      const { userId, otpCode } = req.body;
+      // Support both userId and otp_code (Android sends otp_code)
+      const { userId, otpCode, otp_code, token } = req.body;
+      const actualOtpCode = otpCode || otp_code;
+      let actualUserId = userId;
+
+      // If token is provided instead of userId, extract userId from token
+      if (!actualUserId && token) {
+        try {
+          const decoded = JWTUtils.verifyToken(token);
+          actualUserId = decoded.userId;
+        } catch (e) {
+          // Token might be invalid, continue with userId lookup
+        }
+      }
 
       // Validation
-      if (!userId || !otpCode) {
+      if (!actualUserId || !actualOtpCode) {
         return res.status(400).json({
           success: false,
           message: 'User ID and OTP are required'
@@ -163,7 +220,7 @@ class AuthController {
       }
 
       // Find user
-      const user = await User.findById(userId);
+      const user = await User.findById(actualUserId);
       if (!user || !user.isActive) {
         return res.status(401).json({
           success: false,
@@ -172,7 +229,7 @@ class AuthController {
       }
 
       // Find valid OTP
-      const validOTP = await OtpCode.findValidOTP(userId, 'LOGIN');
+      const validOTP = await OtpCode.findValidOTP(actualUserId, 'LOGIN');
       
       if (!validOTP) {
         return res.status(401).json({
@@ -182,7 +239,7 @@ class AuthController {
       }
 
       // Verify OTP
-      const isValidOTP = OTPUtils.verifyOTP(otpCode, validOTP.otpHash);
+      const isValidOTP = OTPUtils.verifyOTP(actualOtpCode, validOTP.otpHash);
       
       if (!isValidOTP) {
         await validOTP.incrementAttempt();
@@ -212,9 +269,12 @@ class AuthController {
         success: true,
         message: 'Login successful',
         data: {
-          user: user.toJSON(),
+          user: formatUser(user),
           accessToken,
-          refreshToken
+          refreshToken,
+          refresh_token: refreshToken,  // Also provide as 'refresh_token' for Android compatibility
+          token: accessToken,  // Also provide as 'token' for Android compatibility
+          access_token: accessToken  // Also provide as 'access_token' for Android compatibility
         }
       });
 
@@ -269,7 +329,10 @@ class AuthController {
         message: 'Token refreshed successfully',
         data: {
           accessToken,
-          refreshToken: newRefreshToken
+          refreshToken: newRefreshToken,
+          access_token: accessToken,
+          refresh_token: newRefreshToken,
+          token: accessToken
         }
       });
 
@@ -315,9 +378,7 @@ class AuthController {
 
       res.status(200).json({
         success: true,
-        data: {
-          user: user.toJSON()
-        }
+        data: formatUser(user)
       });
 
     } catch (error) {

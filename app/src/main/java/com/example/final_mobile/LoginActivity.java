@@ -18,6 +18,7 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import android.widget.TextView;
 import android.widget.EditText;
+import android.view.LayoutInflater;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -37,11 +38,12 @@ public class LoginActivity extends AppCompatActivity {
         authService = new AuthService(this);
         sessionManager = SessionManager.getInstance(this);
 
-        // Check if user is already logged in
-        if (sessionManager.isLoggedIn()) {
-            navigateToMainActivity();
-            return;
-        }
+        // Always show login screen - user must login every time
+        // If you want auto-login, uncomment the code below:
+        // if (sessionManager.isLoggedIn()) {
+        //     navigateToMainActivity();
+        //     return;
+        // }
 
         initViews();
         setupUI();
@@ -157,28 +159,41 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void showOtpDialog(String message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Xác thực OTP");
-        builder.setMessage(message);
-
-        // Create input field for OTP
-        final EditText otpInput = new EditText(this);
-        otpInput.setHint("Nhập mã OTP");
-        otpInput.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
-        builder.setView(otpInput);
-
-        builder.setPositiveButton("Xác nhận", (dialog, which) -> {
-            String otpCode = otpInput.getText().toString().trim();
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_otp_verification, null);
+        
+        TextView tvTransactionInfo = dialogView.findViewById(R.id.tv_transaction_info);
+        // For login, show email address
+        String email = etEmail.getText().toString().trim();
+        tvTransactionInfo.setText(email);
+        
+        TextInputEditText etOtp = dialogView.findViewById(R.id.et_otp);
+        
+        MaterialButton btnCancel = dialogView.findViewById(R.id.btn_cancel);
+        MaterialButton btnConfirm = dialogView.findViewById(R.id.btn_confirm);
+        
+        AlertDialog dialog = new AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(false)
+            .create();
+        
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+        btnConfirm.setOnClickListener(v -> {
+            String otpCode = etOtp.getText().toString().trim();
             if (otpCode.isEmpty()) {
                 Toast.makeText(this, "Vui lòng nhập mã OTP", Toast.LENGTH_SHORT).show();
                 return;
             }
             
+            if (otpCode.length() != 6) {
+                Toast.makeText(this, "Mã OTP phải có 6 chữ số", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            
+            dialog.dismiss();
             verifyOtp(otpCode);
         });
-
-        builder.setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss());
-        builder.show();
+        
+        dialog.show();
     }
 
     private void verifyOtp(String otpCode) {

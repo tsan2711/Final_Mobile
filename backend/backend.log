@@ -1,0 +1,11 @@
+
+> backend@1.0.0 start
+> node server.js
+
+[dotenv@17.2.2] injecting env (12) from .env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+(node:1591) [MONGOOSE] Warning: Duplicate schema index on {"transactionId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+🚀 Server running on http://0.0.0.0:8000
+📱 Android app can connect to: http://YOUR_IP:8000/api/
+🔗 Health check: http://0.0.0.0:8000/health
+✅ MongoDB Connected

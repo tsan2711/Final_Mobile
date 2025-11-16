@@ -9,8 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -55,12 +59,9 @@ public class TransactionFragment extends Fragment {
 
     private void initViews(View view) {
         tvFragmentLabel = view.findViewById(R.id.tv_fragment_label);
-        
-        // Try to find buttons (these may not exist in current layout)
-        // For now, we'll set them to null and handle clicks differently
-        btnTransfer = null; // Not available in current layout
-        btnDeposit = null; // Not available in current layout
-        btnFilter = null; // Not available in current layout
+        btnTransfer = view.findViewById(R.id.btn_transfer);
+        btnDeposit = view.findViewById(R.id.btn_deposit);
+        btnFilter = view.findViewById(R.id.btn_filter);
         
         // Initialize progress dialog
         progressDialog = new ProgressDialog(getContext());
@@ -71,27 +72,18 @@ public class TransactionFragment extends Fragment {
         // Setup fragment UI here
         tvFragmentLabel.setText(getString(R.string.transaction_fragment_label));
         
-        // For demo purposes, make the label clickable to show transfer dialog
-        tvFragmentLabel.setOnClickListener(v -> {
-            // Show menu options
-            String[] options = {"Chuyển tiền", "Thông tin nạp tiền", "Lọc giao dịch"};
-            android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
-            builder.setTitle("Chọn chức năng");
-            builder.setItems(options, (dialog, which) -> {
-                switch (which) {
-                    case 0:
-                        showTransferDialog();
-                        break;
-                    case 1:
-                        showDepositInfo();
-                        break;
-                    case 2:
-                        showFilterDialog();
-                        break;
-                }
-            });
-            builder.show();
-        });
+        // Setup button click listeners
+        if (btnTransfer != null) {
+            btnTransfer.setOnClickListener(v -> showTransferDialog());
+        }
+        
+        if (btnDeposit != null) {
+            btnDeposit.setOnClickListener(v -> showDepositInfo());
+        }
+        
+        if (btnFilter != null) {
+            btnFilter.setOnClickListener(v -> showFilterDialog());
+        }
     }
 
     private void loadAccountInfo() {
@@ -164,56 +156,38 @@ public class TransactionFragment extends Fragment {
             return;
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Chuyển tiền");
-
-        // Create custom layout for transfer
-        View dialogView = LayoutInflater.from(getContext()).inflate(android.R.layout.simple_list_item_1, null);
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_transfer_money, null);
         
-        // Create a simple vertical layout
-        android.widget.LinearLayout layout = new android.widget.LinearLayout(getContext());
-        layout.setOrientation(android.widget.LinearLayout.VERTICAL);
-        layout.setPadding(50, 20, 50, 20);
-
-        // Account number input
-        EditText etAccountNumber = new EditText(getContext());
-        etAccountNumber.setHint("Số tài khoản người nhận");
-        etAccountNumber.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
-        layout.addView(etAccountNumber);
-
-        // Amount input
-        EditText etAmount = new EditText(getContext());
-        etAmount.setHint("Số tiền");
-        etAmount.setInputType(android.text.InputType.TYPE_CLASS_NUMBER | android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        layout.addView(etAmount);
-
-        // Description input
-        EditText etDescription = new EditText(getContext());
-        etDescription.setHint("Nội dung chuyển tiền");
-        etDescription.setInputType(android.text.InputType.TYPE_CLASS_TEXT);
-        layout.addView(etDescription);
-
-        // Balance info
-        TextView tvBalance = new TextView(getContext());
-        tvBalance.setText("Số dư khả dụng: " + primaryAccount.getFormattedBalance());
-        tvBalance.setTextSize(14);
-        tvBalance.setPadding(0, 20, 0, 0);
-        layout.addView(tvBalance);
-
-        builder.setView(layout);
-
-        builder.setPositiveButton("Chuyển tiền", (dialog, which) -> {
+        TextView tvBalance = dialogView.findViewById(R.id.tv_balance);
+        tvBalance.setText(primaryAccount.getFormattedBalance());
+        
+        TextInputEditText etAccountNumber = dialogView.findViewById(R.id.et_account_number);
+        TextInputEditText etAmount = dialogView.findViewById(R.id.et_amount);
+        TextInputEditText etDescription = dialogView.findViewById(R.id.et_description);
+        
+        MaterialButton btnCancel = dialogView.findViewById(R.id.btn_cancel);
+        MaterialButton btnConfirm = dialogView.findViewById(R.id.btn_confirm);
+        ImageButton btnClose = dialogView.findViewById(R.id.btn_close);
+        
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
+            .setView(dialogView)
+            .setCancelable(true)
+            .create();
+        
+        btnClose.setOnClickListener(v -> dialog.dismiss());
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+        btnConfirm.setOnClickListener(v -> {
             String accountNumber = etAccountNumber.getText().toString().trim();
             String amountStr = etAmount.getText().toString().trim();
             String description = etDescription.getText().toString().trim();
 
             if (validateTransferInput(accountNumber, amountStr, description)) {
+                dialog.dismiss();
                 performTransfer(accountNumber, new BigDecimal(amountStr), description);
             }
         });
-
-        builder.setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss());
-        builder.show();
+        
+        dialog.show();
     }
 
     private boolean validateTransferInput(String accountNumber, String amountStr, String description) {
@@ -234,8 +208,23 @@ public class TransactionFragment extends Fragment {
 
         try {
             BigDecimal amount = new BigDecimal(amountStr);
-            if (!transactionService.isValidTransferAmount(amount, primaryAccount.getBalance())) {
-                Toast.makeText(getContext(), "Số tiền không hợp lệ hoặc không đủ số dư", Toast.LENGTH_SHORT).show();
+            
+            // Check minimum amount
+            BigDecimal minAmount = new BigDecimal("10000");
+            if (amount.compareTo(minAmount) < 0) {
+                Toast.makeText(getContext(), "Số tiền chuyển tối thiểu là 10,000 VND", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+            
+            // Calculate fee and check balance
+            BigDecimal fee = transactionService.calculateFee(amount);
+            BigDecimal totalAmount = amount.add(fee);
+            BigDecimal balance = primaryAccount.getBalance();
+            
+            if (balance == null || balance.compareTo(totalAmount) < 0) {
+                String message = String.format("Số dư không đủ. Bạn cần %s VND (bao gồm phí %s VND) nhưng số dư hiện tại là %s VND",
+                    formatAmount(totalAmount), formatAmount(fee), formatAmount(balance));
+                Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
                 return false;
             }
         } catch (NumberFormatException e) {
@@ -255,7 +244,9 @@ public class TransactionFragment extends Fragment {
         progressDialog.setMessage("Đang xử lý chuyển tiền...");
         progressDialog.show();
 
-        transactionService.transferMoney(toAccountNumber, amount, description, new TransactionService.TransactionCallback() {
+        String fromAccountId = primaryAccount != null ? primaryAccount.getId() : null;
+
+        transactionService.transferMoney(fromAccountId, toAccountNumber, amount, description, new TransactionService.TransactionCallback() {
             @Override
             public void onSuccess(List<Transaction> transactions) {
                 // Not used here
@@ -296,27 +287,34 @@ public class TransactionFragment extends Fragment {
     }
 
     private void showOtpDialog(String message, String transactionId) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Xác thực OTP");
-        builder.setMessage(message);
-
-        EditText otpInput = new EditText(getContext());
-        otpInput.setHint("Nhập mã OTP");
-        otpInput.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
-        builder.setView(otpInput);
-
-        builder.setPositiveButton("Xác nhận", (dialog, which) -> {
-            String otpCode = otpInput.getText().toString().trim();
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_otp_verification, null);
+        
+        TextView tvTransactionInfo = dialogView.findViewById(R.id.tv_transaction_info);
+        tvTransactionInfo.setText(message);
+        
+        TextInputEditText etOtp = dialogView.findViewById(R.id.et_otp);
+        
+        MaterialButton btnCancel = dialogView.findViewById(R.id.btn_cancel);
+        MaterialButton btnConfirm = dialogView.findViewById(R.id.btn_confirm);
+        
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
+            .setView(dialogView)
+            .setCancelable(false)
+            .create();
+        
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+        btnConfirm.setOnClickListener(v -> {
+            String otpCode = etOtp.getText().toString().trim();
             if (otpCode.isEmpty()) {
                 Toast.makeText(getContext(), "Vui lòng nhập mã OTP", Toast.LENGTH_SHORT).show();
                 return;
             }
             
+            dialog.dismiss();
             verifyTransactionOtp(transactionId, otpCode);
         });
-
-        builder.setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss());
-        builder.show();
+        
+        dialog.show();
     }
 
     private void verifyTransactionOtp(String transactionId, String otpCode) {
@@ -386,11 +384,31 @@ public class TransactionFragment extends Fragment {
     }
 
     private void showErrorDialog(String title, String message) {
-        new AlertDialog.Builder(getContext())
-                .setTitle(title)
-                .setMessage(message)
-                .setPositiveButton("OK", null)
-                .show();
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_error, null);
+        
+        TextView tvTitle = dialogView.findViewById(R.id.tv_title);
+        tvTitle.setText(title);
+        TextView tvMessage = dialogView.findViewById(R.id.tv_message);
+        tvMessage.setText(message);
+        
+        MaterialButton btnOk = dialogView.findViewById(R.id.btn_ok);
+        
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
+            .setView(dialogView)
+            .setCancelable(true)
+            .create();
+        
+        btnOk.setOnClickListener(v -> dialog.dismiss());
+        
+        dialog.show();
+    }
+
+    private String formatAmount(BigDecimal amount) {
+        if (amount == null) {
+            return "0";
+        }
+        // Format with thousand separator
+        return amount.toPlainString().replaceAll("(\\d)(?=(\\d{3})+(?!\\d))", "$1.");
     }
 
     @Override

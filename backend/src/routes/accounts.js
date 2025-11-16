@@ -25,4 +25,11 @@ router.get('/:accountId/balance', AccountController.getAccountBalance);
 // Get account by account number (for transfers)
 router.get('/number/:accountNumber', AccountController.getAccountByNumber);
 
+// Deposit and withdrawal
+router.post('/deposit', AccountController.depositMoney);
+router.post('/withdraw', AccountController.withdrawMoney);
+
+// Create default accounts for user
+router.post('/create-defaults', AccountController.createDefaultAccounts);
+
 module.exports = router;

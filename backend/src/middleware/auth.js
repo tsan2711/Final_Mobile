@@ -116,6 +116,7 @@ const bankOfficerOnly = (req, res, next) => {
 
 module.exports = {
   authMiddleware,
+  authenticate: authMiddleware,
   optionalAuth,
   bankOfficerOnly
 };

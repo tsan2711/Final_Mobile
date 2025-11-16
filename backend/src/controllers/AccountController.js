@@ -1,5 +1,6 @@
 const Account = require('../models/Account');
 const User = require('../models/User');
+const { formatAccount } = require('../utils/responseFormatter');
 
 class AccountController {
   // Get all accounts for logged in user
@@ -44,11 +45,13 @@ class AccountController {
         }
       });
 
+      const formattedAccounts = accounts.map(formatAccount);
+
       res.status(200).json({
         success: true,
         message: 'Accounts retrieved successfully',
-        data: {
-          accounts,
+        data: formattedAccounts,
+        meta: {
           totals
         }
       });
@@ -98,7 +101,7 @@ class AccountController {
         success: true,
         message: 'Account retrieved successfully',
         data: {
-          account,
+          account: formatAccount(account),
           calculations: {
             monthlyInterest,
             monthlyPayment,
@@ -139,10 +142,10 @@ class AccountController {
         success: true,
         message: 'Balance retrieved successfully',
         data: {
-          accountNumber: account.maskedAccountNumber,
-          accountType: account.accountType,
+          account_number: account.maskedAccountNumber,
+          account_type: account.accountType,
           balance: account.balance,
-          formattedBalance: account.formattedBalance,
+          formatted_balance: account.formattedBalance,
           currency: account.currency,
           timestamp: new Date().toISOString()
         }
@@ -179,10 +182,9 @@ class AccountController {
         success: true,
         message: 'Account found',
         data: {
-          accountNumber: account.maskedAccountNumber,
-          accountType: account.accountType,
-          ownerName: account.userId.fullName,
-          // Don't return balance for security
+          account_number: account.maskedAccountNumber,
+          account_type: account.accountType,
+          owner_name: account.userId.fullName
         }
       });
 
@@ -216,9 +218,7 @@ class AccountController {
       res.status(200).json({
         success: true,
         message: 'Primary account retrieved successfully',
-        data: {
-          account: primaryAccount
-        }
+        data: formatAccount(primaryAccount)
       });
 
     } catch (error) {
@@ -271,9 +271,13 @@ class AccountController {
         success: true,
         message: 'Account summary retrieved successfully',
         data: {
-          summary,
+          summary: {
+            checking: summary.checking.map(formatAccount),
+            saving: summary.saving.map(formatAccount),
+            mortgage: summary.mortgage.map(formatAccount)
+          },
           totals,
-          primaryAccount,
+          primaryAccount: primaryAccount ? formatAccount(primaryAccount) : null,
           accountCounts: {
             checking: summary.checking.length,
             saving: summary.saving.length,
@@ -288,6 +292,239 @@ class AccountController {
       res.status(500).json({
         success: false,
         message: 'Failed to retrieve account summary'
+      });
+    }
+  }
+
+  // Deposit money to account
+  static async depositMoney(req, res) {
+    try {
+      const { accountId, amount, description } = req.body;
+      const userId = req.userId;
+
+      // Validation
+      const amountNumber = Number(amount);
+      if (!accountId || Number.isNaN(amountNumber)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Account ID and valid amount are required'
+        });
+      }
+
+      if (amountNumber <= 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'Amount must be greater than 0'
+        });
+      }
+
+      // Find account
+      const account = await Account.findOne({
+        _id: accountId,
+        userId,
+        isActive: true
+      });
+
+      if (!account) {
+        return res.status(404).json({
+          success: false,
+          message: 'Account not found'
+        });
+      }
+
+      // Credit the account
+      await account.credit(amountNumber);
+
+      // Create transaction record
+      const Transaction = require('../models/Transaction');
+      const transactionId = Transaction.generateTransactionId();
+      
+      const transaction = new Transaction({
+        transactionId,
+        fromAccountId: account._id,
+        toAccountId: account._id,
+        fromAccountNumber: account.accountNumber,
+        toAccountNumber: account.accountNumber,
+        amount: amountNumber,
+        currency: account.currency,
+        description: description || 'Deposit to account',
+        transactionType: 'DEPOSIT',
+        status: 'COMPLETED',
+        initiatedBy: userId,
+        fee: 0,
+        totalAmount: amountNumber,
+        otpVerified: true,
+        processedAt: new Date()
+      });
+
+      await transaction.save();
+
+      res.status(200).json({
+        success: true,
+        message: 'Deposit completed successfully',
+        data: {
+          transaction_id: transactionId,
+          account: formatAccount(account),
+          amount: amountNumber,
+          new_balance: account.balance,
+          formatted_balance: account.formattedBalance
+        }
+      });
+
+    } catch (error) {
+      console.error('Deposit money error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to deposit money'
+      });
+    }
+  }
+
+  // Withdraw money from account
+  static async withdrawMoney(req, res) {
+    try {
+      const { accountId, amount, description } = req.body;
+      const userId = req.userId;
+
+      // Validation
+      const amountNumber = Number(amount);
+      if (!accountId || Number.isNaN(amountNumber)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Account ID and valid amount are required'
+        });
+      }
+
+      if (amountNumber <= 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'Amount must be greater than 0'
+        });
+      }
+
+      // Find account
+      const account = await Account.findOne({
+        _id: accountId,
+        userId,
+        isActive: true
+      });
+
+      if (!account) {
+        return res.status(404).json({
+          success: false,
+          message: 'Account not found'
+        });
+      }
+
+      // Check sufficient balance
+      if (!account.canDebit(amountNumber)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Insufficient balance'
+        });
+      }
+
+      // Debit the account
+      await account.debit(amountNumber);
+
+      // Create transaction record
+      const Transaction = require('../models/Transaction');
+      const transactionId = Transaction.generateTransactionId();
+      
+      const transaction = new Transaction({
+        transactionId,
+        fromAccountId: account._id,
+        toAccountId: account._id,
+        fromAccountNumber: account.accountNumber,
+        toAccountNumber: account.accountNumber,
+        amount: amountNumber,
+        currency: account.currency,
+        description: description || 'Withdrawal from account',
+        transactionType: 'WITHDRAWAL',
+        status: 'COMPLETED',
+        initiatedBy: userId,
+        fee: 0,
+        totalAmount: amountNumber,
+        otpVerified: true,
+        processedAt: new Date()
+      });
+
+      await transaction.save();
+
+      res.status(200).json({
+        success: true,
+        message: 'Withdrawal completed successfully',
+        data: {
+          transaction_id: transactionId,
+          account: formatAccount(account),
+          amount: amountNumber,
+          new_balance: account.balance,
+          formatted_balance: account.formattedBalance
+        }
+      });
+
+    } catch (error) {
+      console.error('Withdraw money error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to withdraw money'
+      });
+    }
+  }
+
+  // Create default accounts for user (if they don't have any)
+  static async createDefaultAccounts(req, res) {
+    try {
+      const userId = req.userId;
+
+      // Check if user already has accounts
+      const existingAccounts = await Account.find({ userId, isActive: true });
+      
+      if (existingAccounts && existingAccounts.length > 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'User already has accounts',
+          data: existingAccounts.map(formatAccount)
+        });
+      }
+
+      // Create checking account with initial balance
+      const checkingAccount = new Account({
+        userId,
+        accountNumber: Account.generateAccountNumber(),
+        accountType: 'CHECKING',
+        balance: 100000, // Starting balance: 100,000 VND
+        interestRate: 0.5,
+        currency: 'VND'
+      });
+      await checkingAccount.save();
+
+      // Create savings account
+      const savingsAccount = new Account({
+        userId,
+        accountNumber: Account.generateAccountNumber(),
+        accountType: 'SAVING',
+        balance: 0,
+        interestRate: 5.5,
+        currency: 'VND'
+      });
+      await savingsAccount.save();
+
+      console.log(`✅ Created default accounts for user: ${userId}`);
+
+      const accounts = [checkingAccount, savingsAccount];
+
+      res.status(201).json({
+        success: true,
+        message: 'Default accounts created successfully',
+        data: accounts.map(formatAccount)
+      });
+
+    } catch (error) {
+      console.error('Create default accounts error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to create default accounts'
       });
     }
   }

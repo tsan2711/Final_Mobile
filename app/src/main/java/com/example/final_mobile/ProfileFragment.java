@@ -8,9 +8,15 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,7 +28,15 @@ import com.example.final_mobile.services.UserService;
 
 public class ProfileFragment extends Fragment {
 
-    private TextView tvFragmentLabel;
+    private TextView tvUserName;
+    private TextView tvUserEmail;
+    private TextView tvUserPhone;
+    private LinearLayout btnPersonalInfo;
+    private LinearLayout btnSecurity;
+    private LinearLayout btnSupport;
+    private LinearLayout btnAbout;
+    private Button btnLogout;
+    
     private UserService userService;
     private AuthService authService;
     private ProgressDialog progressDialog;
@@ -48,7 +62,15 @@ public class ProfileFragment extends Fragment {
     }
 
     private void initViews(View view) {
-        tvFragmentLabel = view.findViewById(R.id.tv_fragment_label);
+        // Find views from the layout
+        tvUserName = view.findViewById(R.id.tv_user_name);
+        tvUserEmail = view.findViewById(R.id.tv_user_email);
+        tvUserPhone = view.findViewById(R.id.tv_user_phone);
+        btnPersonalInfo = view.findViewById(R.id.btn_personal_info);
+        btnSecurity = view.findViewById(R.id.btn_security);
+        btnSupport = view.findViewById(R.id.btn_support);
+        btnAbout = view.findViewById(R.id.btn_about);
+        btnLogout = view.findViewById(R.id.btn_logout);
         
         // Initialize progress dialog
         progressDialog = new ProgressDialog(getContext());
@@ -56,11 +78,26 @@ public class ProfileFragment extends Fragment {
     }
 
     private void setupUI() {
-        // Setup fragment UI here
-        tvFragmentLabel.setText(getString(R.string.profile_fragment_label));
+        // Setup click listeners
+        if (btnPersonalInfo != null) {
+            btnPersonalInfo.setOnClickListener(v -> showUpdateProfileDialog());
+        }
         
-        // Make the label clickable to show profile menu
-        tvFragmentLabel.setOnClickListener(v -> showProfileMenu());
+        if (btnSecurity != null) {
+            btnSecurity.setOnClickListener(v -> showChangePasswordDialog());
+        }
+        
+        if (btnSupport != null) {
+            btnSupport.setOnClickListener(v -> showSupportDialog());
+        }
+        
+        if (btnAbout != null) {
+            btnAbout.setOnClickListener(v -> showAccountInfoDialog());
+        }
+        
+        if (btnLogout != null) {
+            btnLogout.setOnClickListener(v -> showLogoutConfirmation());
+        }
     }
 
     private void loadUserProfile() {
@@ -94,50 +131,58 @@ public class ProfileFragment extends Fragment {
     }
 
     private void updateProfileDisplay() {
-        if (currentUser != null && tvFragmentLabel != null) {
-            String profileInfo = getString(R.string.profile_fragment_label) + "\n\n" +
-                    "Tên: " + userService.getUserDisplayName() + "\n" +
-                    "Email: " + currentUser.getEmail() + "\n" +
-                    "Điện thoại: " + userService.formatPhoneNumber(currentUser.getPhone()) + "\n" +
-                    "Trạng thái: " + userService.getAccountStatus() + "\n\n" +
-                    "Nhấn để xem thêm tùy chọn";
-            
-            tvFragmentLabel.setText(profileInfo);
+        // Ensure we have user data
+        if (currentUser == null && userService != null) {
+            currentUser = userService.getCurrentUser();
+        }
+        
+        if (currentUser != null) {
+            try {
+                String displayName = currentUser.getFullName();
+                if (displayName == null || displayName.isEmpty()) {
+                    displayName = "User";
+                }
+                
+                String email = currentUser.getEmail();
+                if (email == null || email.isEmpty()) {
+                    email = "N/A";
+                }
+                
+                String phone = currentUser.getPhone();
+                if (phone == null || phone.isEmpty()) {
+                    phone = "N/A";
+                }
+                
+                // Update TextViews with user data
+                if (tvUserName != null) {
+                    tvUserName.setText(displayName);
+                }
+                
+                if (tvUserEmail != null) {
+                    tvUserEmail.setText(email);
+                }
+                
+                if (tvUserPhone != null) {
+                    tvUserPhone.setText(phone);
+                }
+            } catch (Exception e) {
+                // Fallback in case of any error
+                Toast.makeText(getContext(), "Không thể tải thông tin", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            // Show default values when loading
+            if (tvUserName != null) {
+                tvUserName.setText("Đang tải...");
+            }
+            if (tvUserEmail != null) {
+                tvUserEmail.setText("Đang tải...");
+            }
+            if (tvUserPhone != null) {
+                tvUserPhone.setText("Đang tải...");
+            }
         }
     }
 
-    private void showProfileMenu() {
-        String[] options = {
-            "Cập nhật thông tin cá nhân", 
-            "Đổi mật khẩu", 
-            "Thông tin tài khoản",
-            "Hỗ trợ khách hàng",
-            "Đăng xuất"
-        };
-        
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Tùy chọn profile");
-        builder.setItems(options, (dialog, which) -> {
-            switch (which) {
-                case 0:
-                    showUpdateProfileDialog();
-                    break;
-                case 1:
-                    showChangePasswordDialog();
-                    break;
-                case 2:
-                    showAccountInfoDialog();
-                    break;
-                case 3:
-                    showSupportDialog();
-                    break;
-                case 4:
-                    showLogoutConfirmation();
-                    break;
-            }
-        });
-        builder.show();
-    }
 
     private void showUpdateProfileDialog() {
         if (currentUser == null) {
@@ -145,41 +190,35 @@ public class ProfileFragment extends Fragment {
             return;
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Cập nhật thông tin");
-
-        // Create layout for form
-        android.widget.LinearLayout layout = new android.widget.LinearLayout(getContext());
-        layout.setOrientation(android.widget.LinearLayout.VERTICAL);
-        layout.setPadding(50, 20, 50, 20);
-
-        // Full name input
-        EditText etFullName = new EditText(getContext());
-        etFullName.setHint("Họ và tên");
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_update_profile, null);
+        
+        TextInputEditText etFullName = dialogView.findViewById(R.id.et_full_name);
+        TextInputEditText etPhone = dialogView.findViewById(R.id.et_phone);
+        TextInputEditText etAddress = dialogView.findViewById(R.id.et_address);
+        
+        // Set current values
         etFullName.setText(currentUser.getFullName());
-        layout.addView(etFullName);
-
-        // Phone input
-        EditText etPhone = new EditText(getContext());
-        etPhone.setHint("Số điện thoại");
         etPhone.setText(currentUser.getPhone());
-        etPhone.setInputType(android.text.InputType.TYPE_CLASS_PHONE);
-        layout.addView(etPhone);
-
-        // Address input
-        EditText etAddress = new EditText(getContext());
-        etAddress.setHint("Địa chỉ");
         etAddress.setText(currentUser.getAddress());
-        layout.addView(etAddress);
-
-        builder.setView(layout);
-
-        builder.setPositiveButton("Cập nhật", (dialog, which) -> {
+        
+        MaterialButton btnCancel = dialogView.findViewById(R.id.btn_cancel);
+        MaterialButton btnConfirm = dialogView.findViewById(R.id.btn_confirm);
+        ImageButton btnClose = dialogView.findViewById(R.id.btn_close);
+        
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
+            .setView(dialogView)
+            .setCancelable(true)
+            .create();
+        
+        btnClose.setOnClickListener(v -> dialog.dismiss());
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+        btnConfirm.setOnClickListener(v -> {
             String fullName = etFullName.getText().toString().trim();
             String phone = etPhone.getText().toString().trim();
             String address = etAddress.getText().toString().trim();
 
             if (validateProfileInput(fullName, phone)) {
+                dialog.dismiss();
                 User updatedUser = new User();
                 updatedUser.setId(currentUser.getId());
                 updatedUser.setEmail(currentUser.getEmail());
@@ -191,9 +230,8 @@ public class ProfileFragment extends Fragment {
                 updateProfile(updatedUser);
             }
         });
-
-        builder.setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss());
-        builder.show();
+        
+        dialog.show();
     }
 
     private boolean validateProfileInput(String fullName, String phone) {
@@ -255,46 +293,35 @@ public class ProfileFragment extends Fragment {
     }
 
     private void showChangePasswordDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Đổi mật khẩu");
-
-        // Create layout for form
-        android.widget.LinearLayout layout = new android.widget.LinearLayout(getContext());
-        layout.setOrientation(android.widget.LinearLayout.VERTICAL);
-        layout.setPadding(50, 20, 50, 20);
-
-        // Current password input
-        EditText etCurrentPassword = new EditText(getContext());
-        etCurrentPassword.setHint("Mật khẩu hiện tại");
-        etCurrentPassword.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        layout.addView(etCurrentPassword);
-
-        // New password input
-        EditText etNewPassword = new EditText(getContext());
-        etNewPassword.setHint("Mật khẩu mới");
-        etNewPassword.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        layout.addView(etNewPassword);
-
-        // Confirm password input
-        EditText etConfirmPassword = new EditText(getContext());
-        etConfirmPassword.setHint("Xác nhận mật khẩu mới");
-        etConfirmPassword.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        layout.addView(etConfirmPassword);
-
-        builder.setView(layout);
-
-        builder.setPositiveButton("Đổi mật khẩu", (dialog, which) -> {
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_change_password, null);
+        
+        TextInputEditText etCurrentPassword = dialogView.findViewById(R.id.et_current_password);
+        TextInputEditText etNewPassword = dialogView.findViewById(R.id.et_new_password);
+        TextInputEditText etConfirmPassword = dialogView.findViewById(R.id.et_confirm_password);
+        
+        MaterialButton btnCancel = dialogView.findViewById(R.id.btn_cancel);
+        MaterialButton btnConfirm = dialogView.findViewById(R.id.btn_confirm);
+        ImageButton btnClose = dialogView.findViewById(R.id.btn_close);
+        
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
+            .setView(dialogView)
+            .setCancelable(true)
+            .create();
+        
+        btnClose.setOnClickListener(v -> dialog.dismiss());
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+        btnConfirm.setOnClickListener(v -> {
             String currentPassword = etCurrentPassword.getText().toString();
             String newPassword = etNewPassword.getText().toString();
             String confirmPassword = etConfirmPassword.getText().toString();
 
             if (validatePasswordInput(currentPassword, newPassword, confirmPassword)) {
+                dialog.dismiss();
                 changePassword(currentPassword, newPassword);
             }
         });
-
-        builder.setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss());
-        builder.show();
+        
+        dialog.show();
     }
 
     private boolean validatePasswordInput(String currentPassword, String newPassword, String confirmPassword) {
@@ -359,36 +386,63 @@ public class ProfileFragment extends Fragment {
             return;
         }
 
-        String accountInfo = "THÔNG TIN TÀI KHOẢN\n\n" +
-                "Email: " + currentUser.getEmail() + "\n" +
-                "Họ tên: " + currentUser.getFullName() + "\n" +
-                "Điện thoại: " + userService.formatPhoneNumber(currentUser.getPhone()) + "\n" +
-                "Địa chỉ: " + (currentUser.getAddress() != null ? currentUser.getAddress() : "Chưa cập nhật") + "\n" +
-                "Số tài khoản: " + (currentUser.getAccountNumber() != null ? currentUser.getAccountNumber() : "Chưa có") + "\n" +
-                "Loại tài khoản: " + userService.getAccountStatus();
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Thông tin tài khoản");
-        builder.setMessage(accountInfo);
-        builder.setPositiveButton("OK", null);
-        builder.show();
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_account_info, null);
+        
+        TextView tvEmail = dialogView.findViewById(R.id.tv_email);
+        TextView tvFullName = dialogView.findViewById(R.id.tv_full_name);
+        TextView tvPhone = dialogView.findViewById(R.id.tv_phone);
+        TextView tvAddress = dialogView.findViewById(R.id.tv_address);
+        TextView tvAccountNumber = dialogView.findViewById(R.id.tv_account_number);
+        TextView tvAccountType = dialogView.findViewById(R.id.tv_account_type);
+        
+        // Set values
+        tvEmail.setText(currentUser.getEmail());
+        tvFullName.setText(currentUser.getFullName());
+        tvPhone.setText(userService.formatPhoneNumber(currentUser.getPhone()));
+        tvAddress.setText(currentUser.getAddress() != null ? currentUser.getAddress() : "Chưa cập nhật");
+        tvAccountNumber.setText(currentUser.getAccountNumber() != null ? currentUser.getAccountNumber() : "Chưa có");
+        tvAccountType.setText(userService.getAccountStatus());
+        
+        MaterialButton btnOk = dialogView.findViewById(R.id.btn_ok);
+        ImageButton btnClose = dialogView.findViewById(R.id.btn_close);
+        
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
+            .setView(dialogView)
+            .setCancelable(true)
+            .create();
+        
+        btnClose.setOnClickListener(v -> dialog.dismiss());
+        btnOk.setOnClickListener(v -> dialog.dismiss());
+        
+        dialog.show();
     }
 
     private void showSupportDialog() {
-        String supportInfo = "HỖ TRỢ KHÁCH HÀNG\n\n" +
-                "Hotline: 1900 1234\n" +
-                "Email: support@mybank.vn\n" +
-                "Website: www.mybank.vn\n\n" +
-                "Giờ làm việc:\n" +
-                "Thứ 2 - Thứ 6: 8:00 - 17:00\n" +
-                "Thứ 7: 8:00 - 12:00\n" +
-                "Chủ nhật: Nghỉ";
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Hỗ trợ khách hàng");
-        builder.setMessage(supportInfo);
-        builder.setPositiveButton("OK", null);
-        builder.show();
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_support, null);
+        
+        TextView tvHotline = dialogView.findViewById(R.id.tv_hotline);
+        TextView tvEmail = dialogView.findViewById(R.id.tv_email);
+        TextView tvWebsite = dialogView.findViewById(R.id.tv_website);
+        TextView tvWorkingHours = dialogView.findViewById(R.id.tv_working_hours);
+        
+        // Set values
+        tvHotline.setText("1900 1234");
+        tvEmail.setText("support@mybank.vn");
+        tvWebsite.setText("www.mybank.vn");
+        tvWorkingHours.setText("Thứ 2 - Thứ 6: 8:00 - 17:00\nThứ 7: 8:00 - 12:00\nChủ nhật: Nghỉ");
+        
+        MaterialButton btnOk = dialogView.findViewById(R.id.btn_ok);
+        ImageButton btnClose = dialogView.findViewById(R.id.btn_close);
+        
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
+            .setView(dialogView)
+            .setCancelable(true)
+            .create();
+        
+        btnClose.setOnClickListener(v -> dialog.dismiss());
+        btnOk.setOnClickListener(v -> dialog.dismiss());
+        
+        dialog.show();
     }
 
     private void showLogoutConfirmation() {
@@ -445,11 +499,23 @@ public class ProfileFragment extends Fragment {
     }
 
     private void showErrorDialog(String title, String message) {
-        new AlertDialog.Builder(getContext())
-                .setTitle(title)
-                .setMessage(message)
-                .setPositiveButton("OK", null)
-                .show();
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_error, null);
+        
+        TextView tvTitle = dialogView.findViewById(R.id.tv_title);
+        tvTitle.setText(title);
+        TextView tvMessage = dialogView.findViewById(R.id.tv_message);
+        tvMessage.setText(message);
+        
+        MaterialButton btnOk = dialogView.findViewById(R.id.btn_ok);
+        
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
+            .setView(dialogView)
+            .setCancelable(true)
+            .create();
+        
+        btnOk.setOnClickListener(v -> dialog.dismiss());
+        
+        dialog.show();
     }
 
     @Override

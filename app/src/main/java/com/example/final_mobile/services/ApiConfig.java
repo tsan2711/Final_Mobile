@@ -57,6 +57,15 @@ public class ApiConfig {
     public static final String GET_BRANCHES = "branches";
     public static final String GET_NEAREST_BRANCH = "branches/nearest";
     
+    // Admin endpoints (Bank Officer only)
+    public static final String ADMIN_DASHBOARD = "admin/dashboard";
+    public static final String ADMIN_GET_CUSTOMERS = "admin/customers";
+    public static final String ADMIN_SEARCH_CUSTOMERS = "admin/customers/search";
+    public static final String ADMIN_GET_CUSTOMER_DETAILS = "admin/customers/{customerId}";
+    public static final String ADMIN_CREATE_ACCOUNT = "admin/accounts/create";
+    public static final String ADMIN_UPDATE_ACCOUNT = "admin/accounts/{accountId}";
+    public static final String ADMIN_DEACTIVATE_ACCOUNT = "admin/accounts/{accountId}";
+    
     // Headers
     public static final String HEADER_AUTHORIZATION = "Authorization";
     public static final String HEADER_CONTENT_TYPE = "Content-Type";

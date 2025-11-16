@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -167,38 +168,159 @@ public class ApiService {
         });
     }
 
+    // Generic DELETE request method
+    public void delete(String endpoint, ApiCallback callback) {
+        executor.execute(() -> {
+            try {
+                URL url = new URL(ApiConfig.BASE_URL + endpoint);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                
+                // Set request properties
+                connection.setRequestMethod("DELETE");
+                connection.setRequestProperty(ApiConfig.HEADER_ACCEPT, ApiConfig.CONTENT_TYPE_JSON);
+                connection.setConnectTimeout(ApiConfig.CONNECT_TIMEOUT);
+                connection.setReadTimeout(ApiConfig.READ_TIMEOUT);
+
+                // Add authorization header if token exists
+                String token = SessionManager.getInstance(context).getToken();
+                if (token != null && !token.isEmpty()) {
+                    connection.setRequestProperty(ApiConfig.HEADER_AUTHORIZATION, "Bearer " + token);
+                }
+
+                // Get response
+                int responseCode = connection.getResponseCode();
+                String response = readResponse(connection, responseCode);
+
+                Log.d(TAG, "DELETE " + endpoint + " - Response Code: " + responseCode);
+                Log.d(TAG, "Response: " + response);
+
+                // Parse response and call callback
+                handleResponse(response, responseCode, callback);
+
+            } catch (Exception e) {
+                Log.e(TAG, "Error in DELETE request: " + e.getMessage(), e);
+                callback.onError("Network error: " + e.getMessage(), -1);
+            }
+        });
+    }
+
     // Read response from connection
     private String readResponse(HttpURLConnection connection, int responseCode) throws IOException {
-        BufferedReader reader;
-        if (responseCode >= 200 && responseCode < 300) {
-            reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        } else {
-            reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
-        }
-
+        BufferedReader reader = null;
         StringBuilder response = new StringBuilder();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            response.append(line);
+        
+        try {
+            InputStream inputStream = null;
+            if (responseCode >= 200 && responseCode < 300) {
+                inputStream = connection.getInputStream();
+            } else {
+                inputStream = connection.getErrorStream();
+            }
+
+            if (inputStream != null) {
+                reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    if (response.length() > 0) {
+                        response.append("\n");
+                    }
+                    response.append(line);
+                }
+            }
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    Log.e(TAG, "Error closing reader", e);
+                }
+            }
         }
-        reader.close();
-        return response.toString();
+        
+        String result = response.toString();
+        
+        // Remove BOM (Byte Order Mark) if present
+        if (result.length() > 0 && result.charAt(0) == '\uFEFF') {
+            result = result.substring(1);
+        }
+        
+        // Trim whitespace but preserve structure for JSON
+        result = result.trim();
+        
+        if (result.isEmpty()) {
+            Log.w(TAG, "Empty response from server for status code: " + responseCode);
+        }
+        return result;
     }
 
     // Handle API response
     private void handleResponse(String response, int responseCode, ApiCallback callback) {
+        // Check if response is empty
+        if (response == null || response.trim().isEmpty()) {
+            Log.e(TAG, "Empty response from server. Status code: " + responseCode);
+            if (responseCode >= 200 && responseCode < 300) {
+                // Empty success response - return empty JSON object
+                try {
+                    JSONObject emptyResponse = new JSONObject();
+                    emptyResponse.put("success", true);
+                    emptyResponse.put("data", new JSONObject());
+                    callback.onSuccess(emptyResponse);
+                } catch (JSONException e) {
+                    callback.onError("Empty response from server", responseCode);
+                }
+            } else {
+                callback.onError("Server returned empty response (Status: " + responseCode + ")", responseCode);
+            }
+            return;
+        }
+
+        // Clean the response string before parsing
+        String cleanedResponse = response.trim();
+        
+        // Remove BOM if present
+        if (cleanedResponse.length() > 0 && cleanedResponse.charAt(0) == '\uFEFF') {
+            cleanedResponse = cleanedResponse.substring(1).trim();
+        }
+        
+        // Check if response looks like JSON (starts with { or [)
+        if (!cleanedResponse.startsWith("{") && !cleanedResponse.startsWith("[")) {
+            Log.e(TAG, "Response does not appear to be JSON. First 100 chars: " + 
+                (cleanedResponse.length() > 100 ? cleanedResponse.substring(0, 100) : cleanedResponse));
+            callback.onError("Server returned non-JSON response. Status: " + responseCode + 
+                ". Response: " + (cleanedResponse.length() > 200 ? cleanedResponse.substring(0, 200) + "..." : cleanedResponse), responseCode);
+            return;
+        }
+
         try {
-            JSONObject jsonResponse = new JSONObject(response);
+            // Log response for debugging (truncate if too long)
+            String logResponse = cleanedResponse.length() > 500 ? cleanedResponse.substring(0, 500) + "..." : cleanedResponse;
+            Log.d(TAG, "Parsing response (length: " + cleanedResponse.length() + "): " + logResponse);
+            
+            JSONObject jsonResponse = new JSONObject(cleanedResponse);
             
             if (responseCode >= 200 && responseCode < 300) {
                 callback.onSuccess(jsonResponse);
             } else {
                 String errorMessage = jsonResponse.optString("message", "Unknown error");
+                Log.e(TAG, "Error response: " + errorMessage);
                 callback.onError(errorMessage, responseCode);
             }
         } catch (JSONException e) {
-            Log.e(TAG, "Error parsing JSON response: " + e.getMessage(), e);
-            callback.onError("Invalid response format", responseCode);
+            Log.e(TAG, "Error parsing JSON response. Status: " + responseCode, e);
+            Log.e(TAG, "JSON Exception details: " + e.getMessage());
+            Log.e(TAG, "Response content (first 500 chars): " + 
+                (cleanedResponse.length() > 500 ? cleanedResponse.substring(0, 500) + "..." : cleanedResponse));
+            
+            // Try to extract partial error message if JSON is malformed
+            String errorMsg = "Invalid JSON format: " + e.getMessage();
+            if (cleanedResponse.length() > 0) {
+                errorMsg += ". Response preview: " + 
+                    (cleanedResponse.length() > 200 ? cleanedResponse.substring(0, 200) + "..." : cleanedResponse);
+            }
+            callback.onError(errorMsg, responseCode);
+        } catch (Exception e) {
+            Log.e(TAG, "Unexpected error handling response: " + e.getMessage(), e);
+            callback.onError("Unexpected error: " + e.getMessage(), responseCode);
         }
     }
 

@@ -74,9 +74,12 @@ public class TransactionService {
     }
 
     // Transfer money
-    public void transferMoney(String toAccountNumber, BigDecimal amount, String description, TransactionCallback callback) {
+    public void transferMoney(String fromAccountId, String toAccountNumber, BigDecimal amount, String description, TransactionCallback callback) {
         try {
             JSONObject requestBody = new JSONObject();
+            if (fromAccountId != null && !fromAccountId.isEmpty()) {
+                requestBody.put("from_account_id", fromAccountId);
+            }
             requestBody.put("to_account_number", toAccountNumber);
             requestBody.put("amount", amount.toString());
             requestBody.put("description", description);
@@ -128,10 +131,13 @@ public class TransactionService {
     public void verifyTransactionOtp(String transactionId, String otpCode, TransactionCallback callback) {
         try {
             JSONObject requestBody = new JSONObject();
+            // Support both formats for backend compatibility
             requestBody.put("transaction_id", transactionId);
+            requestBody.put("transactionId", transactionId);
             requestBody.put("otp_code", otpCode);
+            requestBody.put("otpCode", otpCode);
 
-            apiService.post(ApiConfig.VERIFY_OTP, requestBody, new ApiService.ApiCallback() {
+            apiService.post(ApiConfig.VERIFY_TRANSFER_OTP, requestBody, new ApiService.ApiCallback() {
                 @Override
                 public void onSuccess(JSONObject response) {
                     try {
@@ -340,7 +346,35 @@ public class TransactionService {
         return cleanAccountNumber.matches("\\d{10,16}"); // 10-16 digits
     }
 
-    // Validate transfer amount
+    // Calculate transaction fee (matches backend logic)
+    public BigDecimal calculateFee(BigDecimal amount) {
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            return BigDecimal.ZERO;
+        }
+        
+        BigDecimal fee = BigDecimal.ZERO;
+        BigDecimal oneHundredThousand = new BigDecimal("100000");
+        BigDecimal oneMillion = new BigDecimal("1000000");
+        BigDecimal tenMillion = new BigDecimal("10000000");
+        
+        if (amount.compareTo(oneHundredThousand) <= 0) {
+            // <= 100K VND: Free
+            fee = BigDecimal.ZERO;
+        } else if (amount.compareTo(oneMillion) <= 0) {
+            // <= 1M VND: 5,000 VND
+            fee = new BigDecimal("5000");
+        } else if (amount.compareTo(tenMillion) <= 0) {
+            // <= 10M VND: 10,000 VND
+            fee = new BigDecimal("10000");
+        } else {
+            // > 10M VND: 20,000 VND
+            fee = new BigDecimal("20000");
+        }
+        
+        return fee;
+    }
+
+    // Validate transfer amount (including fee)
     public boolean isValidTransferAmount(BigDecimal amount, BigDecimal availableBalance) {
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
             return false;
@@ -352,25 +386,58 @@ public class TransactionService {
             return false;
         }
         
-        // Check if sufficient balance
-        return availableBalance != null && availableBalance.compareTo(amount) >= 0;
+        // Calculate fee and total amount (matches backend logic)
+        BigDecimal fee = calculateFee(amount);
+        BigDecimal totalAmount = amount.add(fee);
+        
+        // Check if sufficient balance (must cover amount + fee)
+        return availableBalance != null && availableBalance.compareTo(totalAmount) >= 0;
     }
 
-    // Get error message
+    // Get error message - prioritize backend message if available
     private String getErrorMessage(String error, int statusCode) {
+        // If error message is provided and contains Vietnamese or common phrases, use it
+        if (error != null && !error.isEmpty()) {
+            // Translate common English error messages to Vietnamese
+            String lowerError = error.toLowerCase();
+            if (lowerError.contains("insufficient balance") || lowerError.contains("số dư không đủ")) {
+                return "Số dư không đủ để thực hiện giao dịch";
+            }
+            if (lowerError.contains("destination account not found") || lowerError.contains("tài khoản nhận")) {
+                return "Không tìm thấy tài khoản nhận. Vui lòng kiểm tra lại số tài khoản";
+            }
+            if (lowerError.contains("account not found") || lowerError.contains("không tìm thấy tài khoản")) {
+                return "Không tìm thấy tài khoản. Vui lòng kiểm tra lại";
+            }
+            if (lowerError.contains("cannot transfer to the same account")) {
+                return "Không thể chuyển tiền đến cùng tài khoản";
+            }
+            if (lowerError.contains("amount must be greater than 0")) {
+                return "Số tiền phải lớn hơn 0";
+            }
+            if (lowerError.contains("destination account number and amount are required")) {
+                return "Vui lòng nhập đầy đủ số tài khoản nhận và số tiền";
+            }
+            // If error is in Vietnamese or contains useful info, use it directly
+            if (error.contains("không") || error.contains("lỗi") || error.contains("vui lòng")) {
+                return error;
+            }
+        }
+        
+        // Fallback to status code based messages
         switch (statusCode) {
             case ApiConfig.UNAUTHORIZED:
-                return "Phiên đăng nhập đã hết hạn";
+                return "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại";
             case ApiConfig.FORBIDDEN:
                 return "Bạn không có quyền thực hiện giao dịch này";
             case ApiConfig.BAD_REQUEST:
-                return "Thông tin giao dịch không hợp lệ";
+                return error != null && !error.isEmpty() ? error : "Thông tin giao dịch không hợp lệ. Vui lòng kiểm tra lại";
             case ApiConfig.UNPROCESSABLE_ENTITY:
                 return "Số dư không đủ hoặc tài khoản không tồn tại";
             case ApiConfig.INTERNAL_SERVER_ERROR:
                 return "Lỗi hệ thống. Vui lòng thử lại sau";
             default:
-                return error != null ? error : "Đã xảy ra lỗi không xác định";
+                return error != null && !error.isEmpty() ? error : "Giao dịch không hợp lệ. Vui lòng thử lại sau";
         }
     }
 }

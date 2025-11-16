@@ -10,11 +10,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.final_mobile.models.Account;
 import com.example.final_mobile.models.User;
 import com.example.final_mobile.services.AccountService;
 import com.example.final_mobile.services.SessionManager;
+import com.google.android.material.card.MaterialCardView;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -28,6 +31,10 @@ public class HomeFragment extends Fragment {
     private TextView tvSavingsBalance;
     private TextView tvMonthlyInterest;
     private TextView tvMortgagePayment;
+    
+    private MaterialCardView cardTransfer;
+    private MaterialCardView cardPayment;
+    private MaterialCardView cardAccount;
     
     private AccountService accountService;
     private SessionManager sessionManager;
@@ -54,11 +61,17 @@ public class HomeFragment extends Fragment {
     private void initViews(View view) {
         tvFragmentLabel = view.findViewById(R.id.tv_fragment_label);
         
+        // Bind views from layout
+        tvAccountBalance = view.findViewById(R.id.tv_account_balance);
+        tvAccountNumber = view.findViewById(R.id.tv_account_number);
+        
+        // Quick action cards
+        cardTransfer = view.findViewById(R.id.card_transfer);
+        cardPayment = view.findViewById(R.id.card_payment);
+        cardAccount = view.findViewById(R.id.card_account);
+        
         // Try to find views for dynamic data (these may not exist in current layout)
-        // For now, we'll use the main label to show dynamic content
         tvWelcomeMessage = tvFragmentLabel; // Reuse existing view for welcome message
-        tvAccountBalance = tvFragmentLabel; // Will show account info here
-        tvAccountNumber = null; // Not available in current layout
         
         // These would be in additional cards for savings and mortgage
         tvSavingsBalance = null; // Not available in current layout
@@ -76,21 +89,125 @@ public class HomeFragment extends Fragment {
             String welcomeMessage = "Chào " + getFirstName(currentUser.getFullName()) + "!";
             tvWelcomeMessage.setText(welcomeMessage);
         }
+        
+        // Setup quick action card click listeners
+        if (cardTransfer != null) {
+            cardTransfer.setOnClickListener(v -> navigateToTransactionFragment());
+        }
+        
+        if (cardPayment != null) {
+            cardPayment.setOnClickListener(v -> navigateToUtilitiesFragment());
+        }
+        
+        if (cardAccount != null) {
+            cardAccount.setOnClickListener(v -> navigateToProfileFragment());
+        }
+    }
+    
+    private void navigateToTransactionFragment() {
+        if (getActivity() == null || !isAdded()) {
+            return;
+        }
+        
+        try {
+            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+            if (fragmentManager == null) {
+                return;
+            }
+            
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.replace(R.id.fragment_container, new TransactionFragment());
+            transaction.commit();
+            
+            // Update bottom navigation selection (this may trigger listener, but that's okay)
+            if (getActivity() instanceof MainActivity) {
+                MainActivity mainActivity = (MainActivity) getActivity();
+                mainActivity.setBottomNavigationSelection(R.id.nav_transactions);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (getContext() != null) {
+                Toast.makeText(getContext(), "Lỗi khi chuyển trang: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+    
+    private void navigateToUtilitiesFragment() {
+        if (getActivity() == null || !isAdded()) {
+            return;
+        }
+        
+        try {
+            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+            if (fragmentManager == null) {
+                return;
+            }
+            
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.replace(R.id.fragment_container, new UtilitiesFragment());
+            transaction.commit();
+            
+            // Update bottom navigation selection
+            if (getActivity() instanceof MainActivity) {
+                MainActivity mainActivity = (MainActivity) getActivity();
+                mainActivity.setBottomNavigationSelection(R.id.nav_utilities);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (getContext() != null) {
+                Toast.makeText(getContext(), "Lỗi khi chuyển trang: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+    
+    private void navigateToProfileFragment() {
+        if (getActivity() == null || !isAdded()) {
+            return;
+        }
+        
+        try {
+            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+            if (fragmentManager == null) {
+                return;
+            }
+            
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.replace(R.id.fragment_container, new ProfileFragment());
+            transaction.commit();
+            
+            // Update bottom navigation selection
+            if (getActivity() instanceof MainActivity) {
+                MainActivity mainActivity = (MainActivity) getActivity();
+                mainActivity.setBottomNavigationSelection(R.id.nav_profile);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (getContext() != null) {
+                Toast.makeText(getContext(), "Lỗi khi chuyển trang: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     private void loadUserData() {
-        // Load account information
-        accountService.getUserAccounts(new AccountService.AccountCallback() {
+        // Load primary account information to ensure balance and account number are synchronized
+        accountService.getPrimaryAccount(new AccountService.AccountCallback() {
             @Override
             public void onSuccess(List<Account> accounts) {
-                if (getActivity() != null) {
-                    getActivity().runOnUiThread(() -> updateAccountDisplay(accounts));
+                if (getActivity() != null && !accounts.isEmpty()) {
+                    getActivity().runOnUiThread(() -> {
+                        // Get primary account from list (should be only one)
+                        Account primaryAccount = accounts.get(0);
+                        updatePrimaryAccountDisplay(primaryAccount);
+                    });
                 }
             }
 
             @Override
             public void onSingleAccountSuccess(Account account) {
-                // Not used in this context
+                // This can also be used if API returns single account
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> updatePrimaryAccountDisplay(account));
+                }
             }
 
             @Override
@@ -100,13 +217,75 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onError(String error) {
-                if (getActivity() != null) {
+                if (getActivity() != null && isAdded()) {
                     getActivity().runOnUiThread(() -> {
-                        Toast.makeText(getContext(), "Lỗi tải dữ liệu: " + error, Toast.LENGTH_SHORT).show();
+                        // Additional check to prevent crash
+                        if (getContext() == null || !isAdded()) {
+                            return;
+                        }
+                        
+                        if (error != null && (error.contains("No accounts found") || 
+                                              error.contains("Account not found") ||
+                                              error.contains("No primary account") ||
+                                              error.contains("404"))) {
+                            // User has no accounts yet - show friendly message and default values
+                            updatePrimaryAccountDisplay(null);
+                            
+                            Toast.makeText(getContext(), 
+                                "Tài khoản chưa được kích hoạt. Vui lòng liên hệ ngân hàng.", 
+                                Toast.LENGTH_LONG).show();
+                            
+                            // Show default info
+                            if (tvFragmentLabel != null && getView() != null) {
+                                try {
+                                    User currentUser = sessionManager.getCurrentUser();
+                                    String name = "bạn";
+                                    if (currentUser != null && currentUser.getFullName() != null) {
+                                        String[] nameParts = currentUser.getFullName().trim().split("\\s+");
+                                        name = nameParts[nameParts.length - 1];
+                                    }
+                                    
+                                    String welcomeMsg = "Chào " + name + "!\n\n" +
+                                            "Tài khoản của bạn chưa được kích hoạt.\n\n" +
+                                            "Vui lòng liên hệ:\n" +
+                                            "☎️ Hotline: 1900 1234\n" +
+                                            "📧 Email: support@mybank.vn\n\n" +
+                                            "để được hỗ trợ kích hoạt tài khoản.";
+                                    tvFragmentLabel.setText(welcomeMsg);
+                                } catch (Exception e) {
+                                    // Fail silently - fragment may have been destroyed
+                                }
+                            }
+                        } else {
+                            Toast.makeText(getContext(), "Lỗi tải dữ liệu: " + error, Toast.LENGTH_SHORT).show();
+                        }
                     });
                 }
             }
         });
+    }
+
+    // Update primary account display - ensure balance and account number are synchronized
+    private void updatePrimaryAccountDisplay(Account primaryAccount) {
+        if (primaryAccount != null) {
+            // Update balance and account number from the same account object
+            // This ensures they are always synchronized
+            if (tvAccountBalance != null) {
+                tvAccountBalance.setText(primaryAccount.getFormattedBalance());
+            }
+            
+            if (tvAccountNumber != null) {
+                tvAccountNumber.setText(primaryAccount.getMaskedAccountNumber());
+            }
+        } else {
+            // No primary account found - show default values
+            if (tvAccountBalance != null) {
+                tvAccountBalance.setText("0 VNĐ");
+            }
+            if (tvAccountNumber != null) {
+                tvAccountNumber.setText("**** **** **** ****");
+            }
+        }
     }
 
     private void updateAccountDisplay(List<Account> accounts) {
@@ -129,13 +308,8 @@ public class HomeFragment extends Fragment {
             }
         }
         
-        // Update checking account display
-        if (checkingAccount != null && tvAccountBalance != null) {
-            String accountInfo = getString(R.string.home_fragment_label) + "\n\n" +
-                    "Số dư: " + checkingAccount.getFormattedBalance() + "\n" +
-                    "Tài khoản: " + checkingAccount.getMaskedAccountNumber();
-            tvAccountBalance.setText(accountInfo);
-        }
+        // Update checking account display - synchronize balance and account number
+        updatePrimaryAccountDisplay(checkingAccount);
         
         // Update savings account display
         if (savingsAccount != null) {
