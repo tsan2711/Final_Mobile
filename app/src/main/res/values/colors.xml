@@ -4,73 +4,93 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     
-    <!-- Balanced Monochrome Palette -->
-    <color name="primary_color">#1A1A1A</color>
-    <color name="primary_dark_color">#000000</color>
-    <color name="primary_light_color">#404040</color>
+    <!-- Modern Vibrant Primary Palette -->
+    <color name="primary_color">#6366F1</color>
+    <color name="primary_dark_color">#4F46E5</color>
+    <color name="primary_light_color">#818CF8</color>
+    <color name="primary_variant">#8B5CF6</color>
     
     <!-- Secondary Colors -->
-    <color name="secondary_color">#666666</color>
-    <color name="secondary_light">#808080</color>
-    <color name="accent_color">#333333</color>
+    <color name="secondary_color">#10B981</color>
+    <color name="secondary_light">#34D399</color>
+    <color name="accent_color">#F59E0B</color>
+    <color name="accent_pink">#EC4899</color>
+    <color name="accent_blue">#3B82F6</color>
+    <color name="accent_purple">#8B5CF6</color>
     
     <!-- Background Colors -->
-    <color name="background_color">#FFFFFF</color>
-    <color name="background_secondary">#FAFAFA</color>
-    <color name="background_tertiary">#F5F5F5</color>
+    <color name="background_color">#F8FAFC</color>
+    <color name="background_secondary">#F1F5F9</color>
+    <color name="background_tertiary">#E2E8F0</color>
     <color name="surface_color">#FFFFFF</color>
-    <color name="surface_variant">#F8F8F8</color>
+    <color name="surface_variant">#F8FAFC</color>
     <color name="surface_elevated">#FFFFFF</color>
     
     <!-- Text Colors -->
-    <color name="primary_text_color">#1A1A1A</color>
-    <color name="secondary_text_color">#666666</color>
-    <color name="tertiary_text_color">#999999</color>
+    <color name="primary_text_color">#0F172A</color>
+    <color name="secondary_text_color">#64748B</color>
+    <color name="tertiary_text_color">#94A3B8</color>
     <color name="text_on_primary">#FFFFFF</color>
-    <color name="text_on_surface">#1A1A1A</color>
-    <color name="text_disabled">#CCCCCC</color>
+    <color name="text_on_surface">#0F172A</color>
+    <color name="text_disabled">#CBD5E1</color>
     
     <!-- Status Colors -->
-    <color name="success_color">#2E7D32</color>
-    <color name="success_light">#E8F5E9</color>
-    <color name="error_color">#D32F2F</color>
-    <color name="error_light">#FFEBEE</color>
-    <color name="warning_color">#F57C00</color>
-    <color name="warning_light">#FFF3E0</color>
-    <color name="info_color">#1976D2</color>
-    <color name="info_light">#E3F2FD</color>
+    <color name="success_color">#10B981</color>
+    <color name="success_light">#D1FAE5</color>
+    <color name="error_color">#EF4444</color>
+    <color name="error_light">#FEE2E2</color>
+    <color name="warning_color">#F59E0B</color>
+    <color name="warning_light">#FEF3C7</color>
+    <color name="info_color">#3B82F6</color>
+    <color name="info_light">#DBEAFE</color>
     
     <!-- Card Colors -->
     <color name="card_background">#FFFFFF</color>
     <color name="card_shadow">#1A000000</color>
-    <color name="card_border">#E0E0E0</color>
-    <color name="card_border_dark">#BDBDBD</color>
+    <color name="card_border">#E2E8F0</color>
+    <color name="card_border_dark">#CBD5E1</color>
     
     <!-- Bottom Navigation Colors -->
     <color name="bottom_nav_background">#FFFFFF</color>
     <color name="bottom_nav_item_color">@color/bottom_nav_item_selector</color>
     
-    <!-- Gradient Colors -->
-    <color name="gradient_start">#1A1A1A</color>
-    <color name="gradient_end">#404040</color>
+    <!-- Gradient Colors - Modern Vibrant -->
+    <color name="gradient_start">#6366F1</color>
+    <color name="gradient_end">#8B5CF6</color>
+    <color name="gradient_secondary_start">#10B981</color>
+    <color name="gradient_secondary_end">#34D399</color>
+    <color name="gradient_accent_start">#F59E0B</color>
+    <color name="gradient_accent_end">#F97316</color>
+    <color name="gradient_pink_start">#EC4899</color>
+    <color name="gradient_pink_end">#F472B6</color>
+    <color name="gradient_blue_start">#3B82F6</color>
+    <color name="gradient_blue_end">#60A5FA</color>
     <color name="gradient_light_start">#FFFFFF</color>
-    <color name="gradient_light_end">#F5F5F5</color>
+    <color name="gradient_light_end">#F8FAFC</color>
     
     <!-- Transaction Type Colors -->
-    <color name="transfer_color">#1976D2</color>
-    <color name="deposit_color">#2E7D32</color>
-    <color name="withdrawal_color">#D32F2F</color>
-    <color name="payment_color">#F57C00</color>
+    <color name="transfer_color">#3B82F6</color>
+    <color name="deposit_color">#10B981</color>
+    <color name="withdrawal_color">#EF4444</color>
+    <color name="payment_color">#F59E0B</color>
+    
+    <!-- Icon Background Colors -->
+    <color name="icon_bg_blue">#DBEAFE</color>
+    <color name="icon_bg_green">#D1FAE5</color>
+    <color name="icon_bg_orange">#FEF3C7</color>
+    <color name="icon_bg_pink">#FCE7F3</color>
+    <color name="icon_bg_purple">#EDE9FE</color>
+    <color name="icon_bg_red">#FEE2E2</color>
     
     <!-- Interactive States -->
-    <color name="ripple_color">#1A000000</color>
-    <color name="focus_color">#1A1A1A</color>
-    <color name="hover_color">#F5F5F5</color>
-    <color name="pressed_color">#E0E0E0</color>
+    <color name="ripple_color">#1A6366F1</color>
+    <color name="focus_color">#6366F1</color>
+    <color name="hover_color">#F1F5F9</color>
+    <color name="pressed_color">#E2E8F0</color>
     
     <!-- Divider Colors -->
-    <color name="divider_color">#E0E0E0</color>
-    <color name="divider_dark">#BDBDBD</color>
+    <color name="divider_color">#E2E8F0</color>
+    <color name="divider_dark">#CBD5E1</color>
     
     <!-- Shadow Colors -->
     <color name="shadow_light">#0D000000</color>

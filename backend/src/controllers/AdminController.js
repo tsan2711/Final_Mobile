@@ -1,7 +1,7 @@
 const User = require('../models/User');
 const Account = require('../models/Account');
 const Transaction = require('../models/Transaction');
-const { formatUser, formatAccount } = require('../utils/responseFormatter');
+const { formatUser, formatAccount, formatTransaction } = require('../utils/responseFormatter');
 
 class AdminController {
   // Get all customers (with pagination)
@@ -473,6 +473,317 @@ class AdminController {
       res.status(500).json({
         success: false,
         message: 'Failed to retrieve dashboard stats'
+      });
+    }
+  }
+
+  // Get all transactions (for admin - all customer transactions)
+  static async getAllTransactions(req, res) {
+    try {
+      const { 
+        page = 1, 
+        limit = 20,
+        type,
+        status,
+        startDate,
+        endDate 
+      } = req.query;
+
+      // Build query - get all transactions from CUSTOMER accounts only
+      const customerUsers = await User.find({ customerType: 'CUSTOMER' }).select('_id');
+      const customerUserIds = customerUsers.map(u => u._id);
+      
+      const customerAccounts = await Account.find({ userId: { $in: customerUserIds } }).select('_id');
+      const customerAccountIds = customerAccounts.map(a => a._id);
+
+      const query = {
+        $or: [
+          { fromAccountId: { $in: customerAccountIds } },
+          { toAccountId: { $in: customerAccountIds } }
+        ]
+      };
+
+      // Add filters
+      if (type) {
+        query.transactionType = type;
+      }
+
+      if (status) {
+        query.status = status;
+      }
+
+      if (startDate || endDate) {
+        query.createdAt = {};
+        if (startDate) query.createdAt.$gte = new Date(startDate);
+        if (endDate) query.createdAt.$lte = new Date(endDate);
+      }
+
+      // Execute query with pagination
+      const skip = (parseInt(page) - 1) * parseInt(limit);
+      
+      const [transactions, total] = await Promise.all([
+        Transaction.find(query)
+          .populate('fromAccountId', 'accountNumber accountType userId')
+          .populate('toAccountId', 'accountNumber accountType userId')
+          .populate('initiatedBy', 'fullName email')
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(parseInt(limit)),
+        Transaction.countDocuments(query)
+      ]);
+
+      // Calculate pagination info
+      const totalPages = Math.ceil(total / parseInt(limit));
+
+      res.status(200).json({
+        success: true,
+        message: 'Transactions retrieved successfully',
+        data: transactions.map(t => {
+          const transaction = {
+            transaction_id: t.transactionId ? String(t.transactionId) : '',
+            amount: (t.amount !== null && t.amount !== undefined) ? Number(t.amount) : 0,
+            type: t.transactionType ? String(t.transactionType) : '',
+            status: t.status ? String(t.status) : '',
+            description: t.description ? String(t.description) : '',
+            from_account_number: t.fromAccountNumber || '',
+            to_account_number: t.toAccountNumber || ''
+          };
+
+          // Handle created_at
+          if (t.createdAt) {
+            transaction.created_at = typeof t.createdAt === 'string' ? t.createdAt : t.createdAt.toISOString();
+          } else {
+            transaction.created_at = null;
+          }
+
+          // Handle initiated_by
+          if (t.initiatedBy && t.initiatedBy._id) {
+            transaction.initiated_by = {
+              name: t.initiatedBy.fullName ? String(t.initiatedBy.fullName) : '',
+              email: t.initiatedBy.email ? String(t.initiatedBy.email) : ''
+            };
+          } else {
+            transaction.initiated_by = null;
+          }
+
+          return transaction;
+        }),
+        meta: {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          total,
+          total_pages: totalPages,
+          has_next_page: parseInt(page) < totalPages,
+          has_prev_page: parseInt(page) > 1
+        }
+      });
+
+    } catch (error) {
+      console.error('Get all transactions error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to retrieve transactions'
+      });
+    }
+  }
+
+  // Admin transfer money between customer accounts (no OTP required)
+  static async transferMoney(req, res) {
+    try {
+      const { fromAccountNumber, toAccountNumber, amount, description } = req.body;
+      const officerId = req.userId;
+
+      const amountNumber = Number(amount);
+
+      // Validation
+      if (!fromAccountNumber || !toAccountNumber || Number.isNaN(amountNumber)) {
+        return res.status(400).json({
+          success: false,
+          message: 'From account number, to account number, and valid amount are required'
+        });
+      }
+
+      if (amountNumber <= 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'Amount must be greater than 0'
+        });
+      }
+
+      if (amountNumber < 10000) {
+        return res.status(400).json({
+          success: false,
+          message: 'Minimum transfer amount is 10,000 VND'
+        });
+      }
+
+      // Find accounts (must be customer accounts)
+      const fromAccount = await Account.findOne({
+        accountNumber: fromAccountNumber,
+        isActive: true
+      }).populate('userId', 'customerType');
+
+      const toAccount = await Account.findOne({
+        accountNumber: toAccountNumber,
+        isActive: true
+      }).populate('userId', 'customerType');
+
+      if (!fromAccount || !toAccount) {
+        return res.status(404).json({
+          success: false,
+          message: 'One or both accounts not found'
+        });
+      }
+
+      // Verify both are customer accounts
+      if (fromAccount.userId.customerType !== 'CUSTOMER' || toAccount.userId.customerType !== 'CUSTOMER') {
+        return res.status(403).json({
+          success: false,
+          message: 'Can only transfer between customer accounts'
+        });
+      }
+
+      // Check if same account
+      if (fromAccount._id.toString() === toAccount._id.toString()) {
+        return res.status(400).json({
+          success: false,
+          message: 'Cannot transfer to the same account'
+        });
+      }
+
+      // Calculate fee and total
+      const fee = Transaction.calculateFee(amountNumber, 'TRANSFER');
+      const totalAmount = amountNumber + fee;
+
+      // Check sufficient balance
+      if (!fromAccount.canDebit(totalAmount)) {
+        return res.status(400).json({
+          success: false,
+          message: `Insufficient balance. Need ${totalAmount.toLocaleString()} VND (including fee ${fee.toLocaleString()} VND) but current balance is ${fromAccount.balance.toLocaleString()} VND`
+        });
+      }
+
+      // Perform transfer
+      await fromAccount.debit(totalAmount);
+      await toAccount.credit(amountNumber);
+
+      // Create transaction record
+      const transactionId = Transaction.generateTransactionId();
+      const transaction = new Transaction({
+        transactionId,
+        fromAccountId: fromAccount._id,
+        toAccountId: toAccount._id,
+        fromAccountNumber: fromAccount.accountNumber,
+        toAccountNumber: toAccount.accountNumber,
+        amount: amountNumber,
+        currency: fromAccount.currency,
+        description: description || `Transfer by bank officer: ${fromAccount.accountNumber} -> ${toAccount.accountNumber}`,
+        transactionType: 'TRANSFER',
+        status: 'COMPLETED',
+        initiatedBy: officerId,
+        fee,
+        totalAmount,
+        otpVerified: true, // Admin transfers don't need OTP
+        processedAt: new Date()
+      });
+
+      await transaction.save();
+
+      res.status(200).json({
+        success: true,
+        message: 'Transfer completed successfully',
+        data: formatTransaction(transaction)
+      });
+
+    } catch (error) {
+      console.error('Admin transfer money error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to transfer money: ' + error.message
+      });
+    }
+  }
+
+  // Admin deposit money to customer account
+  static async depositMoney(req, res) {
+    try {
+      const { accountNumber, amount, description } = req.body;
+      const officerId = req.userId;
+
+      const amountNumber = Number(amount);
+
+      // Validation
+      if (!accountNumber || Number.isNaN(amountNumber)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Account number and valid amount are required'
+        });
+      }
+
+      if (amountNumber <= 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'Amount must be greater than 0'
+        });
+      }
+
+      // Find account (must be customer account)
+      const account = await Account.findOne({
+        accountNumber,
+        isActive: true
+      }).populate('userId', 'customerType');
+
+      if (!account) {
+        return res.status(404).json({
+          success: false,
+          message: 'Account not found'
+        });
+      }
+
+      // Verify it's a customer account
+      if (account.userId.customerType !== 'CUSTOMER') {
+        return res.status(403).json({
+          success: false,
+          message: 'Can only deposit to customer accounts'
+        });
+      }
+
+      // Credit the account
+      await account.credit(amountNumber);
+
+      // Create transaction record
+      const transactionId = Transaction.generateTransactionId();
+      const transaction = new Transaction({
+        transactionId,
+        fromAccountId: account._id,
+        toAccountId: account._id,
+        fromAccountNumber: account.accountNumber,
+        toAccountNumber: account.accountNumber,
+        amount: amountNumber,
+        currency: account.currency,
+        description: description || `Deposit by bank officer to ${account.accountNumber}`,
+        transactionType: 'DEPOSIT',
+        status: 'COMPLETED',
+        initiatedBy: officerId,
+        fee: 0,
+        totalAmount: amountNumber,
+        otpVerified: true, // Admin deposits don't need OTP
+        processedAt: new Date()
+      });
+
+      await transaction.save();
+
+      res.status(200).json({
+        success: true,
+        message: 'Deposit completed successfully',
+        data: formatTransaction(transaction)
+      });
+
+    } catch (error) {
+      console.error('Admin deposit money error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to deposit money: ' + error.message
       });
     }
   }

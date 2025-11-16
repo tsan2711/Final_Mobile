@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res/auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -44,33 +44,34 @@
         <Button
             android:id="@+id/btn_transfer"
             android:layout_width="0dp"
-            android:layout_height="48dp"
+            android:layout_height="52dp"
             android:layout_weight="1"
             android:layout_marginEnd="8dp"
             android:text="Chuyển tiền"
             android:textSize="14sp"
-            android:textColor="@color/text_on_primary"
+            android:textColor="@color/white"
             android:textStyle="bold"
             android:drawableLeft="@drawable/ic_transfer_money"
             android:drawablePadding="8dp"
-            android:background="@drawable/button_monochrome"
-            android:backgroundTint="@color/primary_color" />
+            android:drawableTint="@color/white"
+            android:background="@drawable/gradient_blue"
+            android:elevation="4dp" />
 
         <Button
             android:id="@+id/btn_deposit"
             android:layout_width="0dp"
-            android:layout_height="48dp"
+            android:layout_height="52dp"
             android:layout_weight="1"
             android:layout_marginStart="8dp"
             android:text="Nạp tiền"
             android:textSize="14sp"
-            android:textColor="@color/primary_color"
+            android:textColor="@color/white"
             android:textStyle="bold"
             android:drawableLeft="@drawable/ic_credit_card"
             android:drawablePadding="8dp"
-            android:drawableTint="@color/primary_color"
-            android:background="@drawable/button_outline_monochrome"
-            android:backgroundTint="@color/surface_color" />
+            android:drawableTint="@color/white"
+            android:background="@drawable/gradient_secondary"
+            android:elevation="4dp" />
 
     </LinearLayout>
 
@@ -94,7 +95,7 @@
         <Button
             android:id="@+id/btn_filter"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="44dp"
             android:text="Bộ lọc"
             android:textSize="12sp"
             android:textColor="@color/primary_color"
@@ -102,8 +103,7 @@
             android:drawableLeft="@drawable/ic_filter"
             android:drawablePadding="4dp"
             android:drawableTint="@color/primary_color"
-            android:background="@drawable/button_outline_monochrome"
-            android:backgroundTint="@color/surface_color" />
+            android:background="@drawable/button_outline_primary" />
 
     </LinearLayout>
 
@@ -119,467 +119,29 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Today Section -->
-            <TextView
-                android:layout_width="wrap_content"
+            <!-- Transactions Container (Dynamic) -->
+            <LinearLayout
+                android:id="@+id/ll_transactions_container"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Hôm nay"
-                android:textColor="@color/secondary_text_color"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="12dp"
+                android:orientation="vertical"
                 android:layout_marginTop="8dp" />
 
-            <!-- Transaction Item 1 -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:background="@color/surface_color">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp">
-
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_transactions"
-                    android:background="@drawable/circle_background"
-                    android:padding="8dp" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginStart="12dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Chuyển tiền đến Nguyễn Văn B"
-                        android:textColor="@color/primary_text_color"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="14:30 • 1234567890"
-                        android:textColor="@color/secondary_text_color"
-                        android:textSize="12sp"
-                        android:layout_marginTop="4dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Hoàn thành"
-                        android:textColor="#4CAF50"
-                        android:textSize="11sp"
-                        android:background="#E8F5E8"
-                        android:padding="4dp"
-                        android:layout_marginTop="6dp" />
-
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="-1,500,000 VNĐ"
-                    android:textColor="@color/withdrawal_color"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:layout_gravity="center_vertical" />
-
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <!-- Transaction Item 2 -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:background="@color/surface_color">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp">
-
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_utilities"
-                    android:background="@drawable/circle_background_green"
-                    android:padding="8dp" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginStart="12dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Thanh toán hóa đơn điện EVN"
-                        android:textColor="@color/primary_text_color"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="10:15 • HD123456"
-                        android:textColor="@color/secondary_text_color"
-                        android:textSize="12sp"
-                        android:layout_marginTop="4dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Hoàn thành"
-                        android:textColor="#4CAF50"
-                        android:textSize="11sp"
-                        android:background="#E8F5E8"
-                        android:padding="4dp"
-                        android:layout_marginTop="6dp" />
-
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="-850,000 VNĐ"
-                    android:textColor="#F44336"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:layout_gravity="center_vertical" />
-
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <!-- Yesterday Section -->
+            <!-- Empty State -->
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/tv_no_transactions"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Hôm qua"
+                android:text="Chưa có giao dịch nào"
                 android:textColor="@color/secondary_text_color"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="12dp"
-                android:layout_marginTop="16dp" />
-
-            <!-- Transaction Item 3 -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:background="@color/surface_color">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp">
-
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_utilities"
-                    android:background="@drawable/circle_background_green"
-                    android:padding="8dp" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginStart="12dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Nạp tiền từ ngân hàng VCB"
-                        android:textColor="@color/primary_text_color"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="09:15 • VCB****1234"
-                        android:textColor="@color/secondary_text_color"
-                        android:textSize="12sp"
-                        android:layout_marginTop="4dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Hoàn thành"
-                        android:textColor="#4CAF50"
-                        android:textSize="11sp"
-                        android:background="#E8F5E8"
-                        android:padding="4dp"
-                        android:layout_marginTop="6dp" />
-
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="+5,000,000 VNĐ"
-                    android:textColor="#4CAF50"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:layout_gravity="center_vertical" />
-
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <!-- Transaction Item 4 -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:background="@color/surface_color">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp">
-
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_phone"
-                    android:background="@drawable/circle_background"
-                    android:padding="8dp" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginStart="12dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Nạp tiền điện thoại Viettel"
-                        android:textColor="@color/primary_text_color"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="16:45 • 0987654321"
-                        android:textColor="@color/secondary_text_color"
-                        android:textSize="12sp"
-                        android:layout_marginTop="4dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Hoàn thành"
-                        android:textColor="#4CAF50"
-                        android:textSize="11sp"
-                        android:background="#E8F5E8"
-                        android:padding="4dp"
-                        android:layout_marginTop="6dp" />
-
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="-200,000 VNĐ"
-                    android:textColor="#F44336"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:layout_gravity="center_vertical" />
-
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <!-- This Week Section -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tuần này"
-                android:textColor="@color/secondary_text_color"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="12dp"
-                android:layout_marginTop="16dp" />
-
-            <!-- Transaction Item 5 -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:background="@color/surface_color">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp">
-
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_transactions"
-                    android:background="@drawable/circle_background"
-                    android:padding="8dp" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginStart="12dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Chuyển tiền đến Trần Thị C"
-                        android:textColor="@color/primary_text_color"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="T6, 08:30 • 9876543210"
-                        android:textColor="@color/secondary_text_color"
-                        android:textSize="12sp"
-                        android:layout_marginTop="4dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Hoàn thành"
-                        android:textColor="#4CAF50"
-                        android:textSize="11sp"
-                        android:background="#E8F5E8"
-                        android:padding="4dp"
-                        android:layout_marginTop="6dp" />
-
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="-3,200,000 VNĐ"
-                    android:textColor="#F44336"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:layout_gravity="center_vertical" />
-
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <!-- Transaction Item 6 -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:background="@color/surface_color">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp">
-
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_transactions"
-                    android:background="#FFB74D"
-                    android:padding="8dp" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginStart="12dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Nhận tiền từ Lê Văn D"
-                        android:textColor="@color/primary_text_color"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="T4, 11:20 • 5555666777"
-                        android:textColor="@color/secondary_text_color"
-                        android:textSize="12sp"
-                        android:layout_marginTop="4dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Hoàn thành"
-                        android:textColor="#4CAF50"
-                        android:textSize="11sp"
-                        android:background="#E8F5E8"
-                        android:padding="4dp"
-                        android:layout_marginTop="6dp" />
-
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="+800,000 VNĐ"
-                    android:textColor="#4CAF50"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:layout_gravity="center_vertical" />
-
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
+                android:textSize="16sp"
+                android:gravity="center"
+                android:padding="32dp"
+                android:visibility="gone" />
 
             <!-- Load More Button -->
             <Button
+                android:id="@+id/btn_load_more"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Xem thêm giao dịch"
@@ -588,6 +150,7 @@
                 android:textColor="@color/primary_color"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
+                android:visibility="gone"
                 style="?android:attr/borderlessButtonStyle" />
 
         </LinearLayout>

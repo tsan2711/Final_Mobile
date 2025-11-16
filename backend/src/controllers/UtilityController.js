@@ -11,6 +11,22 @@ class UtilityController {
       const { accountId, customerNumber, amount, customerName, period } = req.body;
       const userId = req.userId;
 
+      // Validate required fields
+      if (!userId) {
+        console.error('Pay electricity bill: userId is missing', { req: { userId: req.userId, user: req.user } });
+        return res.status(401).json({
+          success: false,
+          message: 'User authentication required'
+        });
+      }
+
+      if (!customerNumber || !amount) {
+        return res.status(400).json({
+          success: false,
+          message: 'Customer number and amount are required'
+        });
+      }
+
       return await UtilityController.processUtilityPayment(
         req, res, userId, accountId,
         'ELECTRICITY', 'EVN', customerNumber, amount,
@@ -19,9 +35,14 @@ class UtilityController {
       );
     } catch (error) {
       console.error('Pay electricity bill error:', error);
+      console.error('Error stack:', error.stack);
+      console.error('Request body:', req.body);
+      console.error('Request user:', req.user);
+      console.error('Request userId:', req.userId);
       res.status(500).json({
         success: false,
-        message: 'Failed to process electricity bill payment'
+        message: 'Failed to process electricity bill payment',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
       });
     }
   }
@@ -153,6 +174,24 @@ class UtilityController {
   // Generic utility payment processor
   static async processUtilityPayment(req, res, userId, accountId, serviceType, provider, serviceNumber, amount, description, metadata = {}) {
     try {
+      // Validate userId
+      if (!userId) {
+        console.error('processUtilityPayment: userId is missing');
+        return res.status(401).json({
+          success: false,
+          message: 'User authentication required'
+        });
+      }
+
+      // Validate req.user
+      if (!req.user) {
+        console.error('processUtilityPayment: req.user is missing', { userId, serviceType });
+        return res.status(401).json({
+          success: false,
+          message: 'User information not found'
+        });
+      }
+
       // Validation
       const amountNumber = Number(amount);
       if (!serviceNumber || Number.isNaN(amountNumber)) {
@@ -230,9 +269,12 @@ class UtilityController {
       const otp = OTPUtils.generateOTP(6);
       const otpHash = OTPUtils.hashOTP(otp);
 
+      // Get user email safely
+      const userEmail = req.user?.email || req.user?.userEmail || 'unknown@example.com';
+      
       const otpCode = new OtpCode({
         userId,
-        email: req.user.email,
+        email: userEmail,
         otpHash,
         otpType: 'UTILITY',
         transactionId,
@@ -242,7 +284,7 @@ class UtilityController {
       await otpCode.save();
 
       // Log OTP for development
-      console.log(`🔐 UTILITY OTP for ${req.user.email}: ${otp}`);
+      console.log(`🔐 UTILITY OTP for ${userEmail}: ${otp}`);
 
       res.status(200).json({
         success: true,
@@ -268,6 +310,15 @@ class UtilityController {
 
     } catch (error) {
       console.error('Process utility payment error:', error);
+      console.error('Error stack:', error.stack);
+      console.error('Error details:', {
+        userId,
+        accountId,
+        serviceType,
+        serviceNumber,
+        amount,
+        user: req.user ? { id: req.user._id, email: req.user.email } : 'missing'
+      });
       throw error;
     }
   }

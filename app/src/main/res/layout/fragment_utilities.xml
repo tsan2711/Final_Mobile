@@ -47,34 +47,42 @@
             android:layout_marginBottom="16dp">
 
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_electricity"
                 android:layout_width="0dp"
-                android:layout_height="100dp"
+                android:layout_height="110dp"
                 android:layout_weight="1"
                 android:layout_marginEnd="8dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/surface_color">
+                app:cardCornerRadius="20dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/surface_color"
+                app:strokeWidth="0dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:padding="12dp">
+                    android:padding="16dp">
 
                     <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
                         android:src="@drawable/ic_electricity"
-                        android:layout_marginBottom="8dp"
-                        app:tint="@color/primary_color" />
+                        android:layout_marginBottom="12dp"
+                        android:background="@drawable/circle_background_orange"
+                        android:padding="12dp"
+                        app:tint="@color/accent_color" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Tiền điện"
                         android:textColor="@color/primary_text_color"
-                        android:textSize="12sp"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
                         android:textAlignment="center" />
 
                 </LinearLayout>
@@ -82,28 +90,35 @@
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_water"
                 android:layout_width="0dp"
-                android:layout_height="100dp"
+                android:layout_height="110dp"
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/surface_color">
+                app:cardCornerRadius="20dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/surface_color"
+                app:strokeWidth="0dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:padding="12dp">
+                    android:padding="16dp">
 
                     <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
                         android:src="@drawable/ic_water"
-                        android:layout_marginBottom="8dp"
-                        app:tint="@color/primary_color" />
+                        android:layout_marginBottom="12dp"
+                        android:background="@drawable/circle_background_blue"
+                        android:padding="12dp"
+                        app:tint="@color/accent_blue" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -118,27 +133,34 @@
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_internet"
                 android:layout_width="0dp"
-                android:layout_height="100dp"
+                android:layout_height="110dp"
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/surface_color">
+                app:cardCornerRadius="20dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/surface_color"
+                app:strokeWidth="0dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:padding="12dp">
+                    android:padding="16dp">
 
                     <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
                         android:src="@drawable/ic_utilities"
-                        android:layout_marginBottom="8dp"
-                        app:tint="@color/primary_color" />
+                        android:layout_marginBottom="12dp"
+                        android:background="@drawable/circle_background_purple"
+                        android:padding="12dp"
+                        app:tint="@color/accent_purple" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -171,27 +193,34 @@
             android:layout_marginBottom="24dp">
 
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_topup"
                 android:layout_width="0dp"
-                android:layout_height="100dp"
+                android:layout_height="110dp"
                 android:layout_weight="1"
                 android:layout_marginEnd="8dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/surface_color">
+                app:cardCornerRadius="20dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/surface_color"
+                app:strokeWidth="0dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:padding="12dp">
+                    android:padding="16dp">
 
                     <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
                         android:src="@drawable/ic_phone"
-                        android:layout_marginBottom="8dp"
-                        app:tint="@color/primary_color" />
+                        android:layout_marginBottom="12dp"
+                        android:background="@drawable/circle_background_pink"
+                        android:padding="12dp"
+                        app:tint="@color/accent_pink" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -206,28 +235,35 @@
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_data_package"
                 android:layout_width="0dp"
-                android:layout_height="100dp"
+                android:layout_height="110dp"
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/surface_color">
+                app:cardCornerRadius="20dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/surface_color"
+                app:strokeWidth="0dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:padding="12dp">
+                    android:padding="16dp">
 
                     <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
                         android:src="@drawable/ic_transactions"
-                        android:layout_marginBottom="8dp"
-                        app:tint="@color/primary_color" />
+                        android:layout_marginBottom="12dp"
+                        android:background="@drawable/circle_background_green"
+                        android:padding="12dp"
+                        app:tint="@color/secondary_color" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -242,27 +278,34 @@
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_scratch_card"
                 android:layout_width="0dp"
-                android:layout_height="100dp"
+                android:layout_height="110dp"
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/surface_color">
+                app:cardCornerRadius="20dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/surface_color"
+                app:strokeWidth="0dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:padding="12dp">
+                    android:padding="16dp">
 
                     <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
                         android:src="@drawable/ic_profile"
-                        android:layout_marginBottom="8dp"
-                        app:tint="@color/primary_color" />
+                        android:layout_marginBottom="12dp"
+                        android:background="@drawable/circle_background_orange"
+                        android:padding="12dp"
+                        app:tint="@color/accent_color" />
 
                     <TextView
                         android:layout_width="wrap_content"

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,6 +32,7 @@ public class OfficerHomeFragment extends Fragment {
     private TextView tvTotalBalance;
     private TextView tvTodayTransactions;
     private TextView tvNoTransactions;
+    private Button btnLoadMoreTransactions;
     
     private MaterialCardView cardCustomers;
     private MaterialCardView cardCreateAccount;
@@ -40,6 +42,11 @@ public class OfficerHomeFragment extends Fragment {
     private AdminService adminService;
     private SessionManager sessionManager;
     private ProgressDialog progressDialog;
+    
+    private int currentPage = 1;
+    private int limit = 20;
+    private boolean hasNextPage = false;
+    private List<AdminService.RecentTransaction> allTransactions = new java.util.ArrayList<>();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -68,6 +75,7 @@ public class OfficerHomeFragment extends Fragment {
         tvTotalBalance = view.findViewById(R.id.tv_total_balance);
         tvTodayTransactions = view.findViewById(R.id.tv_today_transactions);
         tvNoTransactions = view.findViewById(R.id.tv_no_transactions);
+        btnLoadMoreTransactions = view.findViewById(R.id.btn_load_more_transactions);
         
         cardCustomers = view.findViewById(R.id.card_customers);
         cardCreateAccount = view.findViewById(R.id.card_create_account);
@@ -88,6 +96,7 @@ public class OfficerHomeFragment extends Fragment {
         // Setup click listeners
         cardCustomers.setOnClickListener(v -> navigateToCustomersFragment());
         cardCreateAccount.setOnClickListener(v -> showCreateAccountDialog());
+        btnLoadMoreTransactions.setOnClickListener(v -> loadMoreTransactions());
     }
 
     private void loadDashboardStats() {
@@ -102,6 +111,8 @@ public class OfficerHomeFragment extends Fragment {
                         progressDialog.dismiss();
                         if (stats != null) {
                             updateDashboardStats(stats);
+                            // Load all transactions after dashboard stats
+                            loadAllTransactions();
                         } else {
                             // Show empty state
                             tvTotalCustomers.setText("0");
@@ -110,6 +121,7 @@ public class OfficerHomeFragment extends Fragment {
                             tvTodayTransactions.setText("0");
                             tvNoTransactions.setVisibility(View.VISIBLE);
                             llRecentTransactions.setVisibility(View.GONE);
+                            btnLoadMoreTransactions.setVisibility(View.GONE);
                         }
                     });
                 }
@@ -129,10 +141,92 @@ public class OfficerHomeFragment extends Fragment {
                         tvTodayTransactions.setText("0");
                         tvNoTransactions.setVisibility(View.VISIBLE);
                         llRecentTransactions.setVisibility(View.GONE);
+                        btnLoadMoreTransactions.setVisibility(View.GONE);
                     });
                 }
             }
         });
+    }
+
+    private void loadAllTransactions() {
+        // Reset for initial load
+        currentPage = 1;
+        allTransactions.clear();
+        loadMoreTransactions();
+    }
+
+    private void loadMoreTransactions() {
+        if (!hasNextPage && currentPage > 1) {
+            // Already loaded all pages
+            return;
+        }
+
+        btnLoadMoreTransactions.setEnabled(false);
+        btnLoadMoreTransactions.setText("Đang tải...");
+
+        int pageToLoad = currentPage;
+        adminService.getAllTransactions(pageToLoad, limit, null, null, new AdminService.TransactionListCallback() {
+            @Override
+            public void onSuccess(List<AdminService.RecentTransaction> transactions, int total, int page, int totalPages, boolean hasNext) {
+                if (getActivity() != null && isAdded()) {
+                    getActivity().runOnUiThread(() -> {
+                        hasNextPage = hasNext;
+                        currentPage = page + 1; // Increment for next load
+
+                        if (page == 1) {
+                            // First load - replace all
+                            allTransactions.clear();
+                        }
+
+                        allTransactions.addAll(transactions);
+                        updateTransactionsDisplay();
+
+                        // Update load more button
+                        if (hasNextPage) {
+                            btnLoadMoreTransactions.setVisibility(View.VISIBLE);
+                            btnLoadMoreTransactions.setEnabled(true);
+                            int remaining = total - allTransactions.size();
+                            if (remaining > 0) {
+                                btnLoadMoreTransactions.setText("Xem thêm giao dịch (" + remaining + " còn lại)");
+                            } else {
+                                btnLoadMoreTransactions.setText("Xem thêm giao dịch");
+                            }
+                        } else {
+                            btnLoadMoreTransactions.setVisibility(View.GONE);
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+                if (getActivity() != null && isAdded()) {
+                    getActivity().runOnUiThread(() -> {
+                        btnLoadMoreTransactions.setEnabled(true);
+                        btnLoadMoreTransactions.setText("Xem thêm giao dịch");
+                        android.util.Log.e("OfficerHomeFragment", "Error loading transactions: " + error);
+                        Toast.makeText(getContext(), "Lỗi tải giao dịch: " + error, Toast.LENGTH_SHORT).show();
+                    });
+                }
+            }
+        });
+    }
+
+    private void updateTransactionsDisplay() {
+        if (allTransactions == null || allTransactions.isEmpty()) {
+            tvNoTransactions.setVisibility(View.VISIBLE);
+            llRecentTransactions.setVisibility(View.GONE);
+            btnLoadMoreTransactions.setVisibility(View.GONE);
+        } else {
+            tvNoTransactions.setVisibility(View.GONE);
+            llRecentTransactions.setVisibility(View.VISIBLE);
+            llRecentTransactions.removeAllViews();
+
+            for (AdminService.RecentTransaction transaction : allTransactions) {
+                View transactionView = createTransactionView(transaction);
+                llRecentTransactions.addView(transactionView);
+            }
+        }
     }
 
     private void updateDashboardStats(AdminService.DashboardStats stats) {
@@ -141,22 +235,7 @@ public class OfficerHomeFragment extends Fragment {
         tvActiveAccounts.setText(String.valueOf(stats.getActiveAccounts()));
         tvTotalBalance.setText(formatCurrency(stats.getTotalBalance()));
         tvTodayTransactions.setText(String.valueOf(stats.getTodayTransactions()));
-
-        // Update recent transactions
-        List<AdminService.RecentTransaction> transactions = stats.getRecentTransactions();
-        if (transactions == null || transactions.isEmpty()) {
-            tvNoTransactions.setVisibility(View.VISIBLE);
-            llRecentTransactions.setVisibility(View.GONE);
-        } else {
-            tvNoTransactions.setVisibility(View.GONE);
-            llRecentTransactions.setVisibility(View.VISIBLE);
-            llRecentTransactions.removeAllViews();
-
-            for (AdminService.RecentTransaction transaction : transactions) {
-                View transactionView = createTransactionView(transaction);
-                llRecentTransactions.addView(transactionView);
-            }
-        }
+        // Transactions will be loaded separately via loadAllTransactions()
     }
 
     private View createTransactionView(AdminService.RecentTransaction transaction) {

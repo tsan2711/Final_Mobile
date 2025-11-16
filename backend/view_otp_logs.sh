@@ -5,3 +5,4 @@ echo "📱 Watching for OTP logs... (Press Ctrl+C to stop)"
 echo "=========================================="
 tail -f server.log | grep --line-buffered -i "🔐\|OTP\|otp"
 
+

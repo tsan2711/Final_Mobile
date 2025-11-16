@@ -313,6 +313,20 @@
             android:layout_marginTop="16dp"
             android:visibility="gone" />
 
+        <!-- Load More Button -->
+        <Button
+            android:id="@+id/btn_load_more_transactions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Xem thêm giao dịch"
+            android:textSize="14sp"
+            android:background="@android:color/transparent"
+            android:textColor="@color/primary_color"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone"
+            style="?android:attr/borderlessButtonStyle" />
+
     </LinearLayout>
 
 </ScrollView>

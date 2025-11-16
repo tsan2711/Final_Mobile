@@ -25,17 +25,17 @@
             <ImageView
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:src="@drawable/ic_profile"
+                android:src="@drawable/ic_transfer_money"
                 android:padding="12dp"
                 android:background="@drawable/circle_background"
                 android:layout_marginEnd="16dp"
-                android:contentDescription="Cập nhật thông tin" />
+                android:contentDescription="Chuyển tiền" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Cập nhật thông tin"
+                android:text="Chuyển tiền giữa tài khoản"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="@color/primary_text_color" />
@@ -50,18 +50,43 @@
                 android:tint="@color/secondary_text_color" />
         </LinearLayout>
 
+        <!-- Info Card -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="@color/background_secondary">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="💡 Lưu ý: Chỉ có thể chuyển tiền giữa các tài khoản khách hàng"
+                    android:textSize="12sp"
+                    android:textColor="@color/secondary_text_color"
+                    android:lineSpacingExtra="4dp" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
         <!-- Input Fields Container -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Full Name -->
+            <!-- From Account Number -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                android:hint="Họ và tên"
+                android:hint="Số tài khoản nguồn"
                 app:hintTextColor="@color/secondary_text_color"
                 app:boxStrokeColor="@color/primary_color"
                 app:boxCornerRadiusTopStart="12dp"
@@ -71,20 +96,20 @@
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_full_name"
+                    android:id="@+id/et_from_account"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPersonName"
+                    android:inputType="number"
                     android:textSize="16sp"
                     android:textColor="@color/primary_text_color" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Phone -->
+            <!-- To Account Number -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                android:hint="Số điện thoại"
+                android:hint="Số tài khoản đích"
                 app:hintTextColor="@color/secondary_text_color"
                 app:boxStrokeColor="@color/primary_color"
                 app:boxCornerRadiusTopStart="12dp"
@@ -94,20 +119,45 @@
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_phone"
+                    android:id="@+id/et_to_account"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="phone"
+                    android:inputType="number"
                     android:textSize="16sp"
                     android:textColor="@color/primary_text_color" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Address -->
+            <!-- Amount -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="Số tiền"
+                app:hintTextColor="@color/secondary_text_color"
+                app:boxStrokeColor="@color/primary_color"
+                app:prefixText="₫"
+                app:prefixTextColor="@color/primary_text_color"
+                app:boxCornerRadiusTopStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusBottomEnd="12dp"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_amount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:textSize="16sp"
+                    android:textColor="@color/primary_text_color" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Description -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
-                android:hint="Địa chỉ"
+                android:hint="Mô tả (tùy chọn)"
                 app:hintTextColor="@color/secondary_text_color"
                 app:boxStrokeColor="@color/primary_color"
                 app:boxCornerRadiusTopStart="12dp"
@@ -117,10 +167,10 @@
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_address"
+                    android:id="@+id/et_description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPostalAddress"
+                    android:inputType="textCapSentences"
                     android:maxLines="3"
                     android:textSize="16sp"
                     android:textColor="@color/primary_text_color" />
@@ -152,7 +202,7 @@
                 style="@style/Widget.Material3.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Cập nhật"
+                android:text="Chuyển tiền"
                 android:textColor="@color/text_on_primary"
                 android:backgroundTint="@color/primary_color"
                 android:textSize="16sp"
@@ -162,5 +212,4 @@
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>
-
 

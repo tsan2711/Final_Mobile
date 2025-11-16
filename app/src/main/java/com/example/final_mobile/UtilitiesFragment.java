@@ -68,15 +68,15 @@ public class UtilitiesFragment extends Fragment {
     }
     
     private void setupUtilityCards(View view) {
-        // Bill payment cards
-        View electricityCard = findCardByText(view, "Tiền điện");
-        View waterCard = findCardByText(view, "Tiền nước");
-        View internetCard = findCardByText(view, "Internet");
+        // Bill payment cards - use findViewById for reliable access
+        View electricityCard = view.findViewById(R.id.card_electricity);
+        View waterCard = view.findViewById(R.id.card_water);
+        View internetCard = view.findViewById(R.id.card_internet);
         
         // Mobile service cards
-        View topupCard = findCardByText(view, "Nạp tiền");
-        View dataPackageCard = findCardByText(view, "Gói cước");
-        View scratchCardCard = findCardByText(view, "Thẻ cào");
+        View topupCard = view.findViewById(R.id.card_topup);
+        View dataPackageCard = view.findViewById(R.id.card_data_package);
+        View scratchCardCard = view.findViewById(R.id.card_scratch_card);
         
         if (electricityCard != null) {
             electricityCard.setOnClickListener(v -> showElectricityBillDialog());
@@ -101,21 +101,6 @@ public class UtilitiesFragment extends Fragment {
         if (scratchCardCard != null) {
             scratchCardCard.setOnClickListener(v -> showScratchCardDialog());
         }
-    }
-    
-    private View findCardByText(View parent, String text) {
-        if (parent instanceof ViewGroup) {
-            ViewGroup viewGroup = (ViewGroup) parent;
-            for (int i = 0; i < viewGroup.getChildCount(); i++) {
-                View child = viewGroup.getChildAt(i);
-                if (child instanceof TextView && text.equals(((TextView) child).getText().toString())) {
-                    return child.getParent() instanceof CardView ? (View) child.getParent() : child;
-                }
-                View result = findCardByText(child, text);
-                if (result != null) return result;
-            }
-        }
-        return null;
     }
 
     private void showElectricityBillDialog() {

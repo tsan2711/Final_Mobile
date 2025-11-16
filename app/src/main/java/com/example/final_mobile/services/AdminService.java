@@ -40,6 +40,11 @@ public class AdminService {
         void onError(String error);
     }
 
+    public interface TransactionListCallback {
+        void onSuccess(List<RecentTransaction> transactions, int total, int page, int totalPages, boolean hasNextPage);
+        void onError(String error);
+    }
+
     // Customer info model
     public static class CustomerInfo {
         private String id;
@@ -594,6 +599,193 @@ public class AdminService {
             accounts.add(account);
         }
         return accounts;
+    }
+
+    // Get all transactions with pagination
+    public void getAllTransactions(int page, int limit, String type, String status, TransactionListCallback callback) {
+        String endpoint = ApiConfig.ADMIN_GET_TRANSACTIONS + "?page=" + page + "&limit=" + limit;
+        if (type != null && !type.isEmpty() && !type.equals("Tất cả")) {
+            try {
+                endpoint += "&type=" + java.net.URLEncoder.encode(type, "UTF-8");
+            } catch (java.io.UnsupportedEncodingException e) {
+                android.util.Log.e("AdminService", "Error encoding type: " + e.getMessage());
+            }
+        }
+        if (status != null && !status.isEmpty() && !status.equals("Tất cả")) {
+            try {
+                endpoint += "&status=" + java.net.URLEncoder.encode(status, "UTF-8");
+            } catch (java.io.UnsupportedEncodingException e) {
+                android.util.Log.e("AdminService", "Error encoding status: " + e.getMessage());
+            }
+        }
+        android.util.Log.d("AdminService", "Calling getAllTransactions: " + ApiConfig.BASE_URL + endpoint);
+        apiService.get(endpoint, new ApiService.ApiCallback() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                android.util.Log.d("AdminService", "getAllTransactions response received: " + response.toString());
+                try {
+                    if (response == null) {
+                        android.util.Log.e("AdminService", "getAllTransactions response is null");
+                        callback.onError("Response is null");
+                        return;
+                    }
+                    
+                    boolean success = response.optBoolean("success", false);
+                    android.util.Log.d("AdminService", "getAllTransactions success flag: " + success);
+                    
+                    if (success) {
+                        JSONArray transactionsArray = response.optJSONArray("data");
+                        JSONObject meta = response.optJSONObject("meta");
+                        
+                        if (transactionsArray == null) {
+                            android.util.Log.e("AdminService", "transactionsArray is null");
+                            callback.onError("Data array is null in response");
+                            return;
+                        }
+                        
+                        if (meta == null) {
+                            android.util.Log.e("AdminService", "meta object is null");
+                            callback.onError("Meta object is null in response");
+                            return;
+                        }
+
+                        android.util.Log.d("AdminService", "Found " + transactionsArray.length() + " transactions in array");
+
+                        List<RecentTransaction> transactions = new ArrayList<>();
+                        for (int i = 0; i < transactionsArray.length(); i++) {
+                            try {
+                                JSONObject t = transactionsArray.getJSONObject(i);
+                                RecentTransaction transaction = new RecentTransaction();
+                                transaction.setTransactionId(t.optString("transaction_id", ""));
+                                
+                                // Handle amount as number or string
+                                if (t.has("amount")) {
+                                    if (t.get("amount") instanceof Number) {
+                                        transaction.setAmount(BigDecimal.valueOf(t.getDouble("amount")));
+                                    } else {
+                                        transaction.setAmount(new BigDecimal(t.getString("amount")));
+                                    }
+                                } else {
+                                    transaction.setAmount(BigDecimal.ZERO);
+                                }
+                                
+                                transaction.setType(t.optString("type", ""));
+                                transaction.setStatus(t.optString("status", ""));
+                                transaction.setDescription(t.optString("description", ""));
+                                
+                                // Handle created_at
+                                String createdAt = "";
+                                if (t.has("created_at")) {
+                                    if (t.get("created_at") instanceof String) {
+                                        createdAt = t.getString("created_at");
+                                    } else {
+                                        createdAt = t.optString("created_at", "");
+                                    }
+                                }
+                                transaction.setCreatedAt(createdAt);
+                                
+                                transactions.add(transaction);
+                            } catch (Exception e) {
+                                android.util.Log.e("AdminService", "Error parsing transaction " + i + ": " + e.getMessage(), e);
+                                // Continue with next transaction
+                            }
+                        }
+
+                        int total = meta.optInt("total", 0);
+                        int currentPage = meta.optInt("page", page);
+                        int totalPages = meta.optInt("total_pages", 1);
+                        boolean hasNextPage = meta.optBoolean("has_next_page", false);
+                        
+                        android.util.Log.d("AdminService", "Total transactions: " + total + ", page: " + currentPage + ", totalPages: " + totalPages);
+                        android.util.Log.d("AdminService", "Parsed " + transactions.size() + " transactions successfully");
+
+                        callback.onSuccess(transactions, total, currentPage, totalPages, hasNextPage);
+                    } else {
+                        String errorMsg = response.optString("message", "Failed to get transactions");
+                        android.util.Log.e("AdminService", "getAllTransactions API returned success=false: " + errorMsg);
+                        callback.onError(errorMsg);
+                    }
+                } catch (Exception e) {
+                    android.util.Log.e("AdminService", "Unexpected error parsing getAllTransactions response: " + e.getMessage(), e);
+                    callback.onError("Unexpected error: " + e.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String error, int statusCode) {
+                android.util.Log.e("AdminService", "getAllTransactions API error: " + error + " (Status: " + statusCode + ")");
+                callback.onError(error);
+            }
+        });
+    }
+
+    // Admin transfer money between customer accounts
+    public void transferMoney(String fromAccountNumber, String toAccountNumber, BigDecimal amount, String description, AdminCallback callback) {
+        try {
+            JSONObject requestBody = new JSONObject();
+            requestBody.put("fromAccountNumber", fromAccountNumber);
+            requestBody.put("toAccountNumber", toAccountNumber);
+            requestBody.put("amount", amount.doubleValue());
+            if (description != null && !description.isEmpty()) {
+                requestBody.put("description", description);
+            }
+
+            apiService.post(ApiConfig.ADMIN_TRANSFER_MONEY, requestBody, new ApiService.ApiCallback() {
+                @Override
+                public void onSuccess(JSONObject response) {
+                    try {
+                        if (response.getBoolean("success")) {
+                            callback.onSuccess(response.optString("message", "Transfer completed successfully"));
+                        } else {
+                            callback.onError(response.optString("message", "Failed to transfer money"));
+                        }
+                    } catch (JSONException e) {
+                        callback.onError("Error parsing response: " + e.getMessage());
+                    }
+                }
+
+                @Override
+                public void onError(String error, int statusCode) {
+                    callback.onError(error);
+                }
+            });
+        } catch (JSONException e) {
+            callback.onError("Error creating request: " + e.getMessage());
+        }
+    }
+
+    // Admin deposit money to customer account
+    public void depositMoney(String accountNumber, BigDecimal amount, String description, AdminCallback callback) {
+        try {
+            JSONObject requestBody = new JSONObject();
+            requestBody.put("accountNumber", accountNumber);
+            requestBody.put("amount", amount.doubleValue());
+            if (description != null && !description.isEmpty()) {
+                requestBody.put("description", description);
+            }
+
+            apiService.post(ApiConfig.ADMIN_DEPOSIT_MONEY, requestBody, new ApiService.ApiCallback() {
+                @Override
+                public void onSuccess(JSONObject response) {
+                    try {
+                        if (response.getBoolean("success")) {
+                            callback.onSuccess(response.optString("message", "Deposit completed successfully"));
+                        } else {
+                            callback.onError(response.optString("message", "Failed to deposit money"));
+                        }
+                    } catch (JSONException e) {
+                        callback.onError("Error parsing response: " + e.getMessage());
+                    }
+                }
+
+                @Override
+                public void onError(String error, int statusCode) {
+                    callback.onError(error);
+                }
+            });
+        } catch (JSONException e) {
+            callback.onError("Error creating request: " + e.getMessage());
+        }
     }
 }
 

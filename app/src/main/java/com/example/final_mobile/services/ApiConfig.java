@@ -65,6 +65,9 @@ public class ApiConfig {
     public static final String ADMIN_CREATE_ACCOUNT = "admin/accounts/create";
     public static final String ADMIN_UPDATE_ACCOUNT = "admin/accounts/{accountId}";
     public static final String ADMIN_DEACTIVATE_ACCOUNT = "admin/accounts/{accountId}";
+    public static final String ADMIN_GET_TRANSACTIONS = "admin/transactions";
+    public static final String ADMIN_TRANSFER_MONEY = "admin/transactions/transfer";
+    public static final String ADMIN_DEPOSIT_MONEY = "admin/transactions/deposit";
     
     // Headers
     public static final String HEADER_AUTHORIZATION = "Authorization";

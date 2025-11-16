@@ -21,5 +21,10 @@ router.post('/accounts/create', AdminController.createCustomerAccount);
 router.put('/accounts/:accountId', AdminController.updateAccount);
 router.delete('/accounts/:accountId', AdminController.deactivateAccount);
 
+// Transaction management
+router.get('/transactions', AdminController.getAllTransactions);
+router.post('/transactions/transfer', AdminController.transferMoney);
+router.post('/transactions/deposit', AdminController.depositMoney);
+
 module.exports = router;
 

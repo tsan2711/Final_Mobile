@@ -90,7 +90,9 @@ public class ApiService {
     public void get(String endpoint, ApiCallback callback) {
         executor.execute(() -> {
             try {
-                URL url = new URL(ApiConfig.BASE_URL + endpoint);
+                String fullUrl = ApiConfig.BASE_URL + endpoint;
+                Log.d(TAG, "GET Request - Full URL: " + fullUrl);
+                URL url = new URL(fullUrl);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 
                 // Set request properties

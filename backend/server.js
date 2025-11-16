@@ -170,6 +170,7 @@ connectDB();
 
 // Import routes
 const authRoutes = require('./src/routes/auth');
+const userRoutes = require('./src/routes/user');
 const accountRoutes = require('./src/routes/accounts');
 const transactionRoutes = require('./src/routes/transactions');
 const utilityRoutes = require('./src/routes/utilities');
@@ -195,6 +196,7 @@ app.get('/api/test', (req, res) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/user', userRoutes);
 app.use('/api/accounts', accountRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/utilities', utilityRoutes);
