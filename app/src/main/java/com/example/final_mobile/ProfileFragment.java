@@ -1,5 +1,6 @@
 package com.example.final_mobile;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -24,7 +25,11 @@ import androidx.fragment.app.Fragment;
 
 import com.example.final_mobile.models.User;
 import com.example.final_mobile.services.AuthService;
+import com.example.final_mobile.services.EkycService;
 import com.example.final_mobile.services.UserService;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class ProfileFragment extends Fragment {
 
@@ -33,14 +38,18 @@ public class ProfileFragment extends Fragment {
     private TextView tvUserPhone;
     private LinearLayout btnPersonalInfo;
     private LinearLayout btnSecurity;
+    private LinearLayout btnEkyc;
     private LinearLayout btnSupport;
     private LinearLayout btnAbout;
     private Button btnLogout;
     
     private UserService userService;
     private AuthService authService;
+    private EkycService ekycService;
     private ProgressDialog progressDialog;
     private User currentUser;
+    
+    private static final int REQUEST_CODE_FACE_CAPTURE = 100;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -55,6 +64,7 @@ public class ProfileFragment extends Fragment {
         // Initialize services
         userService = new UserService(getContext());
         authService = new AuthService(getContext());
+        ekycService = new EkycService(getContext());
         
         initViews(view);
         setupUI();
@@ -68,6 +78,7 @@ public class ProfileFragment extends Fragment {
         tvUserPhone = view.findViewById(R.id.tv_user_phone);
         btnPersonalInfo = view.findViewById(R.id.btn_personal_info);
         btnSecurity = view.findViewById(R.id.btn_security);
+        btnEkyc = view.findViewById(R.id.btn_ekyc);
         btnSupport = view.findViewById(R.id.btn_support);
         btnAbout = view.findViewById(R.id.btn_about);
         btnLogout = view.findViewById(R.id.btn_logout);
@@ -85,6 +96,10 @@ public class ProfileFragment extends Fragment {
         
         if (btnSecurity != null) {
             btnSecurity.setOnClickListener(v -> showChangePasswordDialog());
+        }
+        
+        if (btnEkyc != null) {
+            btnEkyc.setOnClickListener(v -> showEkycOptionsDialog());
         }
         
         if (btnSupport != null) {
@@ -516,6 +531,117 @@ public class ProfileFragment extends Fragment {
         btnOk.setOnClickListener(v -> dialog.dismiss());
         
         dialog.show();
+    }
+
+    private void showEkycOptionsDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Xác thực eKYC");
+        builder.setMessage("Chọn hành động:");
+        
+        builder.setPositiveButton("Chụp ảnh khuôn mặt", (dialog, which) -> {
+            startFaceCaptureActivity();
+        });
+        
+        builder.setNeutralButton("Kiểm tra trạng thái", (dialog, which) -> {
+            checkEkycStatus();
+        });
+        
+        builder.setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss());
+        builder.show();
+    }
+
+    private void startFaceCaptureActivity() {
+        Intent intent = new Intent(getActivity(), FaceCaptureActivity.class);
+        startActivityForResult(intent, REQUEST_CODE_FACE_CAPTURE);
+    }
+
+    private void checkEkycStatus() {
+        progressDialog.setMessage("Đang kiểm tra trạng thái eKYC...");
+        progressDialog.show();
+
+        ekycService.getVerificationStatus(new EkycService.EkycCallback() {
+            @Override
+            public void onSuccess(JSONObject data) {
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        progressDialog.dismiss();
+                        try {
+                            String status = data.optString("verification_status", "NOT_STARTED");
+                            boolean isValid = data.optBoolean("is_valid", false);
+                            boolean hasFaceImage = data.optBoolean("has_face_image", false);
+                            
+                            String message = "Trạng thái eKYC: ";
+                            
+                            switch (status) {
+                                case "NOT_STARTED":
+                                    message += "Chưa bắt đầu\n\nVui lòng chụp ảnh khuôn mặt để bắt đầu xác thực eKYC.";
+                                    break;
+                                case "PENDING":
+                                    message += "Đang chờ xác thực\n\nẢnh khuôn mặt đã được tải lên. Đang chờ hệ thống xác thực.";
+                                    break;
+                                case "VERIFIED":
+                                    message += "Đã xác thực ✓\n\n";
+                                    if (isValid) {
+                                        message += "Xác thực hợp lệ. Bạn có thể thực hiện giao dịch giá trị cao.";
+                                    } else {
+                                        message += "Xác thực đã hết hạn. Vui lòng xác thực lại.";
+                                    }
+                                    break;
+                                case "REJECTED":
+                                    message += "Đã từ chối\n\nẢnh khuôn mặt không đạt yêu cầu. Vui lòng chụp lại.";
+                                    break;
+                                default:
+                                    message += status;
+                            }
+                            
+                            if (hasFaceImage && !status.equals("NOT_STARTED")) {
+                                message += "\n\n✓ Đã có ảnh khuôn mặt";
+                            }
+                            
+                            new AlertDialog.Builder(getContext())
+                                .setTitle("Trạng thái eKYC")
+                                .setMessage(message)
+                                .setPositiveButton("OK", null)
+                                .setNeutralButton("Chụp lại", (dialog, which) -> {
+                                    startFaceCaptureActivity();
+                                })
+                                .show();
+                        } catch (Exception e) {
+                            Toast.makeText(getContext(), "Lỗi đọc dữ liệu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        progressDialog.dismiss();
+                        Toast.makeText(getContext(), "Lỗi: " + error, Toast.LENGTH_SHORT).show();
+                    });
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_FACE_CAPTURE) {
+            if (resultCode == Activity.RESULT_OK) {
+                if (data != null) {
+                    String status = data.getStringExtra("verification_status");
+                    if (status != null) {
+                        Toast.makeText(getContext(), "Xác thực eKYC: " + status, Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getContext(), "Ảnh đã được tải lên thành công!", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(getContext(), "Ảnh đã được tải lên thành công!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
     }
 
     @Override

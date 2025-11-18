@@ -16,6 +16,9 @@ router.get('/summary', AccountController.getAccountSummary);
 // Get primary account
 router.get('/primary', AccountController.getPrimaryAccount);
 
+// Get interest projection (must come before /:accountId route)
+router.get('/:accountId/interest-projection', AccountController.getInterestProjection);
+
 // Get specific account by ID
 router.get('/:accountId', AccountController.getAccount);
 

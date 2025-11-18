@@ -199,6 +199,183 @@ public class UtilityService {
         }
     }
 
+    // Book flight
+    public void bookFlight(String accountId, String flightNumber, BigDecimal amount, String airline,
+                          String departureDate, String arrivalDate, String passengerName, String route,
+                          UtilityCallback callback) {
+        try {
+            JSONObject requestBody = new JSONObject();
+            if (accountId != null && !accountId.isEmpty()) {
+                requestBody.put("accountId", accountId);
+            }
+            requestBody.put("flightNumber", flightNumber);
+            requestBody.put("amount", amount.doubleValue());
+            if (airline != null) requestBody.put("airline", airline);
+            if (departureDate != null) requestBody.put("departureDate", departureDate);
+            if (arrivalDate != null) requestBody.put("arrivalDate", arrivalDate);
+            if (passengerName != null) requestBody.put("passengerName", passengerName);
+            if (route != null) requestBody.put("route", route);
+
+            apiService.post("utilities/book-flight", requestBody, new ApiService.ApiCallback() {
+                @Override
+                public void onSuccess(JSONObject response) {
+                    try {
+                        if (response.getBoolean("success")) {
+                            JSONObject data = response.getJSONObject("data");
+                            String transactionId = data.getString("transaction_id");
+                            String otp = data.optString("developmentOTP", data.optString("development_otp", ""));
+                            
+                            UtilityPayment payment = parseUtilityPayment(data);
+                            callback.onInitiateSuccess(transactionId, otp, payment);
+                        } else {
+                            callback.onError(response.optString("message", "Flight booking failed"));
+                        }
+                    } catch (JSONException e) {
+                        callback.onError("Error parsing response: " + e.getMessage());
+                    }
+                }
+
+                @Override
+                public void onError(String error, int statusCode) {
+                    callback.onError(error);
+                }
+            });
+        } catch (JSONException e) {
+            callback.onError("Error: " + e.getMessage());
+        }
+    }
+
+    // Buy movie ticket
+    public void buyMovieTicket(String accountId, String movieName, BigDecimal amount, String cinema,
+                               String showTime, String seatNumber, Integer quantity, UtilityCallback callback) {
+        try {
+            JSONObject requestBody = new JSONObject();
+            if (accountId != null && !accountId.isEmpty()) {
+                requestBody.put("accountId", accountId);
+            }
+            requestBody.put("movieName", movieName);
+            requestBody.put("amount", amount.doubleValue());
+            if (cinema != null) requestBody.put("cinema", cinema);
+            if (showTime != null) requestBody.put("showTime", showTime);
+            if (seatNumber != null) requestBody.put("seatNumber", seatNumber);
+            if (quantity != null) requestBody.put("quantity", quantity);
+
+            apiService.post("utilities/buy-movie-ticket", requestBody, new ApiService.ApiCallback() {
+                @Override
+                public void onSuccess(JSONObject response) {
+                    try {
+                        if (response.getBoolean("success")) {
+                            JSONObject data = response.getJSONObject("data");
+                            String transactionId = data.getString("transaction_id");
+                            String otp = data.optString("developmentOTP", data.optString("development_otp", ""));
+                            
+                            UtilityPayment payment = parseUtilityPayment(data);
+                            callback.onInitiateSuccess(transactionId, otp, payment);
+                        } else {
+                            callback.onError(response.optString("message", "Movie ticket purchase failed"));
+                        }
+                    } catch (JSONException e) {
+                        callback.onError("Error parsing response: " + e.getMessage());
+                    }
+                }
+
+                @Override
+                public void onError(String error, int statusCode) {
+                    callback.onError(error);
+                }
+            });
+        } catch (JSONException e) {
+            callback.onError("Error: " + e.getMessage());
+        }
+    }
+
+    // Book hotel
+    public void bookHotel(String accountId, String hotelName, BigDecimal amount, String checkInDate,
+                         String checkOutDate, String guestName, String roomType, UtilityCallback callback) {
+        try {
+            JSONObject requestBody = new JSONObject();
+            if (accountId != null && !accountId.isEmpty()) {
+                requestBody.put("accountId", accountId);
+            }
+            requestBody.put("hotelName", hotelName);
+            requestBody.put("amount", amount.doubleValue());
+            if (checkInDate != null) requestBody.put("checkInDate", checkInDate);
+            if (checkOutDate != null) requestBody.put("checkOutDate", checkOutDate);
+            if (guestName != null) requestBody.put("guestName", guestName);
+            if (roomType != null) requestBody.put("roomType", roomType);
+
+            apiService.post("utilities/book-hotel", requestBody, new ApiService.ApiCallback() {
+                @Override
+                public void onSuccess(JSONObject response) {
+                    try {
+                        if (response.getBoolean("success")) {
+                            JSONObject data = response.getJSONObject("data");
+                            String transactionId = data.getString("transaction_id");
+                            String otp = data.optString("developmentOTP", data.optString("development_otp", ""));
+                            
+                            UtilityPayment payment = parseUtilityPayment(data);
+                            callback.onInitiateSuccess(transactionId, otp, payment);
+                        } else {
+                            callback.onError(response.optString("message", "Hotel booking failed"));
+                        }
+                    } catch (JSONException e) {
+                        callback.onError("Error parsing response: " + e.getMessage());
+                    }
+                }
+
+                @Override
+                public void onError(String error, int statusCode) {
+                    callback.onError(error);
+                }
+            });
+        } catch (JSONException e) {
+            callback.onError("Error: " + e.getMessage());
+        }
+    }
+
+    // E-commerce payment
+    public void payEcommerce(String accountId, String orderId, BigDecimal amount, String platform,
+                             String productName, String merchantName, UtilityCallback callback) {
+        try {
+            JSONObject requestBody = new JSONObject();
+            if (accountId != null && !accountId.isEmpty()) {
+                requestBody.put("accountId", accountId);
+            }
+            requestBody.put("orderId", orderId);
+            requestBody.put("amount", amount.doubleValue());
+            if (platform != null) requestBody.put("platform", platform);
+            if (productName != null) requestBody.put("productName", productName);
+            if (merchantName != null) requestBody.put("merchantName", merchantName);
+
+            apiService.post("utilities/pay-ecommerce", requestBody, new ApiService.ApiCallback() {
+                @Override
+                public void onSuccess(JSONObject response) {
+                    try {
+                        if (response.getBoolean("success")) {
+                            JSONObject data = response.getJSONObject("data");
+                            String transactionId = data.getString("transaction_id");
+                            String otp = data.optString("developmentOTP", data.optString("development_otp", ""));
+                            
+                            UtilityPayment payment = parseUtilityPayment(data);
+                            callback.onInitiateSuccess(transactionId, otp, payment);
+                        } else {
+                            callback.onError(response.optString("message", "E-commerce payment failed"));
+                        }
+                    } catch (JSONException e) {
+                        callback.onError("Error parsing response: " + e.getMessage());
+                    }
+                }
+
+                @Override
+                public void onError(String error, int statusCode) {
+                    callback.onError(error);
+                }
+            });
+        } catch (JSONException e) {
+            callback.onError("Error: " + e.getMessage());
+        }
+    }
+
     // Verify utility OTP
     public void verifyUtilityOTP(String transactionId, String otpCode, UtilityCallback callback) {
         try {

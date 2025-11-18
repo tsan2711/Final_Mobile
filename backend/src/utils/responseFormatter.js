@@ -30,13 +30,35 @@ const formatAccount = (account) => {
   const plain = toPlainObject(account);
   if (!plain) return null;
 
-  return {
+  // Debug logging for balance
+  const rawBalance = plain.balance;
+  const formattedBalance = (plain.balance !== null && plain.balance !== undefined) ? Number(plain.balance) : 0;
+  
+  if (rawBalance !== formattedBalance) {
+    console.log(`[DEBUG] ⚠️ Balance conversion: ${rawBalance} (${typeof rawBalance}) -> ${formattedBalance} (${typeof formattedBalance})`);
+  }
+
+  // Handle userId - can be ObjectId, string, or populated object
+  let userIdString = null;
+  if (plain.userId) {
+    if (typeof plain.userId === 'object' && plain.userId._id) {
+      userIdString = plain.userId._id.toString();
+    } else if (typeof plain.userId.toString === 'function') {
+      userIdString = plain.userId.toString();
+    } else {
+      userIdString = String(plain.userId);
+    }
+  } else if (plain.user_id) {
+    userIdString = String(plain.user_id);
+  }
+
+  const result = {
     id: (plain._id && typeof plain._id.toString === 'function') ? plain._id.toString() : (plain.id || null),
-    user_id: (plain.userId && typeof plain.userId.toString === 'function') ? plain.userId.toString() : (plain.user_id ? String(plain.user_id) : null),
+    user_id: userIdString,
     account_number: plain.accountNumber ? String(plain.accountNumber) : (plain.account_number ? String(plain.account_number) : ''),
     masked_account_number: (account && account.maskedAccountNumber) ? String(account.maskedAccountNumber) : (plain.masked_account_number ? String(plain.masked_account_number) : ''),
     account_type: plain.accountType ? String(plain.accountType) : (plain.account_type ? String(plain.account_type) : ''),
-    balance: (plain.balance !== null && plain.balance !== undefined) ? Number(plain.balance) : 0,
+    balance: formattedBalance,
     formatted_balance: (account && account.formattedBalance) ? String(account.formattedBalance) : (plain.formatted_balance ? String(plain.formatted_balance) : ''),
     interest_rate: (plain.interestRate !== null && plain.interestRate !== undefined) ? Number(plain.interestRate) : ((plain.interest_rate !== null && plain.interest_rate !== undefined) ? Number(plain.interest_rate) : null),
     currency: plain.currency ? String(plain.currency) : 'VND',
@@ -44,6 +66,10 @@ const formatAccount = (account) => {
     created_at: plain.createdAt || null,
     updated_at: plain.updatedAt || null
   };
+
+  console.log(`[DEBUG] 💵 Formatted account balance: ${result.balance} for account ${result.account_number}`);
+  
+  return result;
 };
 
 const formatTransaction = (transaction) => {

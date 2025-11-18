@@ -573,6 +573,11 @@ public class AdminService {
         for (int i = 0; i < accountArray.length(); i++) {
             JSONObject accountJson = accountArray.getJSONObject(i);
             Account account = new Account();
+            
+            // Handle id (might be _id or id)
+            String id = accountJson.optString("id", accountJson.optString("_id", ""));
+            account.setId(id);
+            
             account.setAccountNumber(accountJson.optString("account_number", ""));
             
             // Handle balance
@@ -596,6 +601,13 @@ public class AdminService {
             }
             
             account.setCurrency(accountJson.optString("currency", "VND"));
+            
+            // Handle account_type
+            account.setAccountType(accountJson.optString("account_type", ""));
+            
+            // Handle is_active
+            account.setActive(accountJson.optBoolean("is_active", true));
+            
             accounts.add(account);
         }
         return accounts;
@@ -784,6 +796,235 @@ public class AdminService {
                 }
             });
         } catch (JSONException e) {
+            callback.onError("Error creating request: " + e.getMessage());
+        }
+    }
+
+    // Create new customer
+    public void createCustomer(String email, String password, String fullName, String phone, String address, AdminCallback callback) {
+        try {
+            JSONObject requestBody = new JSONObject();
+            requestBody.put("email", email);
+            requestBody.put("password", password);
+            requestBody.put("fullName", fullName);
+            requestBody.put("phone", phone);
+            if (address != null && !address.isEmpty()) {
+                requestBody.put("address", address);
+            }
+
+            apiService.post(ApiConfig.ADMIN_CREATE_CUSTOMER, requestBody, new ApiService.ApiCallback() {
+                @Override
+                public void onSuccess(JSONObject response) {
+                    try {
+                        if (response.getBoolean("success")) {
+                            JSONObject customerData = response.getJSONObject("data");
+                            CustomerInfo customer = parseCustomerInfo(customerData);
+                            callback.onSuccess(customer);
+                        } else {
+                            callback.onError(response.optString("message", "Failed to create customer"));
+                        }
+                    } catch (JSONException e) {
+                        callback.onError("Error parsing response: " + e.getMessage());
+                    }
+                }
+
+                @Override
+                public void onError(String error, int statusCode) {
+                    callback.onError(error);
+                }
+            });
+        } catch (JSONException e) {
+            callback.onError("Error creating request: " + e.getMessage());
+        }
+    }
+
+    // Update customer information
+    public void updateCustomer(String customerId, String email, String fullName, String phone, String address, Boolean isActive, AdminCallback callback) {
+        try {
+            JSONObject requestBody = new JSONObject();
+            if (email != null && !email.isEmpty()) {
+                requestBody.put("email", email);
+            }
+            if (fullName != null && !fullName.isEmpty()) {
+                requestBody.put("fullName", fullName);
+            }
+            if (phone != null && !phone.isEmpty()) {
+                requestBody.put("phone", phone);
+            }
+            if (address != null) {
+                requestBody.put("address", address);
+            }
+            if (isActive != null) {
+                requestBody.put("isActive", isActive);
+            }
+
+            String endpoint = ApiConfig.ADMIN_UPDATE_CUSTOMER.replace("{customerId}", customerId);
+            apiService.put(endpoint, requestBody, new ApiService.ApiCallback() {
+                @Override
+                public void onSuccess(JSONObject response) {
+                    try {
+                        if (response.getBoolean("success")) {
+                            JSONObject customerData = response.getJSONObject("data");
+                            CustomerInfo customer = parseCustomerInfo(customerData);
+                            callback.onSuccess(customer);
+                        } else {
+                            callback.onError(response.optString("message", "Failed to update customer"));
+                        }
+                    } catch (JSONException e) {
+                        callback.onError("Error parsing response: " + e.getMessage());
+                    }
+                }
+
+                @Override
+                public void onError(String error, int statusCode) {
+                    callback.onError(error);
+                }
+            });
+        } catch (JSONException e) {
+            callback.onError("Error creating request: " + e.getMessage());
+        }
+    }
+
+    // Interest rate history model
+    public static class InterestRateHistoryItem {
+        private String id;
+        private String accountId;
+        private String accountNumber;
+        private String accountType;
+        private double oldRate;
+        private double newRate;
+        private String changedByName;
+        private String changedByEmail;
+        private String reason;
+        private String effectiveDate;
+        private String createdAt;
+
+        public String getId() { return id; }
+        public void setId(String id) { this.id = id; }
+        public String getAccountId() { return accountId; }
+        public void setAccountId(String accountId) { this.accountId = accountId; }
+        public String getAccountNumber() { return accountNumber; }
+        public void setAccountNumber(String accountNumber) { this.accountNumber = accountNumber; }
+        public String getAccountType() { return accountType; }
+        public void setAccountType(String accountType) { this.accountType = accountType; }
+        public double getOldRate() { return oldRate; }
+        public void setOldRate(double oldRate) { this.oldRate = oldRate; }
+        public double getNewRate() { return newRate; }
+        public void setNewRate(double newRate) { this.newRate = newRate; }
+        public String getChangedByName() { return changedByName; }
+        public void setChangedByName(String changedByName) { this.changedByName = changedByName; }
+        public String getChangedByEmail() { return changedByEmail; }
+        public void setChangedByEmail(String changedByEmail) { this.changedByEmail = changedByEmail; }
+        public String getReason() { return reason; }
+        public void setReason(String reason) { this.reason = reason; }
+        public String getEffectiveDate() { return effectiveDate; }
+        public void setEffectiveDate(String effectiveDate) { this.effectiveDate = effectiveDate; }
+        public String getCreatedAt() { return createdAt; }
+        public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
+    }
+
+    public interface InterestRateHistoryCallback {
+        void onSuccess(List<InterestRateHistoryItem> history, int total, int page, int totalPages);
+        void onError(String error);
+    }
+
+    // Update interest rate for account type
+    public void updateInterestRate(String accountType, double newRate, String reason, AdminCallback callback) {
+        try {
+            JSONObject requestBody = new JSONObject();
+            requestBody.put("accountType", accountType);
+            requestBody.put("newRate", newRate);
+            if (reason != null && !reason.isEmpty()) {
+                requestBody.put("reason", reason);
+            }
+
+            apiService.put(ApiConfig.ADMIN_UPDATE_INTEREST_RATE, requestBody, new ApiService.ApiCallback() {
+                @Override
+                public void onSuccess(JSONObject response) {
+                    try {
+                        if (response.getBoolean("success")) {
+                            callback.onSuccess(response.optString("message", "Interest rate updated successfully"));
+                        } else {
+                            callback.onError(response.optString("message", "Failed to update interest rate"));
+                        }
+                    } catch (JSONException e) {
+                        callback.onError("Error parsing response: " + e.getMessage());
+                    }
+                }
+
+                @Override
+                public void onError(String error, int statusCode) {
+                    callback.onError(error);
+                }
+            });
+        } catch (JSONException e) {
+            callback.onError("Error creating request: " + e.getMessage());
+        }
+    }
+
+    // Get interest rate history
+    public void getInterestRateHistory(String accountType, String accountId, int page, int limit, InterestRateHistoryCallback callback) {
+        try {
+            StringBuilder endpoint = new StringBuilder(ApiConfig.ADMIN_GET_INTEREST_RATE_HISTORY);
+            endpoint.append("?page=").append(page).append("&limit=").append(limit);
+            if (accountType != null && !accountType.isEmpty()) {
+                endpoint.append("&accountType=").append(java.net.URLEncoder.encode(accountType, "UTF-8"));
+            }
+            if (accountId != null && !accountId.isEmpty()) {
+                endpoint.append("&accountId=").append(java.net.URLEncoder.encode(accountId, "UTF-8"));
+            }
+
+            apiService.get(endpoint.toString(), new ApiService.ApiCallback() {
+                @Override
+                public void onSuccess(JSONObject response) {
+                    try {
+                        if (response.getBoolean("success")) {
+                            JSONArray historyArray = response.getJSONArray("data");
+                            JSONObject meta = response.optJSONObject("meta");
+
+                            List<InterestRateHistoryItem> history = new ArrayList<>();
+                            for (int i = 0; i < historyArray.length(); i++) {
+                                JSONObject h = historyArray.getJSONObject(i);
+                                InterestRateHistoryItem item = new InterestRateHistoryItem();
+                                item.setId(h.optString("id", ""));
+                                item.setAccountId(h.optString("account_id", ""));
+                                item.setAccountNumber(h.optString("account_number", ""));
+                                item.setAccountType(h.optString("account_type", ""));
+                                item.setOldRate(h.optDouble("old_rate", 0));
+                                item.setNewRate(h.optDouble("new_rate", 0));
+                                item.setReason(h.optString("reason", ""));
+                                item.setEffectiveDate(h.optString("effective_date", ""));
+                                item.setCreatedAt(h.optString("created_at", ""));
+
+                                // Parse changed_by
+                                if (h.has("changed_by") && !h.isNull("changed_by")) {
+                                    JSONObject changedBy = h.getJSONObject("changed_by");
+                                    item.setChangedByName(changedBy.optString("name", ""));
+                                    item.setChangedByEmail(changedBy.optString("email", ""));
+                                }
+
+                                history.add(item);
+                            }
+
+                            int total = meta != null ? meta.optInt("total", 0) : history.size();
+                            int currentPage = meta != null ? meta.optInt("page", page) : page;
+                            int totalPages = meta != null ? meta.optInt("total_pages", 1) : 1;
+
+                            callback.onSuccess(history, total, currentPage, totalPages);
+                        } else {
+                            callback.onError(response.optString("message", "Failed to get interest rate history"));
+                        }
+                    } catch (JSONException e) {
+                        callback.onError("Error parsing response: " + e.getMessage());
+                    }
+                }
+
+                @Override
+                public void onError(String error, int statusCode) {
+                    callback.onError(error);
+                }
+            });
+        } catch (Exception e) {
             callback.onError("Error creating request: " + e.getMessage());
         }
     }

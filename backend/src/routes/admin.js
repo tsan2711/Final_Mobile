@@ -12,9 +12,12 @@ router.use(bankOfficerOnly);
 router.get('/dashboard', AdminController.getDashboardStats);
 
 // Customer management
+// Note: More specific routes must come before parameterized routes
+router.get('/customers/search', AdminController.searchCustomers); // Must come before /customers/:customerId
 router.get('/customers', AdminController.getAllCustomers);
-router.get('/customers/search', AdminController.searchCustomers);
+router.post('/customers', AdminController.createCustomer);
 router.get('/customers/:customerId', AdminController.getCustomerDetails);
+router.put('/customers/:customerId', AdminController.updateCustomer);
 
 // Account management
 router.post('/accounts/create', AdminController.createCustomerAccount);
@@ -25,6 +28,10 @@ router.delete('/accounts/:accountId', AdminController.deactivateAccount);
 router.get('/transactions', AdminController.getAllTransactions);
 router.post('/transactions/transfer', AdminController.transferMoney);
 router.post('/transactions/deposit', AdminController.depositMoney);
+
+// Interest rate management
+router.put('/interest-rates', AdminController.updateInterestRate);
+router.get('/interest-rates/history', AdminController.getInterestRateHistory);
 
 module.exports = router;
 

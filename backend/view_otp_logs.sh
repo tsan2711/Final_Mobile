@@ -6,3 +6,4 @@ echo "=========================================="
 tail -f server.log | grep --line-buffered -i "🔐\|OTP\|otp"
 
 
+

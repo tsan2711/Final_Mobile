@@ -78,6 +78,14 @@ public class UtilitiesFragment extends Fragment {
         View dataPackageCard = view.findViewById(R.id.card_data_package);
         View scratchCardCard = view.findViewById(R.id.card_scratch_card);
         
+        // Travel & Entertainment cards
+        View flightCard = view.findViewById(R.id.card_flight);
+        View movieCard = view.findViewById(R.id.card_movie);
+        View hotelCard = view.findViewById(R.id.card_hotel);
+        
+        // E-commerce card
+        View ecommerceCard = view.findViewById(R.id.card_ecommerce);
+        
         if (electricityCard != null) {
             electricityCard.setOnClickListener(v -> showElectricityBillDialog());
         }
@@ -100,6 +108,22 @@ public class UtilitiesFragment extends Fragment {
         
         if (scratchCardCard != null) {
             scratchCardCard.setOnClickListener(v -> showScratchCardDialog());
+        }
+        
+        if (flightCard != null) {
+            flightCard.setOnClickListener(v -> showFlightBookingDialog());
+        }
+        
+        if (movieCard != null) {
+            movieCard.setOnClickListener(v -> showMovieTicketDialog());
+        }
+        
+        if (hotelCard != null) {
+            hotelCard.setOnClickListener(v -> showHotelBookingDialog());
+        }
+        
+        if (ecommerceCard != null) {
+            ecommerceCard.setOnClickListener(v -> showEcommercePaymentDialog());
         }
     }
 
@@ -270,6 +294,145 @@ public class UtilitiesFragment extends Fragment {
         Toast.makeText(getContext(), "Tính năng đang phát triển", Toast.LENGTH_SHORT).show();
     }
 
+    private void showFlightBookingDialog() {
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_flight_booking, null);
+        
+        TextInputEditText etFlightNumber = dialogView.findViewById(R.id.et_flight_number);
+        TextInputEditText etAirline = dialogView.findViewById(R.id.et_airline);
+        TextInputEditText etRoute = dialogView.findViewById(R.id.et_route);
+        TextInputEditText etAmount = dialogView.findViewById(R.id.et_amount);
+        
+        MaterialButton btnCancel = dialogView.findViewById(R.id.btn_cancel);
+        MaterialButton btnConfirm = dialogView.findViewById(R.id.btn_confirm);
+        ImageButton btnClose = dialogView.findViewById(R.id.btn_close);
+        
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
+            .setView(dialogView)
+            .setCancelable(true)
+            .create();
+        
+        btnClose.setOnClickListener(v -> dialog.dismiss());
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+        btnConfirm.setOnClickListener(v -> {
+            String flightNumber = etFlightNumber.getText().toString().trim();
+            String airline = etAirline.getText().toString().trim();
+            String route = etRoute.getText().toString().trim();
+            String amountStr = etAmount.getText().toString().trim();
+
+            if (validateFlightBooking(flightNumber, amountStr)) {
+                dialog.dismiss();
+                BigDecimal amount = new BigDecimal(amountStr);
+                processFlightBooking(flightNumber, amount, airline, null, null, null, route);
+            }
+        });
+        
+        dialog.show();
+    }
+
+    private void showMovieTicketDialog() {
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_movie_ticket, null);
+        
+        TextInputEditText etMovieName = dialogView.findViewById(R.id.et_movie_name);
+        TextInputEditText etCinema = dialogView.findViewById(R.id.et_cinema);
+        TextInputEditText etQuantity = dialogView.findViewById(R.id.et_quantity);
+        TextInputEditText etAmount = dialogView.findViewById(R.id.et_amount);
+        
+        MaterialButton btnCancel = dialogView.findViewById(R.id.btn_cancel);
+        MaterialButton btnConfirm = dialogView.findViewById(R.id.btn_confirm);
+        ImageButton btnClose = dialogView.findViewById(R.id.btn_close);
+        
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
+            .setView(dialogView)
+            .setCancelable(true)
+            .create();
+        
+        btnClose.setOnClickListener(v -> dialog.dismiss());
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+        btnConfirm.setOnClickListener(v -> {
+            String movieName = etMovieName.getText().toString().trim();
+            String cinema = etCinema.getText().toString().trim();
+            String quantityStr = etQuantity.getText().toString().trim();
+            String amountStr = etAmount.getText().toString().trim();
+
+            if (validateMovieTicket(movieName, amountStr)) {
+                dialog.dismiss();
+                BigDecimal amount = new BigDecimal(amountStr);
+                int quantity = quantityStr.isEmpty() ? 1 : Integer.parseInt(quantityStr);
+                processMovieTicket(movieName, amount, cinema, null, null, quantity);
+            }
+        });
+        
+        dialog.show();
+    }
+
+    private void showHotelBookingDialog() {
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_hotel_booking, null);
+        
+        TextInputEditText etHotelName = dialogView.findViewById(R.id.et_hotel_name);
+        TextInputEditText etRoomType = dialogView.findViewById(R.id.et_room_type);
+        TextInputEditText etAmount = dialogView.findViewById(R.id.et_amount);
+        
+        MaterialButton btnCancel = dialogView.findViewById(R.id.btn_cancel);
+        MaterialButton btnConfirm = dialogView.findViewById(R.id.btn_confirm);
+        ImageButton btnClose = dialogView.findViewById(R.id.btn_close);
+        
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
+            .setView(dialogView)
+            .setCancelable(true)
+            .create();
+        
+        btnClose.setOnClickListener(v -> dialog.dismiss());
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+        btnConfirm.setOnClickListener(v -> {
+            String hotelName = etHotelName.getText().toString().trim();
+            String roomType = etRoomType.getText().toString().trim();
+            String amountStr = etAmount.getText().toString().trim();
+
+            if (validateHotelBooking(hotelName, amountStr)) {
+                dialog.dismiss();
+                BigDecimal amount = new BigDecimal(amountStr);
+                processHotelBooking(hotelName, amount, null, null, null, roomType);
+            }
+        });
+        
+        dialog.show();
+    }
+
+    private void showEcommercePaymentDialog() {
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_ecommerce_payment, null);
+        
+        TextInputEditText etOrderId = dialogView.findViewById(R.id.et_order_id);
+        TextInputEditText etPlatform = dialogView.findViewById(R.id.et_platform);
+        TextInputEditText etProductName = dialogView.findViewById(R.id.et_product_name);
+        TextInputEditText etAmount = dialogView.findViewById(R.id.et_amount);
+        
+        MaterialButton btnCancel = dialogView.findViewById(R.id.btn_cancel);
+        MaterialButton btnConfirm = dialogView.findViewById(R.id.btn_confirm);
+        ImageButton btnClose = dialogView.findViewById(R.id.btn_close);
+        
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
+            .setView(dialogView)
+            .setCancelable(true)
+            .create();
+        
+        btnClose.setOnClickListener(v -> dialog.dismiss());
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+        btnConfirm.setOnClickListener(v -> {
+            String orderId = etOrderId.getText().toString().trim();
+            String platform = etPlatform.getText().toString().trim();
+            String productName = etProductName.getText().toString().trim();
+            String amountStr = etAmount.getText().toString().trim();
+
+            if (validateEcommercePayment(orderId, amountStr)) {
+                dialog.dismiss();
+                BigDecimal amount = new BigDecimal(amountStr);
+                processEcommercePayment(orderId, amount, platform, productName, null);
+            }
+        });
+        
+        dialog.show();
+    }
+
     private boolean validateBillPayment(String customerNumber, String amount) {
         if (TextUtils.isEmpty(customerNumber)) {
             Toast.makeText(getContext(), "Vui lòng nhập mã khách hàng", Toast.LENGTH_SHORT).show();
@@ -307,6 +470,38 @@ public class UtilitiesFragment extends Fragment {
         }
 
         return validateBillPayment(phoneNumber, amount);
+    }
+
+    private boolean validateFlightBooking(String flightNumber, String amount) {
+        if (TextUtils.isEmpty(flightNumber)) {
+            Toast.makeText(getContext(), "Vui lòng nhập số hiệu chuyến bay", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return validateBillPayment(flightNumber, amount);
+    }
+
+    private boolean validateMovieTicket(String movieName, String amount) {
+        if (TextUtils.isEmpty(movieName)) {
+            Toast.makeText(getContext(), "Vui lòng nhập tên phim", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return validateBillPayment(movieName, amount);
+    }
+
+    private boolean validateHotelBooking(String hotelName, String amount) {
+        if (TextUtils.isEmpty(hotelName)) {
+            Toast.makeText(getContext(), "Vui lòng nhập tên khách sạn", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return validateBillPayment(hotelName, amount);
+    }
+
+    private boolean validateEcommercePayment(String orderId, String amount) {
+        if (TextUtils.isEmpty(orderId)) {
+            Toast.makeText(getContext(), "Vui lòng nhập mã đơn hàng", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return validateBillPayment(orderId, amount);
     }
 
     private void processElectricityBill(String customerNumber, BigDecimal amount, String customerName, String period) {
@@ -437,6 +632,174 @@ public class UtilitiesFragment extends Fragment {
         progressDialog.show();
 
         utilityService.mobileTopup(null, phoneNumber, amount, provider,
+            new UtilityService.UtilityCallback() {
+                @Override
+                public void onInitiateSuccess(String transactionId, String otp, UtilityService.UtilityPayment payment) {
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            progressDialog.dismiss();
+                            currentTransactionId = transactionId;
+                            currentOtp = otp;
+                            currentPayment = payment;
+                            showOTPDialog(payment);
+                        });
+                    }
+                }
+
+                @Override
+                public void onVerifySuccess(String message) {
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            progressDialog.dismiss();
+                            showSuccessDialog(message);
+                        });
+                    }
+                }
+
+                @Override
+                public void onError(String error) {
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            progressDialog.dismiss();
+                            showErrorDialog("Lỗi", error);
+                        });
+                    }
+                }
+            });
+    }
+
+    private void processFlightBooking(String flightNumber, BigDecimal amount, String airline,
+                                      String departureDate, String arrivalDate, String passengerName, String route) {
+        progressDialog.setMessage("Đang xử lý...");
+        progressDialog.show();
+
+        utilityService.bookFlight(null, flightNumber, amount, airline, departureDate, arrivalDate, passengerName, route,
+            new UtilityService.UtilityCallback() {
+                @Override
+                public void onInitiateSuccess(String transactionId, String otp, UtilityService.UtilityPayment payment) {
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            progressDialog.dismiss();
+                            currentTransactionId = transactionId;
+                            currentOtp = otp;
+                            currentPayment = payment;
+                            showOTPDialog(payment);
+                        });
+                    }
+                }
+
+                @Override
+                public void onVerifySuccess(String message) {
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            progressDialog.dismiss();
+                            showSuccessDialog(message);
+                        });
+                    }
+                }
+
+                @Override
+                public void onError(String error) {
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            progressDialog.dismiss();
+                            showErrorDialog("Lỗi", error);
+                        });
+                    }
+                }
+            });
+    }
+
+    private void processMovieTicket(String movieName, BigDecimal amount, String cinema,
+                                    String showTime, String seatNumber, Integer quantity) {
+        progressDialog.setMessage("Đang xử lý...");
+        progressDialog.show();
+
+        utilityService.buyMovieTicket(null, movieName, amount, cinema, showTime, seatNumber, quantity,
+            new UtilityService.UtilityCallback() {
+                @Override
+                public void onInitiateSuccess(String transactionId, String otp, UtilityService.UtilityPayment payment) {
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            progressDialog.dismiss();
+                            currentTransactionId = transactionId;
+                            currentOtp = otp;
+                            currentPayment = payment;
+                            showOTPDialog(payment);
+                        });
+                    }
+                }
+
+                @Override
+                public void onVerifySuccess(String message) {
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            progressDialog.dismiss();
+                            showSuccessDialog(message);
+                        });
+                    }
+                }
+
+                @Override
+                public void onError(String error) {
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            progressDialog.dismiss();
+                            showErrorDialog("Lỗi", error);
+                        });
+                    }
+                }
+            });
+    }
+
+    private void processHotelBooking(String hotelName, BigDecimal amount, String checkInDate,
+                                     String checkOutDate, String guestName, String roomType) {
+        progressDialog.setMessage("Đang xử lý...");
+        progressDialog.show();
+
+        utilityService.bookHotel(null, hotelName, amount, checkInDate, checkOutDate, guestName, roomType,
+            new UtilityService.UtilityCallback() {
+                @Override
+                public void onInitiateSuccess(String transactionId, String otp, UtilityService.UtilityPayment payment) {
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            progressDialog.dismiss();
+                            currentTransactionId = transactionId;
+                            currentOtp = otp;
+                            currentPayment = payment;
+                            showOTPDialog(payment);
+                        });
+                    }
+                }
+
+                @Override
+                public void onVerifySuccess(String message) {
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            progressDialog.dismiss();
+                            showSuccessDialog(message);
+                        });
+                    }
+                }
+
+                @Override
+                public void onError(String error) {
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            progressDialog.dismiss();
+                            showErrorDialog("Lỗi", error);
+                        });
+                    }
+                }
+            });
+    }
+
+    private void processEcommercePayment(String orderId, BigDecimal amount, String platform,
+                                         String productName, String merchantName) {
+        progressDialog.setMessage("Đang xử lý...");
+        progressDialog.show();
+
+        utilityService.payEcommerce(null, orderId, amount, platform, productName, merchantName,
             new UtilityService.UtilityCallback() {
                 @Override
                 public void onInitiateSuccess(String transactionId, String otp, UtilityService.UtilityPayment payment) {

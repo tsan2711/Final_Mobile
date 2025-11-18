@@ -1,9 +1,10 @@
 package com.example.final_mobile.models;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class Account {
+public class Account implements Serializable {
     private String id;
     private String userId;
     private String accountNumber;

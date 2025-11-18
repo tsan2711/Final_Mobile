@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const Account = require('../models/Account');
 const Transaction = require('../models/Transaction');
+const InterestRateHistory = require('../models/InterestRateHistory');
 const { formatUser, formatAccount, formatTransaction } = require('../utils/responseFormatter');
 
 class AdminController {
@@ -33,27 +34,30 @@ class AdminController {
             userId: customer._id, 
             accountType: 'CHECKING',
             isActive: true 
-          }).select('accountNumber balance interestRate currency createdAt').sort({ createdAt: -1 });
+          }).select('_id accountNumber accountType balance interestRate currency isActive createdAt').sort({ createdAt: -1 });
 
           const savingAccounts = await Account.find({ 
             userId: customer._id, 
             accountType: 'SAVING',
             isActive: true 
-          }).select('accountNumber balance interestRate currency createdAt').sort({ createdAt: -1 });
+          }).select('_id accountNumber accountType balance interestRate currency isActive createdAt').sort({ createdAt: -1 });
 
           const mortgageAccounts = await Account.find({ 
             userId: customer._id, 
             accountType: 'MORTGAGE',
             isActive: true 
-          }).select('accountNumber balance interestRate currency createdAt').sort({ createdAt: -1 });
+          }).select('_id accountNumber accountType balance interestRate currency isActive createdAt').sort({ createdAt: -1 });
 
           // Format accounts
           const formatAccounts = (accounts) => {
             return accounts.map(acc => ({
+              id: acc._id ? String(acc._id) : '',
               account_number: acc.accountNumber ? String(acc.accountNumber) : '',
+              account_type: acc.accountType ? String(acc.accountType) : '',
               balance: (acc.balance !== null && acc.balance !== undefined) ? Number(acc.balance) : 0,
               interest_rate: (acc.interestRate !== null && acc.interestRate !== undefined) ? Number(acc.interestRate) : 0,
               currency: acc.currency || 'VND',
+              is_active: acc.isActive !== undefined ? Boolean(acc.isActive) : true,
               created_at: acc.createdAt ? acc.createdAt.toISOString() : null
             }));
           };
@@ -318,6 +322,21 @@ class AdminController {
             message: 'Interest rate must be between 0 and 100'
           });
         }
+        
+        // Track rate change in history
+        const oldRate = account.interestRate || 0;
+        if (oldRate !== interestRate) {
+          const historyEntry = new InterestRateHistory({
+            accountId: account._id,
+            accountType: account.accountType,
+            oldRate: oldRate,
+            newRate: interestRate,
+            changedBy: req.userId,
+            effectiveDate: new Date()
+          });
+          await historyEntry.save();
+        }
+        
         account.interestRate = interestRate;
       }
 
@@ -593,10 +612,13 @@ class AdminController {
       const { fromAccountNumber, toAccountNumber, amount, description } = req.body;
       const officerId = req.userId;
 
+      // Normalize account numbers by removing all spaces
+      let normalizedFromAccountNumber = (fromAccountNumber || '').toString().trim().replace(/\s/g, '');
+      let normalizedToAccountNumber = (toAccountNumber || '').toString().trim().replace(/\s/g, '');
       const amountNumber = Number(amount);
 
       // Validation
-      if (!fromAccountNumber || !toAccountNumber || Number.isNaN(amountNumber)) {
+      if (!normalizedFromAccountNumber || !normalizedToAccountNumber || Number.isNaN(amountNumber)) {
         return res.status(400).json({
           success: false,
           message: 'From account number, to account number, and valid amount are required'
@@ -618,15 +640,35 @@ class AdminController {
       }
 
       // Find accounts (must be customer accounts)
-      const fromAccount = await Account.findOne({
-        accountNumber: fromAccountNumber,
+      // First try exact match
+      let fromAccount = await Account.findOne({
+        accountNumber: normalizedFromAccountNumber,
         isActive: true
       }).populate('userId', 'customerType');
 
-      const toAccount = await Account.findOne({
-        accountNumber: toAccountNumber,
+      let toAccount = await Account.findOne({
+        accountNumber: normalizedToAccountNumber,
         isActive: true
       }).populate('userId', 'customerType');
+
+      // If not found, try finding by removing spaces from stored account numbers
+      if (!fromAccount) {
+        const allAccounts = await Account.find({ isActive: true }).populate('userId', 'customerType');
+        fromAccount = allAccounts.find(acc => {
+          if (!acc.accountNumber) return false;
+          const cleanDbNumber = acc.accountNumber.toString().replace(/\s/g, '');
+          return cleanDbNumber === normalizedFromAccountNumber;
+        });
+      }
+
+      if (!toAccount) {
+        const allAccounts = await Account.find({ isActive: true }).populate('userId', 'customerType');
+        toAccount = allAccounts.find(acc => {
+          if (!acc.accountNumber) return false;
+          const cleanDbNumber = acc.accountNumber.toString().replace(/\s/g, '');
+          return cleanDbNumber === normalizedToAccountNumber;
+        });
+      }
 
       if (!fromAccount || !toAccount) {
         return res.status(404).json({
@@ -710,10 +752,12 @@ class AdminController {
       const { accountNumber, amount, description } = req.body;
       const officerId = req.userId;
 
+      // Normalize account number by removing all spaces
+      let normalizedAccountNumber = (accountNumber || '').toString().trim().replace(/\s/g, '');
       const amountNumber = Number(amount);
 
       // Validation
-      if (!accountNumber || Number.isNaN(amountNumber)) {
+      if (!normalizedAccountNumber || Number.isNaN(amountNumber)) {
         return res.status(400).json({
           success: false,
           message: 'Account number and valid amount are required'
@@ -728,10 +772,21 @@ class AdminController {
       }
 
       // Find account (must be customer account)
-      const account = await Account.findOne({
-        accountNumber,
+      // First try exact match
+      let account = await Account.findOne({
+        accountNumber: normalizedAccountNumber,
         isActive: true
       }).populate('userId', 'customerType');
+
+      // If not found, try finding by removing spaces from stored account numbers
+      if (!account) {
+        const allAccounts = await Account.find({ isActive: true }).populate('userId', 'customerType');
+        account = allAccounts.find(acc => {
+          if (!acc.accountNumber) return false;
+          const cleanDbNumber = acc.accountNumber.toString().replace(/\s/g, '');
+          return cleanDbNumber === normalizedAccountNumber;
+        });
+      }
 
       if (!account) {
         return res.status(404).json({
@@ -784,6 +839,363 @@ class AdminController {
       res.status(500).json({
         success: false,
         message: 'Failed to deposit money: ' + error.message
+      });
+    }
+  }
+
+  // Create new customer (officer only)
+  static async createCustomer(req, res) {
+    try {
+      const { email, password, fullName, phone, address } = req.body;
+
+      // Validation
+      if (!email || !password || !fullName || !phone) {
+        return res.status(400).json({
+          success: false,
+          message: 'Email, password, full name, and phone are required'
+        });
+      }
+
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid email format'
+        });
+      }
+
+      // Validate password length
+      if (password.length < 6) {
+        return res.status(400).json({
+          success: false,
+          message: 'Password must be at least 6 characters'
+        });
+      }
+
+      // Validate phone format (basic check)
+      if (phone.length < 10) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid phone number'
+        });
+      }
+
+      // Check if email already exists
+      const existingUser = await User.findOne({ email: email.toLowerCase() });
+      if (existingUser) {
+        return res.status(400).json({
+          success: false,
+          message: 'Email already exists'
+        });
+      }
+
+      // Check if phone already exists
+      const existingPhone = await User.findOne({ phone });
+      if (existingPhone) {
+        return res.status(400).json({
+          success: false,
+          message: 'Phone number already exists'
+        });
+      }
+
+      // Create customer
+      const customer = new User({
+        email: email.toLowerCase(),
+        password, // Will be hashed by pre-save hook
+        fullName,
+        phone,
+        address: address || '',
+        customerType: 'CUSTOMER',
+        isActive: true,
+        emailVerified: false,
+        phoneVerified: false
+      });
+
+      await customer.save();
+
+      res.status(201).json({
+        success: true,
+        message: 'Customer created successfully',
+        data: formatUser(customer)
+      });
+
+    } catch (error) {
+      console.error('Create customer error:', error);
+      if (error.code === 11000) {
+        // Duplicate key error
+        const field = Object.keys(error.keyPattern)[0];
+        return res.status(400).json({
+          success: false,
+          message: `${field} already exists`
+        });
+      }
+      res.status(500).json({
+        success: false,
+        message: 'Failed to create customer: ' + error.message
+      });
+    }
+  }
+
+  // Update customer information (officer only)
+  static async updateCustomer(req, res) {
+    try {
+      const { customerId } = req.params;
+      const { email, fullName, phone, address, isActive } = req.body;
+
+      // Find customer
+      const customer = await User.findById(customerId);
+      
+      if (!customer) {
+        return res.status(404).json({
+          success: false,
+          message: 'Customer not found'
+        });
+      }
+
+      if (customer.customerType !== 'CUSTOMER') {
+        return res.status(403).json({
+          success: false,
+          message: 'User is not a customer'
+        });
+      }
+
+      // Update fields
+      if (email !== undefined && email !== customer.email) {
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          return res.status(400).json({
+            success: false,
+            message: 'Invalid email format'
+          });
+        }
+
+        // Check if email already exists
+        const existingUser = await User.findOne({ 
+          email: email.toLowerCase(),
+          _id: { $ne: customerId }
+        });
+        if (existingUser) {
+          return res.status(400).json({
+            success: false,
+            message: 'Email already exists'
+          });
+        }
+
+        customer.email = email.toLowerCase();
+      }
+
+      if (fullName !== undefined) {
+        customer.fullName = fullName;
+      }
+
+      if (phone !== undefined && phone !== customer.phone) {
+        // Validate phone format
+        if (phone.length < 10) {
+          return res.status(400).json({
+            success: false,
+            message: 'Invalid phone number'
+          });
+        }
+
+        // Check if phone already exists
+        const existingPhone = await User.findOne({ 
+          phone,
+          _id: { $ne: customerId }
+        });
+        if (existingPhone) {
+          return res.status(400).json({
+            success: false,
+            message: 'Phone number already exists'
+          });
+        }
+
+        customer.phone = phone;
+      }
+
+      if (address !== undefined) {
+        customer.address = address;
+      }
+
+      if (isActive !== undefined) {
+        customer.isActive = isActive;
+      }
+
+      await customer.save();
+
+      res.status(200).json({
+        success: true,
+        message: 'Customer updated successfully',
+        data: formatUser(customer)
+      });
+
+    } catch (error) {
+      console.error('Update customer error:', error);
+      if (error.code === 11000) {
+        // Duplicate key error
+        const field = Object.keys(error.keyPattern)[0];
+        return res.status(400).json({
+          success: false,
+          message: `${field} already exists`
+        });
+      }
+      res.status(500).json({
+        success: false,
+        message: 'Failed to update customer: ' + error.message
+      });
+    }
+  }
+
+  // Update interest rate for account type (officer only)
+  static async updateInterestRate(req, res) {
+    try {
+      const { accountType, newRate, reason } = req.body;
+      const officerId = req.userId;
+
+      // Validation
+      if (!accountType || newRate === undefined) {
+        return res.status(400).json({
+          success: false,
+          message: 'Account type and new rate are required'
+        });
+      }
+
+      const validAccountTypes = ['CHECKING', 'SAVING', 'MORTGAGE'];
+      if (!validAccountTypes.includes(accountType)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid account type. Must be CHECKING, SAVING, or MORTGAGE'
+        });
+      }
+
+      if (newRate < 0 || newRate > 100) {
+        return res.status(400).json({
+          success: false,
+          message: 'Interest rate must be between 0 and 100'
+        });
+      }
+
+      // Find all active accounts of this type
+      const accounts = await Account.find({
+        accountType: accountType,
+        isActive: true
+      });
+
+      if (accounts.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: `No active ${accountType} accounts found`
+        });
+      }
+
+      // Update all accounts and track history
+      let updatedCount = 0;
+      const historyEntries = [];
+
+      for (const account of accounts) {
+        const oldRate = account.interestRate || 0;
+        if (oldRate !== newRate) {
+          account.interestRate = newRate;
+          await account.save();
+          updatedCount++;
+
+          // Create history entry
+          const historyEntry = new InterestRateHistory({
+            accountId: account._id,
+            accountType: account.accountType,
+            oldRate: oldRate,
+            newRate: newRate,
+            changedBy: officerId,
+            reason: reason || `Bulk update by bank officer`,
+            effectiveDate: new Date()
+          });
+          await historyEntry.save();
+          historyEntries.push(historyEntry);
+        }
+      }
+
+      res.status(200).json({
+        success: true,
+        message: `Interest rate updated for ${updatedCount} ${accountType} account(s)`,
+        data: {
+          accountType: accountType,
+          oldRate: accounts[0]?.interestRate || 0,
+          newRate: newRate,
+          updatedCount: updatedCount,
+          totalAccounts: accounts.length
+        }
+      });
+
+    } catch (error) {
+      console.error('Update interest rate error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to update interest rate: ' + error.message
+      });
+    }
+  }
+
+  // Get interest rate history
+  static async getInterestRateHistory(req, res) {
+    try {
+      const { accountType, accountId, page = 1, limit = 50 } = req.query;
+      const skip = (parseInt(page) - 1) * parseInt(limit);
+
+      // Build query
+      const query = {};
+      if (accountType) {
+        query.accountType = accountType;
+      }
+      if (accountId) {
+        query.accountId = accountId;
+      }
+
+      // Get history with pagination
+      const [history, total] = await Promise.all([
+        InterestRateHistory.find(query)
+          .populate('accountId', 'accountNumber accountType')
+          .populate('changedBy', 'fullName email')
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(parseInt(limit)),
+        InterestRateHistory.countDocuments(query)
+      ]);
+
+      const totalPages = Math.ceil(total / parseInt(limit));
+
+      res.status(200).json({
+        success: true,
+        message: 'Interest rate history retrieved successfully',
+        data: history.map(h => ({
+          id: h._id.toString(),
+          account_id: h.accountId?._id?.toString() || '',
+          account_number: h.accountId?.accountNumber || '',
+          account_type: h.accountType,
+          old_rate: h.oldRate || 0,
+          new_rate: h.newRate,
+          changed_by: h.changedBy ? {
+            id: h.changedBy._id.toString(),
+            name: h.changedBy.fullName || '',
+            email: h.changedBy.email || ''
+          } : null,
+          reason: h.reason || '',
+          effective_date: h.effectiveDate?.toISOString() || h.createdAt?.toISOString(),
+          created_at: h.createdAt?.toISOString()
+        })),
+        meta: {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          total: total,
+          total_pages: totalPages
+        }
+      });
+
+    } catch (error) {
+      console.error('Get interest rate history error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to retrieve interest rate history: ' + error.message
       });
     }
   }

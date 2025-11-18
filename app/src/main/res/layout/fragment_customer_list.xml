@@ -57,14 +57,31 @@
 
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Create Account Button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_create_account"
+        <!-- Action Buttons -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="➕ Tạo tài khoản mới"
-            android:layout_marginBottom="16dp"
-            style="@style/Widget.Material3.Button" />
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_create_customer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="➕ Tạo khách hàng"
+                android:layout_marginEnd="8dp"
+                style="@style/Widget.Material3.Button" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_create_account"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="💳 Tạo tài khoản"
+                style="@style/Widget.Material3.Button" />
+
+        </LinearLayout>
 
         <!-- Customer List -->
         <LinearLayout

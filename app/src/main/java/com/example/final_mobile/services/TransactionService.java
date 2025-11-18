@@ -76,6 +76,11 @@ public class TransactionService {
     // Transfer money
     public void transferMoney(String fromAccountId, String toAccountNumber, BigDecimal amount, String description, TransactionCallback callback) {
         try {
+            Log.d(TAG, "Transfer - Sending request:");
+            Log.d(TAG, "  from_account_id: " + fromAccountId);
+            Log.d(TAG, "  to_account_number: \"" + toAccountNumber + "\" (length: " + (toAccountNumber != null ? toAccountNumber.length() : 0) + ")");
+            Log.d(TAG, "  amount: " + amount);
+            
             JSONObject requestBody = new JSONObject();
             if (fromAccountId != null && !fromAccountId.isEmpty()) {
                 requestBody.put("from_account_id", fromAccountId);
@@ -171,6 +176,8 @@ public class TransactionService {
     // Get transaction detail
     public void getTransactionDetail(String transactionId, TransactionCallback callback) {
         String endpoint = ApiConfig.GET_TRANSACTION_DETAIL.replace("{id}", transactionId);
+        Log.d(TAG, "Getting transaction detail for ID: " + transactionId);
+        Log.d(TAG, "Endpoint: " + endpoint);
         
         apiService.get(endpoint, new ApiService.ApiCallback() {
             @Override
@@ -213,21 +220,94 @@ public class TransactionService {
     // Parse single transaction from JSON
     private Transaction parseTransactionFromJson(JSONObject transactionJson) throws JSONException {
         Transaction transaction = new Transaction();
-        transaction.setId(transactionJson.getString("id"));
+        
+        // Parse ID - store both transaction_id (String) and MongoDB _id
+        // Backend getTransaction API uses transaction_id field to find transaction
+        String transactionIdStr = transactionJson.optString("transaction_id", "");
+        String mongoIdStr = transactionJson.optString("id", "");
+        
+        // Store both IDs
+        transaction.setTransactionId(transactionIdStr);
+        transaction.setMongoId(mongoIdStr);
+        
+        // Use transaction_id as primary ID for API calls (backend expects this)
+        // Fallback to MongoDB _id if transaction_id is not available
+        if (!transactionIdStr.isEmpty()) {
+            transaction.setId(transactionIdStr);
+            Log.d(TAG, "Using transaction_id: " + transactionIdStr + ", mongoId: " + mongoIdStr);
+        } else if (!mongoIdStr.isEmpty()) {
+            transaction.setId(mongoIdStr);
+            Log.d(TAG, "Using MongoDB _id (fallback): " + mongoIdStr);
+        } else {
+            Log.w(TAG, "No transaction ID found in response");
+        }
+        
         transaction.setFromAccountId(transactionJson.optString("from_account_id", ""));
         transaction.setToAccountId(transactionJson.optString("to_account_id", ""));
         transaction.setFromAccountNumber(transactionJson.optString("from_account_number", ""));
         transaction.setToAccountNumber(transactionJson.optString("to_account_number", ""));
-        transaction.setAmount(new BigDecimal(transactionJson.getString("amount")));
-        transaction.setCurrency(transactionJson.optString("currency", "VND"));
-        transaction.setTransactionType(transactionJson.getString("transaction_type"));
-        transaction.setStatus(transactionJson.getString("status"));
-        transaction.setDescription(transactionJson.optString("description", ""));
-        transaction.setReferenceNumber(transactionJson.optString("reference_number", ""));
         
-        // Parse dates
-        // In real app, you'd parse these from ISO date strings
-        transaction.setCreatedAt(new Date());
+        // Parse amount - support both string and number
+        Object amountObj = transactionJson.opt("amount");
+        if (amountObj != null) {
+            if (amountObj instanceof Number) {
+                transaction.setAmount(new BigDecimal(amountObj.toString()));
+            } else {
+                transaction.setAmount(new BigDecimal(amountObj.toString()));
+            }
+        } else {
+            transaction.setAmount(BigDecimal.ZERO);
+        }
+        
+        transaction.setCurrency(transactionJson.optString("currency", "VND"));
+        transaction.setTransactionType(transactionJson.optString("transaction_type", "TRANSFER"));
+        transaction.setStatus(transactionJson.optString("status", "PENDING"));
+        transaction.setDescription(transactionJson.optString("description", ""));
+        // Use transaction_id as reference number if available, otherwise use MongoDB _id
+        String refNumber = transactionJson.optString("reference_number", "");
+        if (refNumber.isEmpty()) {
+            refNumber = !transactionIdStr.isEmpty() ? transactionIdStr : mongoIdStr;
+        }
+        transaction.setReferenceNumber(refNumber);
+        
+        // Parse dates from ISO format
+        try {
+            // Handle both string and object (empty object {}) cases
+            Object createdAtObj = transactionJson.opt("created_at");
+            String createdAtStr = null;
+            
+            if (createdAtObj instanceof String) {
+                createdAtStr = (String) createdAtObj;
+            } else if (createdAtObj instanceof org.json.JSONObject) {
+                // If it's an object (even empty), try to get ISO string from it
+                org.json.JSONObject dateObj = (org.json.JSONObject) createdAtObj;
+                createdAtStr = dateObj.optString("$date", "");
+                if (createdAtStr.isEmpty()) {
+                    createdAtStr = dateObj.optString("iso", "");
+                }
+            } else {
+                createdAtStr = transactionJson.optString("created_at", "");
+            }
+            
+            if (createdAtStr != null && !createdAtStr.isEmpty() && !createdAtStr.equals("{}")) {
+                // Parse ISO 8601 format: "2025-11-17T23:20:47.532Z" or "2025-11-17T23:20:47Z"
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", java.util.Locale.getDefault());
+                if (createdAtStr.contains(".")) {
+                    sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", java.util.Locale.getDefault());
+                }
+                if (createdAtStr.endsWith("Z")) {
+                    sdf.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+                    createdAtStr = createdAtStr.replace("Z", "");
+                }
+                transaction.setCreatedAt(sdf.parse(createdAtStr));
+            } else {
+                // If date is empty or invalid, use current date
+                transaction.setCreatedAt(new Date());
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Error parsing created_at date, using current date", e);
+            transaction.setCreatedAt(new Date());
+        }
         
         return transaction;
     }

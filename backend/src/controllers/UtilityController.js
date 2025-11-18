@@ -1,6 +1,8 @@
 const Utility = require('../models/Utility');
 const Account = require('../models/Account');
 const OtpCode = require('../models/OtpCode');
+const Transaction = require('../models/Transaction');
+const User = require('../models/User');
 const OTPUtils = require('../utils/otp');
 const { formatUtility } = require('../utils/responseFormatter');
 
@@ -167,6 +169,176 @@ class UtilityController {
       res.status(500).json({
         success: false,
         message: 'Failed to buy scratch card'
+      });
+    }
+  }
+
+  // Book flight
+  static async bookFlight(req, res) {
+    try {
+      const { accountId, flightNumber, amount, airline, departureDate, arrivalDate, passengerName, route } = req.body;
+      const userId = req.userId;
+
+      // Validation
+      if (!flightNumber || !amount) {
+        return res.status(400).json({
+          success: false,
+          message: 'Flight number and amount are required'
+        });
+      }
+
+      // Convert amount to number
+      const amountNumber = Number(amount);
+      if (isNaN(amountNumber) || amountNumber <= 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid amount'
+        });
+      }
+
+      const description = `Mua vé máy bay ${airline || ''} ${flightNumber}${route ? ` (${route})` : ''}`;
+
+      return await UtilityController.processUtilityPayment(
+        req, res, userId, accountId,
+        'FLIGHT', airline || 'GENERAL', flightNumber, amountNumber,
+        description,
+        { flightNumber, airline, departureDate, arrivalDate, passengerName, route }
+      );
+    } catch (error) {
+      console.error('Book flight error:', error);
+      console.error('Error stack:', error.stack);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to book flight',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
+  }
+
+  // Buy movie ticket
+  static async buyMovieTicket(req, res) {
+    try {
+      const { accountId, movieName, amount, cinema, showTime, seatNumber, quantity } = req.body;
+      const userId = req.userId;
+
+      // Validation
+      if (!movieName || !amount) {
+        return res.status(400).json({
+          success: false,
+          message: 'Movie name and amount are required'
+        });
+      }
+
+      // Convert amount to number
+      const amountNumber = Number(amount);
+      if (isNaN(amountNumber) || amountNumber <= 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid amount'
+        });
+      }
+
+      const quantityNum = quantity ? Number(quantity) : 1;
+      const totalAmount = amountNumber * quantityNum;
+      const description = `Mua vé xem phim ${movieName}${cinema ? ` tại ${cinema}` : ''}${showTime ? ` - ${showTime}` : ''}`;
+
+      return await UtilityController.processUtilityPayment(
+        req, res, userId, accountId,
+        'MOVIE', cinema || 'GENERAL', movieName, totalAmount,
+        description,
+        { movieName, cinema, showTime, seatNumber, quantity: quantityNum }
+      );
+    } catch (error) {
+      console.error('Buy movie ticket error:', error);
+      console.error('Error stack:', error.stack);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to buy movie ticket',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
+  }
+
+  // Book hotel
+  static async bookHotel(req, res) {
+    try {
+      const { accountId, hotelName, amount, checkInDate, checkOutDate, guestName, roomType } = req.body;
+      const userId = req.userId;
+
+      // Validation
+      if (!hotelName || !amount) {
+        return res.status(400).json({
+          success: false,
+          message: 'Hotel name and amount are required'
+        });
+      }
+
+      // Convert amount to number
+      const amountNumber = Number(amount);
+      if (isNaN(amountNumber) || amountNumber <= 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid amount'
+        });
+      }
+
+      const description = `Đặt phòng khách sạn ${hotelName}${roomType ? ` - ${roomType}` : ''}${checkInDate && checkOutDate ? ` (${checkInDate} - ${checkOutDate})` : ''}`;
+
+      return await UtilityController.processUtilityPayment(
+        req, res, userId, accountId,
+        'HOTEL', hotelName, hotelName, amountNumber,
+        description,
+        { hotelName, checkInDate, checkOutDate, guestName, roomType }
+      );
+    } catch (error) {
+      console.error('Book hotel error:', error);
+      console.error('Error stack:', error.stack);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to book hotel',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
+  }
+
+  // E-commerce payment
+  static async payEcommerce(req, res) {
+    try {
+      const { accountId, orderId, amount, platform, productName, merchantName } = req.body;
+      const userId = req.userId;
+
+      // Validation
+      if (!orderId || !amount) {
+        return res.status(400).json({
+          success: false,
+          message: 'Order ID and amount are required'
+        });
+      }
+
+      // Convert amount to number
+      const amountNumber = Number(amount);
+      if (isNaN(amountNumber) || amountNumber <= 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid amount'
+        });
+      }
+
+      const description = `Thanh toán đơn hàng ${orderId}${platform ? ` trên ${platform}` : ''}${productName ? ` - ${productName}` : ''}`;
+
+      return await UtilityController.processUtilityPayment(
+        req, res, userId, accountId,
+        'ECOMMERCE', platform || merchantName || 'GENERAL', orderId, amountNumber,
+        description,
+        { orderId, platform, productName, merchantName }
+      );
+    } catch (error) {
+      console.error('E-commerce payment error:', error);
+      console.error('Error stack:', error.stack);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to process e-commerce payment',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
       });
     }
   }
@@ -427,6 +599,82 @@ class UtilityController {
         // Mark as completed
         await utility.markAsCompleted();
 
+        // Create Transaction record for transaction history
+        try {
+          // Find or create a system user for utility payments
+          let systemUser = await User.findOne({
+            email: 'system@utility.local'
+          });
+
+          if (!systemUser) {
+            // Create system user if it doesn't exist
+            // Use a unique phone number to avoid conflicts
+            const timestamp = Date.now().toString().slice(-10);
+            systemUser = new User({
+              email: 'system@utility.local',
+              password: 'system', // Will be hashed by pre-save hook
+              fullName: 'System Utility Account',
+              phone: `999${timestamp}`, // Unique phone number
+              customerType: 'CUSTOMER',
+              isActive: true
+            });
+            await systemUser.save();
+          }
+
+          // Find or create a system account for utility payments
+          // Account number must be 16 digits
+          const systemAccountNumber = '0000000000000000'; // 16 zeros for system account
+          let systemAccount = await Account.findOne({
+            accountNumber: systemAccountNumber,
+            userId: systemUser._id
+          });
+
+          if (!systemAccount) {
+            // Create system account if it doesn't exist
+            systemAccount = new Account({
+              userId: systemUser._id,
+              accountNumber: systemAccountNumber,
+              accountType: 'SAVING',
+              currency: 'VND',
+              balance: 0,
+              isActive: true
+            });
+            await systemAccount.save();
+          }
+
+          // Generate transaction ID
+          const transactionId = Transaction.generateTransactionId();
+
+          // Create transaction record
+          const transaction = new Transaction({
+            transactionId,
+            fromAccountId: account._id,
+            toAccountId: systemAccount._id,
+            fromAccountNumber: account.accountNumber,
+            toAccountNumber: `${utility.provider}_${utility.serviceNumber}`,
+            amount: utility.amount,
+            currency: utility.currency,
+            description: utility.description,
+            transactionType: 'PAYMENT',
+            status: 'COMPLETED',
+            initiatedBy: userId,
+            fee: utility.fee,
+            totalAmount: utility.totalAmount,
+            processedAt: new Date(),
+            otpVerified: true,
+            metadata: {
+              utilityTransactionId: utility.transactionId,
+              serviceType: utility.serviceType,
+              provider: utility.provider
+            }
+          });
+
+          await transaction.save();
+        } catch (transactionError) {
+          // Log error but don't fail the payment
+          console.error('Failed to create transaction record:', transactionError);
+        }
+
         res.status(200).json({
           success: true,
           message: 'Payment completed successfully',
@@ -543,6 +791,30 @@ class UtilityController {
           { code: 'VINAPHONE', name: 'Vinaphone', logo: 'vinaphone_logo.png' },
           { code: 'MOBIFONE', name: 'Mobifone', logo: 'mobifone_logo.png' },
           { code: 'VIETNAMOBILE', name: 'Vietnamobile', logo: 'vietnamobile_logo.png' }
+        ],
+        FLIGHT: [
+          { code: 'VIETJET', name: 'VietJet Air', logo: 'vietjet_logo.png' },
+          { code: 'VIETNAM_AIRLINES', name: 'Vietnam Airlines', logo: 'vietnam_airlines_logo.png' },
+          { code: 'BAMBOO', name: 'Bamboo Airways', logo: 'bamboo_logo.png' },
+          { code: 'JETSTAR', name: 'Jetstar Pacific', logo: 'jetstar_logo.png' }
+        ],
+        MOVIE: [
+          { code: 'CGV', name: 'CGV Cinemas', logo: 'cgv_logo.png' },
+          { code: 'LOTTE', name: 'Lotte Cinemas', logo: 'lotte_logo.png' },
+          { code: 'GALAXY', name: 'Galaxy Cinemas', logo: 'galaxy_logo.png' },
+          { code: 'BHD', name: 'BHD Star Cinemas', logo: 'bhd_logo.png' }
+        ],
+        HOTEL: [
+          { code: 'AGODA', name: 'Agoda', logo: 'agoda_logo.png' },
+          { code: 'BOOKING', name: 'Booking.com', logo: 'booking_logo.png' },
+          { code: 'TRAVELOKA', name: 'Traveloka', logo: 'traveloka_logo.png' },
+          { code: 'EXPEDIA', name: 'Expedia', logo: 'expedia_logo.png' }
+        ],
+        ECOMMERCE: [
+          { code: 'SHOPEE', name: 'Shopee', logo: 'shopee_logo.png' },
+          { code: 'LAZADA', name: 'Lazada', logo: 'lazada_logo.png' },
+          { code: 'TIKI', name: 'Tiki', logo: 'tiki_logo.png' },
+          { code: 'SENDO', name: 'Sendo', logo: 'sendo_logo.png' }
         ]
       };
 

@@ -24,7 +24,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private TextInputEditText etEmail, etPassword;
     private MaterialButton btnLogin;
-    private TextView tvForgotPassword;
+    private TextView tvForgotPassword, tvRegisterLink;
     private ProgressDialog progressDialog;
     private AuthService authService;
     private SessionManager sessionManager;
@@ -54,6 +54,7 @@ public class LoginActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.et_password);
         btnLogin = findViewById(R.id.btn_login);
         tvForgotPassword = findViewById(R.id.tv_forgot_password);
+        tvRegisterLink = findViewById(R.id.tv_register_link);
         
         // Initialize progress dialog
         progressDialog = new ProgressDialog(this);
@@ -77,6 +78,16 @@ public class LoginActivity extends AppCompatActivity {
                 handleForgotPassword();
             }
         });
+
+        // Set click listener for register link
+        if (tvRegisterLink != null) {
+            tvRegisterLink.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    navigateToRegister();
+                }
+            });
+        }
     }
 
     private void handleLogin() {
@@ -257,6 +268,11 @@ public class LoginActivity extends AppCompatActivity {
 
         builder.setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss());
         builder.show();
+    }
+
+    private void navigateToRegister() {
+        Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+        startActivity(intent);
     }
 
     private void navigateToMainActivity() {

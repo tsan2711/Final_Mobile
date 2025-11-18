@@ -175,6 +175,7 @@ const accountRoutes = require('./src/routes/accounts');
 const transactionRoutes = require('./src/routes/transactions');
 const utilityRoutes = require('./src/routes/utilities');
 const adminRoutes = require('./src/routes/admin');
+const ekycRoutes = require('./src/routes/ekyc');
 
 // Routes
 app.get('/health', (req, res) => {
@@ -201,6 +202,7 @@ app.use('/api/accounts', accountRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/utilities', utilityRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/ekyc', ekycRoutes);
 
 // Final catch-all 404 handler - must be after all routes
 // This will catch any route that doesn't match above

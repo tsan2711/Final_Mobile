@@ -53,6 +53,16 @@ public class Transaction {
     // Getters and Setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
+    
+    // Store both transaction_id and MongoDB _id for API calls
+    private String transactionId; // String transaction_id from backend
+    private String mongoId; // MongoDB _id
+    
+    public String getTransactionId() { return transactionId != null ? transactionId : id; }
+    public void setTransactionId(String transactionId) { this.transactionId = transactionId; }
+    
+    public String getMongoId() { return mongoId; }
+    public void setMongoId(String mongoId) { this.mongoId = mongoId; }
 
     public String getFromAccountId() { return fromAccountId; }
     public void setFromAccountId(String fromAccountId) { this.fromAccountId = fromAccountId; }

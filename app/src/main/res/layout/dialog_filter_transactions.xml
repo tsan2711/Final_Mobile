@@ -103,7 +103,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
+                android:layout_marginBottom="20dp"
                 android:hint="Chọn trạng thái"
                 app:hintTextColor="@color/secondary_text_color"
                 app:boxStrokeColor="@color/primary_color"
@@ -123,6 +123,77 @@
                     android:textColor="@color/primary_text_color"
                     android:minHeight="56dp" />
             </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Date Range Filter -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Khoảng thời gian"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/primary_text_color"
+                android:layout_marginBottom="8dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="20dp">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:hint="Từ ngày"
+                    app:hintTextColor="@color/secondary_text_color"
+                    app:boxStrokeColor="@color/primary_color"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    app:endIconMode="clear_text">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_date_from"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none"
+                        android:focusable="false"
+                        android:clickable="true"
+                        android:textSize="16sp"
+                        android:textColor="@color/primary_text_color"
+                        android:minHeight="56dp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:hint="Đến ngày"
+                    app:hintTextColor="@color/secondary_text_color"
+                    app:boxStrokeColor="@color/primary_color"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    app:endIconMode="clear_text">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_date_to"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none"
+                        android:focusable="false"
+                        android:clickable="true"
+                        android:textSize="16sp"
+                        android:textColor="@color/primary_text_color"
+                        android:minHeight="56dp" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
         </LinearLayout>
 
         <!-- Action Buttons -->

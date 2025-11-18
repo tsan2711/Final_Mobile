@@ -27,6 +27,58 @@ public class AuthService {
         void onOtpRequired(String message);
     }
 
+    // Register new user
+    public void register(String email, String password, String fullName, String phone, String address, AuthCallback callback) {
+        try {
+            JSONObject requestBody = new JSONObject();
+            requestBody.put("email", email);
+            requestBody.put("password", password);
+            requestBody.put("fullName", fullName);
+            requestBody.put("phone", phone);
+            if (address != null && !address.isEmpty()) {
+                requestBody.put("address", address);
+            }
+
+            apiService.post(ApiConfig.REGISTER, requestBody, new ApiService.ApiCallback() {
+                @Override
+                public void onSuccess(JSONObject response) {
+                    try {
+                        // Parse response
+                        boolean success = response.getBoolean("success");
+                        if (success) {
+                            JSONObject data = response.getJSONObject("data");
+                            String token = data.optString("token", data.optString("accessToken", data.optString("access_token", "")));
+                            String refreshToken = data.optString("refreshToken", data.optString("refresh_token", ""));
+                            
+                            // Parse user data
+                            JSONObject userData = data.getJSONObject("user");
+                            User user = parseUserFromJson(userData);
+                            
+                            // Create session
+                            sessionManager.createLoginSession(token, refreshToken, user);
+                            callback.onSuccess(user);
+                        } else {
+                            String message = response.optString("message", "Registration failed");
+                            callback.onError(message);
+                        }
+                    } catch (JSONException e) {
+                        Log.e(TAG, "Error parsing register response", e);
+                        callback.onError("Invalid response format");
+                    }
+                }
+
+                @Override
+                public void onError(String error, int statusCode) {
+                    Log.e(TAG, "Register error: " + error + " (Status: " + statusCode + ")");
+                    callback.onError(getErrorMessage(error, statusCode));
+                }
+            });
+        } catch (JSONException e) {
+            Log.e(TAG, "Error creating register request", e);
+            callback.onError("Failed to create register request");
+        }
+    }
+
     // Login with email and password
     public void login(String email, String password, AuthCallback callback) {
         try {

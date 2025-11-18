@@ -107,54 +107,34 @@
 
     </LinearLayout>
 
-    <!-- Transaction List -->
-    <ScrollView
+    <!-- Transaction List with Pull-to-Refresh -->
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_transactions"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="8dp"
+            android:clipToPadding="false" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <!-- Empty State -->
+    <TextView
+        android:id="@+id/tv_no_transactions"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:paddingHorizontal="16dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <!-- Transactions Container (Dynamic) -->
-            <LinearLayout
-                android:id="@+id/ll_transactions_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="8dp" />
-
-            <!-- Empty State -->
-            <TextView
-                android:id="@+id/tv_no_transactions"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Chưa có giao dịch nào"
-                android:textColor="@color/secondary_text_color"
-                android:textSize="16sp"
-                android:gravity="center"
-                android:padding="32dp"
-                android:visibility="gone" />
-
-            <!-- Load More Button -->
-            <Button
-                android:id="@+id/btn_load_more"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Xem thêm giao dịch"
-                android:textSize="14sp"
-                android:background="@android:color/transparent"
-                android:textColor="@color/primary_color"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
-                android:visibility="gone"
-                style="?android:attr/borderlessButtonStyle" />
-
-        </LinearLayout>
-
-    </ScrollView>
+        android:text="Chưa có giao dịch nào"
+        android:textColor="@color/secondary_text_color"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:padding="32dp"
+        android:visibility="gone" />
 
 </LinearLayout>

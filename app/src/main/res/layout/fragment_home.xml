@@ -63,12 +63,16 @@
                         android:textSize="16sp"
                         android:alpha="0.9" />
 
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_arrow_right"
+                    <ImageButton
+                        android:id="@+id/btn_refresh_balance"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@android:drawable/ic_menu_rotate"
+                        android:background="?attr/selectableItemBackgroundBorderless"
                         android:tint="@color/text_on_primary"
-                        android:alpha="0.7" />
+                        android:alpha="0.8"
+                        android:contentDescription="Refresh balance"
+                        android:padding="8dp" />
 
                 </LinearLayout>
 
@@ -93,6 +97,38 @@
                     android:layout_marginTop="8dp"
                     android:alpha="0.8" />
 
+                <!-- Deposit/Withdraw Buttons -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_deposit"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="8dp"
+                        android:text="Nạp tiền"
+                        android:textColor="@color/text_on_primary"
+                        app:backgroundTint="@color/success_color"
+                        app:cornerRadius="12dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_withdraw"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="8dp"
+                        android:text="Rút tiền"
+                        android:textColor="@color/text_on_primary"
+                        app:backgroundTint="@color/error_color"
+                        app:cornerRadius="12dp" />
+
+                </LinearLayout>
+
             </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>
@@ -107,18 +143,19 @@
             android:textStyle="bold"
             android:layout_marginBottom="20dp" />
 
+        <!-- First Row of Quick Actions -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="32dp">
+            android:layout_marginBottom="16dp">
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/card_transfer"
                 android:layout_width="0dp"
                 android:layout_height="130dp"
                 android:layout_weight="1"
-                android:layout_marginEnd="12dp"
+                android:layout_marginEnd="8dp"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="4dp"
                 app:cardBackgroundColor="@color/surface_color"
@@ -161,7 +198,7 @@
                 android:layout_width="0dp"
                 android:layout_height="130dp"
                 android:layout_weight="1"
-                android:layout_marginHorizontal="6dp"
+                android:layout_marginHorizontal="4dp"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="4dp"
                 app:cardBackgroundColor="@color/surface_color"
@@ -199,12 +236,64 @@
 
             </com.google.android.material.card.MaterialCardView>
 
+        </LinearLayout>
+
+        <!-- Second Row of Quick Actions -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="32dp">
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_interest_calculator"
+                android:layout_width="0dp"
+                android:layout_height="130dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/surface_color"
+                app:strokeWidth="0dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@android:drawable/ic_menu_sort_by_size"
+                        android:layout_marginBottom="12dp"
+                        android:background="@drawable/circle_background_purple"
+                        android:padding="12dp"
+                        app:tint="@color/accent_purple" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tính lãi suất"
+                        android:textColor="@color/primary_text_color"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textAlignment="center" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/card_account"
                 android:layout_width="0dp"
                 android:layout_height="130dp"
                 android:layout_weight="1"
-                android:layout_marginStart="12dp"
+                android:layout_marginStart="8dp"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="4dp"
                 app:cardBackgroundColor="@color/surface_color"
@@ -275,133 +364,24 @@
 
         </LinearLayout>
 
-        <!-- Transaction Item 1 -->
-        <com.google.android.material.card.MaterialCardView
+        <!-- Recent Transactions Container (Dynamic) -->
+        <LinearLayout
+            android:id="@+id/ll_recent_transactions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/surface_color"
-            app:strokeWidth="0dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?android:attr/selectableItemBackground">
+            android:orientation="vertical" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="16dp">
-
-                <ImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/ic_transactions"
-                    android:background="@drawable/circle_background_blue"
-                    android:padding="12dp"
-                    app:tint="@color/accent_blue" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginStart="12dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Chuyển tiền đến Nguyễn Văn A"
-                        android:textColor="@color/primary_text_color"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Hôm nay, 14:30"
-                        android:textColor="@color/secondary_text_color"
-                        android:textSize="12sp"
-                        android:layout_marginTop="4dp" />
-
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="-500,000 VNĐ"
-                    android:textColor="@color/withdrawal_color"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
-
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Transaction Item 2 -->
-        <com.google.android.material.card.MaterialCardView
+        <!-- Empty State for Recent Transactions -->
+        <TextView
+            android:id="@+id/tv_no_recent_transactions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/surface_color"
-            app:strokeWidth="0dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?android:attr/selectableItemBackground">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="16dp">
-
-                <ImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/ic_utilities"
-                    android:background="@drawable/circle_background_green"
-                    android:padding="12dp"
-                    app:tint="@color/secondary_color" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginStart="12dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Nạp tiền từ ngân hàng"
-                        android:textColor="@color/primary_text_color"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Hôm qua, 09:15"
-                        android:textColor="@color/secondary_text_color"
-                        android:textSize="12sp"
-                        android:layout_marginTop="4dp" />
-
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="+2,000,000 VNĐ"
-                    android:textColor="@color/deposit_color"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
-
-        </com.google.android.material.card.MaterialCardView>
+            android:text="Chưa có giao dịch gần đây"
+            android:textColor="@color/secondary_text_color"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:padding="16dp"
+            android:visibility="gone" />
 
     </LinearLayout>
 

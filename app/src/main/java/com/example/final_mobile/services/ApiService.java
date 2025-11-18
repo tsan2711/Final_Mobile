@@ -326,6 +326,79 @@ public class ApiService {
         }
     }
 
+    // Multipart POST request for file uploads
+    public void postMultipart(String endpoint, java.io.File file, String fieldName, ApiCallback callback) {
+        executor.execute(() -> {
+            java.io.FileInputStream fileInputStream = null;
+            OutputStream outputStream = null;
+            try {
+                URL url = new URL(ApiConfig.BASE_URL + endpoint);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                
+                // Set request properties for multipart
+                String boundary = "----WebKitFormBoundary" + System.currentTimeMillis();
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty(ApiConfig.HEADER_CONTENT_TYPE, "multipart/form-data; boundary=" + boundary);
+                connection.setRequestProperty(ApiConfig.HEADER_ACCEPT, ApiConfig.CONTENT_TYPE_JSON);
+                connection.setDoOutput(true);
+                connection.setDoInput(true);
+                connection.setConnectTimeout(ApiConfig.CONNECT_TIMEOUT);
+                connection.setReadTimeout(ApiConfig.READ_TIMEOUT);
+
+                // Add authorization header if token exists
+                String token = SessionManager.getInstance(context).getToken();
+                if (token != null && !token.isEmpty()) {
+                    connection.setRequestProperty(ApiConfig.HEADER_AUTHORIZATION, "Bearer " + token);
+                }
+
+                // Write multipart data
+                outputStream = connection.getOutputStream();
+                
+                // Write file part
+                outputStream.write(("--" + boundary + "\r\n").getBytes());
+                outputStream.write(("Content-Disposition: form-data; name=\"" + fieldName + "\"; filename=\"" + file.getName() + "\"\r\n").getBytes());
+                outputStream.write(("Content-Type: image/jpeg\r\n\r\n").getBytes());
+                
+                // Write file content
+                fileInputStream = new java.io.FileInputStream(file);
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+                
+                // Write boundary end
+                outputStream.write(("\r\n--" + boundary + "--\r\n").getBytes());
+                outputStream.flush();
+
+                // Get response
+                int responseCode = connection.getResponseCode();
+                String response = readResponse(connection, responseCode);
+
+                Log.d(TAG, "POST Multipart " + endpoint + " - Response Code: " + responseCode);
+                Log.d(TAG, "Response: " + response);
+
+                // Parse response and call callback
+                handleResponse(response, responseCode, callback);
+
+            } catch (Exception e) {
+                Log.e(TAG, "Error in multipart POST request: " + e.getMessage(), e);
+                callback.onError("Network error: " + e.getMessage(), -1);
+            } finally {
+                try {
+                    if (fileInputStream != null) {
+                        fileInputStream.close();
+                    }
+                    if (outputStream != null) {
+                        outputStream.close();
+                    }
+                } catch (IOException e) {
+                    Log.e(TAG, "Error closing streams", e);
+                }
+            }
+        });
+    }
+
     // Cleanup method
     public void shutdown() {
         if (executor != null && !executor.isShutdown()) {

@@ -7,11 +7,19 @@ class AccountController {
   static async getUserAccounts(req, res) {
     try {
       const userId = req.userId;
+      console.log(`[DEBUG] 🔄 Getting accounts for userId: ${userId}`);
 
       const accounts = await Account.find({ 
         userId, 
         isActive: true 
       }).sort({ accountType: 1, createdAt: -1 });
+
+      console.log(`[DEBUG] 📊 Found ${accounts.length} accounts from database`);
+      
+      // Log balance for each account
+      accounts.forEach(account => {
+        console.log(`[DEBUG] 💰 Account ID: ${account._id}, Number: ${account.accountNumber}, Balance: ${account.balance}, Type: ${account.accountType}`);
+      });
 
       // Initialize totals
       const totals = {
@@ -44,6 +52,12 @@ class AccountController {
       const formattedAccounts = accounts && accounts.length > 0 
         ? accounts.map(formatAccount) 
         : [];
+
+      // Log formatted accounts
+      console.log(`[DEBUG] 📤 Sending ${formattedAccounts.length} formatted accounts to client`);
+      formattedAccounts.forEach(acc => {
+        console.log(`[DEBUG] 📤 Account ${acc.account_number}: balance=${acc.balance} (type: ${typeof acc.balance})`);
+      });
 
       // Always return 200 with empty array if no accounts
       res.status(200).json({
@@ -166,11 +180,25 @@ class AccountController {
     try {
       const { accountNumber } = req.params;
 
+      // Normalize account number by removing all spaces
+      const normalizedAccountNumber = (accountNumber || '').toString().trim().replace(/\s/g, '');
+
       // Only return basic info for security
-      const account = await Account.findOne({ 
-        accountNumber, 
+      // First try exact match
+      let account = await Account.findOne({ 
+        accountNumber: normalizedAccountNumber, 
         isActive: true 
       }).populate('userId', 'fullName email').select('accountNumber accountType userId');
+
+      // If not found, try finding by removing spaces from stored account numbers
+      if (!account) {
+        const allAccounts = await Account.find({ isActive: true }).populate('userId', 'fullName email').select('accountNumber accountType userId');
+        account = allAccounts.find(acc => {
+          if (!acc.accountNumber) return false;
+          const cleanDbNumber = acc.accountNumber.toString().replace(/\s/g, '');
+          return cleanDbNumber === normalizedAccountNumber;
+        });
+      }
 
       if (!account) {
         return res.status(404).json({
@@ -522,6 +550,96 @@ class AccountController {
       res.status(500).json({
         success: false,
         message: 'Failed to create default accounts'
+      });
+    }
+  }
+
+  // Get interest projection for account
+  static async getInterestProjection(req, res) {
+    try {
+      const { accountId } = req.params;
+      const userId = req.userId;
+      const { months = 12 } = req.query; // Default to 12 months
+
+      // Find account
+      const account = await Account.findOne({
+        _id: accountId,
+        userId,
+        isActive: true
+      });
+
+      if (!account) {
+        return res.status(404).json({
+          success: false,
+          message: 'Account not found'
+        });
+      }
+
+      // Only calculate for saving accounts
+      if (account.accountType !== 'SAVING') {
+        return res.status(400).json({
+          success: false,
+          message: 'Interest projection is only available for saving accounts'
+        });
+      }
+
+      const interestRate = account.interestRate || 0;
+      const currentBalance = account.balance || 0;
+      const monthsNum = parseInt(months);
+
+      if (monthsNum < 1 || monthsNum > 60) {
+        return res.status(400).json({
+          success: false,
+          message: 'Months must be between 1 and 60'
+        });
+      }
+
+      // Calculate projections
+      const projections = [];
+      let balance = currentBalance;
+      const monthlyRate = interestRate / 100 / 12; // Monthly interest rate
+
+      for (let month = 1; month <= monthsNum; month++) {
+        // Simple interest calculation (monthly compounding)
+        const monthlyInterest = balance * monthlyRate;
+        balance += monthlyInterest;
+
+        projections.push({
+          month: month,
+          balance: Math.round(balance * 100) / 100,
+          monthly_interest: Math.round(monthlyInterest * 100) / 100,
+          cumulative_interest: Math.round((balance - currentBalance) * 100) / 100
+        });
+      }
+
+      const totalInterest = balance - currentBalance;
+
+      res.status(200).json({
+        success: true,
+        message: 'Interest projection calculated successfully',
+        data: {
+          account: {
+            id: account._id.toString(),
+            account_number: account.accountNumber,
+            account_type: account.accountType,
+            current_balance: currentBalance,
+            interest_rate: interestRate
+          },
+          projection: {
+            months: monthsNum,
+            current_balance: currentBalance,
+            projected_balance: Math.round(balance * 100) / 100,
+            total_interest: Math.round(totalInterest * 100) / 100,
+            monthly_details: projections
+          }
+        }
+      });
+
+    } catch (error) {
+      console.error('Get interest projection error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to calculate interest projection: ' + error.message
       });
     }
   }

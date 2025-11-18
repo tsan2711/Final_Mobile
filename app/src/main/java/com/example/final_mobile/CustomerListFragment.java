@@ -21,6 +21,7 @@ import com.example.final_mobile.models.Account;
 import com.example.final_mobile.services.AdminService;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.math.BigDecimal;
@@ -34,6 +35,7 @@ public class CustomerListFragment extends Fragment {
     private TextView tvFragmentLabel;
     private TextInputEditText etSearch;
     private MaterialButton btnSearch;
+    private MaterialButton btnCreateCustomer;
     private MaterialButton btnCreateAccount;
     
     private ProgressDialog progressDialog;
@@ -62,6 +64,7 @@ public class CustomerListFragment extends Fragment {
         tvFragmentLabel = view.findViewById(R.id.tv_fragment_label);
         etSearch = view.findViewById(R.id.et_search);
         btnSearch = view.findViewById(R.id.btn_search);
+        btnCreateCustomer = view.findViewById(R.id.btn_create_customer);
         btnCreateAccount = view.findViewById(R.id.btn_create_account);
         customerListContainer = view.findViewById(R.id.ll_customer_list);
         
@@ -73,6 +76,7 @@ public class CustomerListFragment extends Fragment {
         tvFragmentLabel.setText("Danh sách Khách hàng");
         
         btnSearch.setOnClickListener(v -> performSearch());
+        btnCreateCustomer.setOnClickListener(v -> showCreateCustomerDialog());
         btnCreateAccount.setOnClickListener(v -> showCreateAccountDialog());
         
         // Search on Enter key
@@ -267,12 +271,177 @@ public class CustomerListFragment extends Fragment {
         }
 
         cardView.setOnClickListener(v -> {
-            // TODO: Show customer details
-            String customerName = customer.getFullName() != null ? customer.getFullName() : "Khách hàng";
-            Toast.makeText(getContext(), "Chi tiết khách hàng: " + customerName, Toast.LENGTH_SHORT).show();
+            // Show update customer dialog on click
+            showUpdateCustomerDialog(customer);
         });
 
         return cardView;
+    }
+
+    private void showCreateCustomerDialog() {
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_create_customer, null);
+
+        TextInputEditText etEmail = dialogView.findViewById(R.id.et_email);
+        TextInputEditText etPassword = dialogView.findViewById(R.id.et_password);
+        TextInputEditText etFullName = dialogView.findViewById(R.id.et_full_name);
+        TextInputEditText etPhone = dialogView.findViewById(R.id.et_phone);
+        TextInputEditText etAddress = dialogView.findViewById(R.id.et_address);
+
+        MaterialButton btnCancel = dialogView.findViewById(R.id.btn_cancel);
+        MaterialButton btnConfirm = dialogView.findViewById(R.id.btn_confirm);
+        ImageButton btnClose = dialogView.findViewById(R.id.btn_close);
+
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
+            .setView(dialogView)
+            .setCancelable(true)
+            .create();
+
+        btnClose.setOnClickListener(v -> dialog.dismiss());
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+        btnConfirm.setOnClickListener(v -> {
+            String email = etEmail.getText().toString().trim();
+            String password = etPassword.getText().toString().trim();
+            String fullName = etFullName.getText().toString().trim();
+            String phone = etPhone.getText().toString().trim();
+            String address = etAddress.getText().toString().trim();
+
+            if (validateCustomerInput(email, password, fullName, phone, true)) {
+                dialog.dismiss();
+                createCustomer(email, password, fullName, phone, address);
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void showUpdateCustomerDialog(AdminService.CustomerInfo customer) {
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_update_customer, null);
+
+        TextInputEditText etEmail = dialogView.findViewById(R.id.et_email);
+        TextInputEditText etFullName = dialogView.findViewById(R.id.et_full_name);
+        TextInputEditText etPhone = dialogView.findViewById(R.id.et_phone);
+        TextInputEditText etAddress = dialogView.findViewById(R.id.et_address);
+        SwitchMaterial switchIsActive = dialogView.findViewById(R.id.switch_is_active);
+
+        // Pre-fill with existing data
+        if (customer != null) {
+            etEmail.setText(customer.getEmail() != null ? customer.getEmail() : "");
+            etFullName.setText(customer.getFullName() != null ? customer.getFullName() : "");
+            etPhone.setText(customer.getPhone() != null ? customer.getPhone() : "");
+            // Note: Address might not be in CustomerInfo, so we can't pre-fill it
+            switchIsActive.setChecked(true); // Default to active, adjust if needed
+        }
+
+        MaterialButton btnCancel = dialogView.findViewById(R.id.btn_cancel);
+        MaterialButton btnConfirm = dialogView.findViewById(R.id.btn_confirm);
+        ImageButton btnClose = dialogView.findViewById(R.id.btn_close);
+
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
+            .setView(dialogView)
+            .setCancelable(true)
+            .create();
+
+        btnClose.setOnClickListener(v -> dialog.dismiss());
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+        btnConfirm.setOnClickListener(v -> {
+            String email = etEmail.getText().toString().trim();
+            String fullName = etFullName.getText().toString().trim();
+            String phone = etPhone.getText().toString().trim();
+            String address = etAddress.getText().toString().trim();
+            boolean isActive = switchIsActive.isChecked();
+
+            if (customer != null && validateCustomerInput(email, null, fullName, phone, false)) {
+                dialog.dismiss();
+                updateCustomer(customer.getId(), email, fullName, phone, address, isActive);
+            }
+        });
+
+        dialog.show();
+    }
+
+    private boolean validateCustomerInput(String email, String password, String fullName, String phone, boolean isNew) {
+        if (TextUtils.isEmpty(email)) {
+            Toast.makeText(getContext(), "Vui lòng nhập email", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            Toast.makeText(getContext(), "Email không hợp lệ", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (isNew && (TextUtils.isEmpty(password) || password.length() < 6)) {
+            Toast.makeText(getContext(), "Mật khẩu phải có ít nhất 6 ký tự", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (TextUtils.isEmpty(fullName)) {
+            Toast.makeText(getContext(), "Vui lòng nhập họ và tên", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (TextUtils.isEmpty(phone) || phone.length() < 10) {
+            Toast.makeText(getContext(), "Số điện thoại không hợp lệ", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        return true;
+    }
+
+    private void createCustomer(String email, String password, String fullName, String phone, String address) {
+        progressDialog.setMessage("Đang tạo khách hàng...");
+        progressDialog.show();
+
+        adminService.createCustomer(email, password, fullName, phone, address, new AdminService.AdminCallback() {
+            @Override
+            public void onSuccess(Object data) {
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        progressDialog.dismiss();
+                        Toast.makeText(getContext(), "Tạo khách hàng thành công!", Toast.LENGTH_LONG).show();
+                        loadCustomers(1, 20); // Refresh list
+                    });
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        progressDialog.dismiss();
+                        Toast.makeText(getContext(), "Lỗi tạo khách hàng: " + error, Toast.LENGTH_LONG).show();
+                    });
+                }
+            }
+        });
+    }
+
+    private void updateCustomer(String customerId, String email, String fullName, String phone, String address, boolean isActive) {
+        progressDialog.setMessage("Đang cập nhật thông tin...");
+        progressDialog.show();
+
+        adminService.updateCustomer(customerId, email, fullName, phone, address, isActive, new AdminService.AdminCallback() {
+            @Override
+            public void onSuccess(Object data) {
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        progressDialog.dismiss();
+                        Toast.makeText(getContext(), "Cập nhật thông tin thành công!", Toast.LENGTH_LONG).show();
+                        loadCustomers(1, 20); // Refresh list
+                    });
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        progressDialog.dismiss();
+                        Toast.makeText(getContext(), "Lỗi cập nhật: " + error, Toast.LENGTH_LONG).show();
+                    });
+                }
+            }
+        });
     }
 
     private void showCreateAccountDialog() {
@@ -444,7 +613,98 @@ public class CustomerListFragment extends Fragment {
         // Set currency
         tvCurrency.setText(account.getCurrency() != null ? account.getCurrency() : "VND");
         
+        // Add click listener to edit account
+        cardView.setOnClickListener(v -> {
+            // Show update account dialog
+            showUpdateAccountDialog(account);
+        });
+        
         return cardView;
+    }
+
+    private void showUpdateAccountDialog(Account account) {
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_update_account, null);
+
+        TextInputEditText etAccountNumber = dialogView.findViewById(R.id.et_account_number);
+        TextInputEditText etAccountType = dialogView.findViewById(R.id.et_account_type);
+        TextInputEditText etInterestRate = dialogView.findViewById(R.id.et_interest_rate);
+        TextInputEditText etBalance = dialogView.findViewById(R.id.et_balance);
+        SwitchMaterial switchIsActive = dialogView.findViewById(R.id.switch_is_active);
+
+        // Pre-fill with existing data
+        if (account != null) {
+            etAccountNumber.setText(account.getAccountNumber() != null ? account.getAccountNumber() : "");
+            etAccountType.setText(account.getAccountType() != null ? account.getAccountType() : "");
+            if (account.getInterestRate() != null) {
+                etInterestRate.setText(account.getInterestRate().toString());
+            }
+            if (account.getBalance() != null) {
+                etBalance.setText(account.getBalance().toString());
+            }
+            switchIsActive.setChecked(account.isActive());
+        }
+
+        MaterialButton btnCancel = dialogView.findViewById(R.id.btn_cancel);
+        MaterialButton btnConfirm = dialogView.findViewById(R.id.btn_confirm);
+        ImageButton btnClose = dialogView.findViewById(R.id.btn_close);
+
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
+            .setView(dialogView)
+            .setCancelable(true)
+            .create();
+
+        btnClose.setOnClickListener(v -> dialog.dismiss());
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+        btnConfirm.setOnClickListener(v -> {
+            String interestRateStr = etInterestRate.getText().toString().trim();
+            String balanceStr = etBalance.getText().toString().trim();
+            boolean isActive = switchIsActive.isChecked();
+
+            if (account != null) {
+                String accountId = account.getId();
+                if (accountId == null || accountId.isEmpty()) {
+                    // Try to get account ID by account number if id is not available
+                    Toast.makeText(getContext(), "Không thể cập nhật: Thiếu ID tài khoản. Vui lòng chọn tài khoản từ danh sách.", Toast.LENGTH_LONG).show();
+                    dialog.dismiss();
+                    return;
+                }
+                
+                dialog.dismiss();
+                BigDecimal interestRate = interestRateStr.isEmpty() ? null : new BigDecimal(interestRateStr);
+                BigDecimal balance = balanceStr.isEmpty() ? null : new BigDecimal(balanceStr);
+                updateAccount(accountId, interestRate, isActive, balance);
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void updateAccount(String accountId, BigDecimal interestRate, Boolean isActive, BigDecimal balance) {
+        progressDialog.setMessage("Đang cập nhật tài khoản...");
+        progressDialog.show();
+
+        adminService.updateAccount(accountId, interestRate, isActive, balance, new AdminService.AdminCallback() {
+            @Override
+            public void onSuccess(Object data) {
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        progressDialog.dismiss();
+                        Toast.makeText(getContext(), "Cập nhật tài khoản thành công!", Toast.LENGTH_LONG).show();
+                        loadCustomers(1, 20); // Refresh list
+                    });
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        progressDialog.dismiss();
+                        Toast.makeText(getContext(), "Lỗi cập nhật tài khoản: " + error, Toast.LENGTH_LONG).show();
+                    });
+                }
+            }
+        });
     }
 
     @Override

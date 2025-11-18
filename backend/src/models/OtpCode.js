@@ -16,7 +16,7 @@ const otpCodeSchema = new mongoose.Schema({
   },
   otpType: {
     type: String,
-    enum: ['LOGIN', 'TRANSACTION', 'PASSWORD_RESET', 'PHONE_VERIFICATION'],
+    enum: ['LOGIN', 'TRANSACTION', 'PASSWORD_RESET', 'PHONE_VERIFICATION', 'UTILITY'],
     required: true
   },
   transactionId: {

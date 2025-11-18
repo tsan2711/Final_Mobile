@@ -36,6 +36,8 @@ public class ApiConfig {
     public static final String GET_ACCOUNT_BALANCE = "accounts/{id}/balance";
     public static final String GET_ACCOUNT_BY_NUMBER = "accounts/number/{accountNumber}";  // Added
     public static final String CREATE_ACCOUNT = "accounts/create";
+    public static final String DEPOSIT_MONEY = "accounts/deposit";
+    public static final String WITHDRAW_MONEY = "accounts/withdraw";
     
     // Transaction endpoints - Updated to match Node.js backend
     public static final String GET_TRANSACTIONS = "transactions/history";  // Updated
@@ -50,8 +52,9 @@ public class ApiConfig {
     public static final String GET_BILL_INFO = "utilities/bill-info";
     
     // eKYC endpoints
-    public static final String UPLOAD_FACE_IMAGE = "ekyc/face-verification";
+    public static final String UPLOAD_FACE_IMAGE = "ekyc/upload-face";
     public static final String VERIFY_IDENTITY = "ekyc/verify-identity";
+    public static final String GET_VERIFICATION_STATUS = "ekyc/verification-status";
     
     // Map endpoints
     public static final String GET_BRANCHES = "branches";
@@ -61,6 +64,8 @@ public class ApiConfig {
     public static final String ADMIN_DASHBOARD = "admin/dashboard";
     public static final String ADMIN_GET_CUSTOMERS = "admin/customers";
     public static final String ADMIN_SEARCH_CUSTOMERS = "admin/customers/search";
+    public static final String ADMIN_CREATE_CUSTOMER = "admin/customers";
+    public static final String ADMIN_UPDATE_CUSTOMER = "admin/customers/{customerId}";
     public static final String ADMIN_GET_CUSTOMER_DETAILS = "admin/customers/{customerId}";
     public static final String ADMIN_CREATE_ACCOUNT = "admin/accounts/create";
     public static final String ADMIN_UPDATE_ACCOUNT = "admin/accounts/{accountId}";
@@ -68,6 +73,11 @@ public class ApiConfig {
     public static final String ADMIN_GET_TRANSACTIONS = "admin/transactions";
     public static final String ADMIN_TRANSFER_MONEY = "admin/transactions/transfer";
     public static final String ADMIN_DEPOSIT_MONEY = "admin/transactions/deposit";
+    public static final String ADMIN_UPDATE_INTEREST_RATE = "admin/interest-rates";
+    public static final String ADMIN_GET_INTEREST_RATE_HISTORY = "admin/interest-rates/history";
+    
+    // Interest rate endpoints
+    public static final String GET_INTEREST_PROJECTION = "accounts/{accountId}/interest-projection";
     
     // Headers
     public static final String HEADER_AUTHORIZATION = "Authorization";
