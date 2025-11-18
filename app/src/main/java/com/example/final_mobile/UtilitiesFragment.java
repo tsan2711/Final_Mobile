@@ -86,6 +86,9 @@ public class UtilitiesFragment extends Fragment {
         // E-commerce card
         View ecommerceCard = view.findViewById(R.id.card_ecommerce);
         
+        // Maps card
+        View mapsCard = view.findViewById(R.id.card_maps);
+        
         if (electricityCard != null) {
             electricityCard.setOnClickListener(v -> showElectricityBillDialog());
         }
@@ -124,6 +127,10 @@ public class UtilitiesFragment extends Fragment {
         
         if (ecommerceCard != null) {
             ecommerceCard.setOnClickListener(v -> showEcommercePaymentDialog());
+        }
+        
+        if (mapsCard != null) {
+            mapsCard.setOnClickListener(v -> openMapsFragment());
         }
     }
 
@@ -951,6 +958,14 @@ public class UtilitiesFragment extends Fragment {
         btnOk.setOnClickListener(v -> dialog.dismiss());
         
         dialog.show();
+    }
+
+    private void openMapsFragment() {
+        // Navigate to MapsFragment
+        if (getActivity() != null && getActivity() instanceof MainActivity) {
+            MainActivity mainActivity = (MainActivity) getActivity();
+            mainActivity.loadFragment(new MapsFragment());
+        }
     }
 
     @Override

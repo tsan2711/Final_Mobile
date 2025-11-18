@@ -838,6 +838,211 @@ class UtilityController {
       });
     }
   }
+
+  // Get all bank branches
+  static async getBranches(req, res) {
+    try {
+      // Mock data - in production, this would come from database
+      const branches = [
+        {
+          id: '1',
+          name: 'Chi nhánh Hồ Chí Minh - Trung tâm',
+          address: '123 Nguyễn Huệ, Quận 1, TP.HCM',
+          phone: '0283823456',
+          latitude: 10.7769,
+          longitude: 106.7009,
+          openingHours: '8:00 - 17:00',
+          services: ['Giao dịch', 'Tư vấn', 'ATM']
+        },
+        {
+          id: '2',
+          name: 'Chi nhánh Hà Nội - Hoàn Kiếm',
+          address: '456 Hoàng Kiếm, Quận Hoàn Kiếm, Hà Nội',
+          phone: '0243823456',
+          latitude: 21.0285,
+          longitude: 105.8542,
+          openingHours: '8:00 - 17:00',
+          services: ['Giao dịch', 'Tư vấn', 'ATM']
+        },
+        {
+          id: '3',
+          name: 'Chi nhánh Đà Nẵng',
+          address: '789 Lê Duẩn, Quận Hải Châu, Đà Nẵng',
+          phone: '0236382345',
+          latitude: 16.0544,
+          longitude: 108.2022,
+          openingHours: '8:00 - 17:00',
+          services: ['Giao dịch', 'Tư vấn', 'ATM']
+        },
+        {
+          id: '4',
+          name: 'Chi nhánh Hồ Chí Minh - Quận 7',
+          address: '321 Nguyễn Thị Thập, Quận 7, TP.HCM',
+          phone: '0283823457',
+          latitude: 10.7306,
+          longitude: 106.7178,
+          openingHours: '8:00 - 17:00',
+          services: ['Giao dịch', 'Tư vấn', 'ATM']
+        },
+        {
+          id: '5',
+          name: 'Chi nhánh Hà Nội - Cầu Giấy',
+          address: '159 Trần Duy Hưng, Quận Cầu Giấy, Hà Nội',
+          phone: '0243823457',
+          latitude: 21.0301,
+          longitude: 105.8019,
+          openingHours: '8:00 - 17:00',
+          services: ['Giao dịch', 'Tư vấn', 'ATM']
+        }
+      ];
+
+      res.status(200).json({
+        success: true,
+        message: 'Branches retrieved successfully',
+        data: branches
+      });
+    } catch (error) {
+      console.error('Get branches error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to retrieve branches'
+      });
+    }
+  }
+
+  // Get nearest branch based on user location
+  static async getNearestBranch(req, res) {
+    try {
+      const { latitude, longitude } = req.query;
+
+      if (!latitude || !longitude) {
+        return res.status(400).json({
+          success: false,
+          message: 'Latitude and longitude are required'
+        });
+      }
+
+      const userLat = parseFloat(latitude);
+      const userLng = parseFloat(longitude);
+
+      if (isNaN(userLat) || isNaN(userLng)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid latitude or longitude'
+        });
+      }
+
+      // All branches (same as getBranches)
+      const branches = [
+        {
+          id: '1',
+          name: 'Chi nhánh Hồ Chí Minh - Trung tâm',
+          address: '123 Nguyễn Huệ, Quận 1, TP.HCM',
+          phone: '0283823456',
+          latitude: 10.7769,
+          longitude: 106.7009,
+          openingHours: '8:00 - 17:00',
+          services: ['Giao dịch', 'Tư vấn', 'ATM']
+        },
+        {
+          id: '2',
+          name: 'Chi nhánh Hà Nội - Hoàn Kiếm',
+          address: '456 Hoàng Kiếm, Quận Hoàn Kiếm, Hà Nội',
+          phone: '0243823456',
+          latitude: 21.0285,
+          longitude: 105.8542,
+          openingHours: '8:00 - 17:00',
+          services: ['Giao dịch', 'Tư vấn', 'ATM']
+        },
+        {
+          id: '3',
+          name: 'Chi nhánh Đà Nẵng',
+          address: '789 Lê Duẩn, Quận Hải Châu, Đà Nẵng',
+          phone: '0236382345',
+          latitude: 16.0544,
+          longitude: 108.2022,
+          openingHours: '8:00 - 17:00',
+          services: ['Giao dịch', 'Tư vấn', 'ATM']
+        },
+        {
+          id: '4',
+          name: 'Chi nhánh Hồ Chí Minh - Quận 7',
+          address: '321 Nguyễn Thị Thập, Quận 7, TP.HCM',
+          phone: '0283823457',
+          latitude: 10.7306,
+          longitude: 106.7178,
+          openingHours: '8:00 - 17:00',
+          services: ['Giao dịch', 'Tư vấn', 'ATM']
+        },
+        {
+          id: '5',
+          name: 'Chi nhánh Hà Nội - Cầu Giấy',
+          address: '159 Trần Duy Hưng, Quận Cầu Giấy, Hà Nội',
+          phone: '0243823457',
+          latitude: 21.0301,
+          longitude: 105.8019,
+          openingHours: '8:00 - 17:00',
+          services: ['Giao dịch', 'Tư vấn', 'ATM']
+        }
+      ];
+
+      // Calculate distance for each branch using Haversine formula
+      const branchesWithDistance = branches.map(branch => {
+        const distance = UtilityController.calculateDistance(
+          userLat,
+          userLng,
+          branch.latitude,
+          branch.longitude
+        );
+        return {
+          ...branch,
+          distance: distance, // in kilometers
+          distanceText: distance < 1 
+            ? `${Math.round(distance * 1000)}m` 
+            : `${distance.toFixed(2)}km`
+        };
+      });
+
+      // Sort by distance
+      branchesWithDistance.sort((a, b) => a.distance - b.distance);
+
+      // Get nearest branch
+      const nearestBranch = branchesWithDistance[0];
+
+      res.status(200).json({
+        success: true,
+        message: 'Nearest branch found',
+        data: {
+          nearest: nearestBranch,
+          allBranches: branchesWithDistance
+        }
+      });
+    } catch (error) {
+      console.error('Get nearest branch error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to find nearest branch'
+      });
+    }
+  }
+
+  // Calculate distance between two coordinates using Haversine formula
+  static calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Radius of the Earth in kilometers
+    const dLat = UtilityController.deg2rad(lat2 - lat1);
+    const dLon = UtilityController.deg2rad(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(UtilityController.deg2rad(lat1)) * Math.cos(UtilityController.deg2rad(lat2)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c; // Distance in kilometers
+    return distance;
+  }
+
+  static deg2rad(deg) {
+    return deg * (Math.PI / 180);
+  }
 }
 
 module.exports = UtilityController;

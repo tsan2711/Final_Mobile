@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigation.setOnItemSelectedListener(navigationListener);
     }
 
-    private void loadFragment(Fragment fragment) {
+    public void loadFragment(Fragment fragment) {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.fragment_container, fragment);
         transaction.commit();

@@ -51,6 +51,12 @@ dependencies {
     // Biometric authentication
     implementation("androidx.biometric:biometric:1.1.0")
     
+    // OpenStreetMap (OSMDroid) - Free, no API key needed
+    implementation("org.osmdroid:osmdroid-android:6.1.17")
+    
+    // Location services (still needed for getting user location)
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+    
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

@@ -16,6 +16,16 @@
     <!-- Camera features -->
     <uses-feature android:name="android.hardware.camera" android:required="false" />
     <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+    
+    <!-- Location permissions -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    
+    <!-- OSMDroid requires write permission for map cache -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" 
+        android:maxSdkVersion="28" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" 
+        android:maxSdkVersion="32" />
 
     <application
         android:allowBackup="true"
@@ -58,6 +68,12 @@
         <!-- Transaction Detail Activity -->
         <activity
             android:name=".TransactionDetailActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+            
+        <!-- Payment Activity -->
+        <activity
+            android:name=".PaymentActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />
             

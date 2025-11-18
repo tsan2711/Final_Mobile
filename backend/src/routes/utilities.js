@@ -30,5 +30,9 @@ router.get('/history', authenticate, UtilityController.getUtilityHistory);
 // Service providers
 router.get('/providers', authenticate, UtilityController.getServiceProviders);
 
+// Branch locations
+router.get('/branches', authenticate, UtilityController.getBranches);
+router.get('/branches/nearest', authenticate, UtilityController.getNearestBranch);
+
 module.exports = router;
 

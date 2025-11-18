@@ -803,13 +803,17 @@ public class TransactionFragment extends Fragment {
     private void showDepositInfo() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Nạp tiền");
-        builder.setMessage("Để nạp tiền vào tài khoản, vui lòng:\n\n" +
-                "1. Chuyển tiền từ ngân hàng khác\n" +
-                "2. Nạp tiền tại ATM\n" +
-                "3. Đến chi nhánh gần nhất\n\n" +
+        builder.setMessage("Chọn phương thức nạp tiền:\n\n" +
+                "1. Nạp tiền qua VNPay\n" +
+                "2. Chuyển khoản từ ngân hàng khác\n\n" +
                 "Số tài khoản của bạn:\n" + 
                 (primaryAccount != null ? primaryAccount.getAccountNumber() : "Chưa có thông tin"));
-        builder.setPositiveButton("OK", null);
+        builder.setPositiveButton("Mở trang thanh toán", (dialog, which) -> {
+            // Open PaymentActivity
+            android.content.Intent intent = new android.content.Intent(getContext(), PaymentActivity.class);
+            startActivity(intent);
+        });
+        builder.setNegativeButton("Hủy", null);
         builder.show();
     }
 

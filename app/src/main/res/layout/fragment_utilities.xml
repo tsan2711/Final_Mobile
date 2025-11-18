@@ -524,13 +524,49 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Empty space for layout balance -->
-            <View
+            <!-- Maps card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_maps"
                 android:layout_width="0dp"
                 android:layout_height="110dp"
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp" />
+                android:layout_marginEnd="8dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/surface_color"
+                app:strokeWidth="0dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@android:drawable/ic_menu_mylocation"
+                        android:layout_marginBottom="12dp"
+                        android:background="@drawable/circle_background_blue"
+                        android:padding="12dp"
+                        app:tint="@color/accent_blue" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Chi nhánh"
+                        android:textColor="@color/primary_text_color"
+                        android:textSize="12sp"
+                        android:textAlignment="center" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
 
             <View
                 android:layout_width="0dp"

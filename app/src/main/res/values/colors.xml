@@ -20,6 +20,7 @@
     
     <!-- Background Colors -->
     <color name="background_color">#F8FAFC</color>
+    <color name="background_primary">#F8FAFC</color>
     <color name="background_secondary">#F1F5F9</color>
     <color name="background_tertiary">#E2E8F0</color>
     <color name="surface_color">#FFFFFF</color>

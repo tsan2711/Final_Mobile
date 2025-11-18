@@ -57,8 +57,8 @@ public class ApiConfig {
     public static final String GET_VERIFICATION_STATUS = "ekyc/verification-status";
     
     // Map endpoints
-    public static final String GET_BRANCHES = "branches";
-    public static final String GET_NEAREST_BRANCH = "branches/nearest";
+    public static final String GET_BRANCHES = "utilities/branches";
+    public static final String GET_NEAREST_BRANCH = "utilities/branches/nearest";
     
     // Admin endpoints (Bank Officer only)
     public static final String ADMIN_DASHBOARD = "admin/dashboard";
@@ -78,6 +78,13 @@ public class ApiConfig {
     
     // Interest rate endpoints
     public static final String GET_INTEREST_PROJECTION = "accounts/{accountId}/interest-projection";
+    
+    // Payment gateway endpoints
+    public static final String VNPAY_CREATE_PAYMENT = "payments/vnpay/create-payment";
+    public static final String VNPAY_CALLBACK = "payments/vnpay/callback";
+    public static final String BANK_TRANSFER = "payments/bank-transfer";
+    public static final String GET_PAYMENT_STATUS = "payments/{paymentId}";
+    public static final String GET_PAYMENT_HISTORY = "payments/history/list";
     
     // Headers
     public static final String HEADER_AUTHORIZATION = "Authorization";
