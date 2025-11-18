@@ -240,16 +240,24 @@ public class MapsFragment extends Fragment {
         branchService.getBranches(new BranchService.BranchCallback() {
             @Override
             public void onSuccess(List<Branch> branchList) {
-                branches = branchList;
-                displayBranchesOnMap();
-                showLoading(false);
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        branches = branchList;
+                        displayBranchesOnMap();
+                        showLoading(false);
+                    });
+                }
             }
 
             @Override
             public void onError(String error) {
                 Log.e(TAG, "Error loading branches: " + error);
-                showError("Lỗi tải danh sách chi nhánh: " + error);
-                showLoading(false);
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        showError("Lỗi tải danh sách chi nhánh: " + error);
+                        showLoading(false);
+                    });
+                }
             }
         });
     }
@@ -258,18 +266,22 @@ public class MapsFragment extends Fragment {
         branchService.getNearestBranch(latitude, longitude, new BranchService.NearestBranchCallback() {
             @Override
             public void onSuccess(Branch nearest, List<Branch> allBranches) {
-                nearestBranch = nearest;
-                branches = allBranches;
-                
-                // Update map with branches (including distances)
-                displayBranchesOnMap();
-                
-                // Show nearest branch card
-                showNearestBranchCard(nearest);
-                
-                // Draw route to nearest branch
-                if (userLocation != null) {
-                    drawRouteToNearestBranch();
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        nearestBranch = nearest;
+                        branches = allBranches;
+                        
+                        // Update map with branches (including distances)
+                        displayBranchesOnMap();
+                        
+                        // Show nearest branch card
+                        showNearestBranchCard(nearest);
+                        
+                        // Draw route to nearest branch
+                        if (userLocation != null) {
+                            drawRouteToNearestBranch();
+                        }
+                    });
                 }
             }
 
@@ -277,7 +289,11 @@ public class MapsFragment extends Fragment {
             public void onError(String error) {
                 Log.e(TAG, "Error getting nearest branch: " + error);
                 // Still show branches without nearest info
-                displayBranchesOnMap();
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        displayBranchesOnMap();
+                    });
+                }
             }
         });
     }
@@ -424,11 +440,17 @@ public class MapsFragment extends Fragment {
     }
 
     private void showError(String error) {
-        if (tvError != null) {
-            tvError.setText(error);
-            tvError.setVisibility(View.VISIBLE);
-        }
-        Toast.makeText(getContext(), error, Toast.LENGTH_LONG).show();
+        if (getActivity() == null) return;
+        
+        getActivity().runOnUiThread(() -> {
+            if (tvError != null) {
+                tvError.setText(error);
+                tvError.setVisibility(View.VISIBLE);
+            }
+            if (getContext() != null) {
+                Toast.makeText(getContext(), error, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     @Override

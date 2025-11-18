@@ -3,6 +3,7 @@ const Account = require('../models/Account');
 const OtpCode = require('../models/OtpCode');
 const Transaction = require('../models/Transaction');
 const User = require('../models/User');
+const Branch = require('../models/Branch');
 const OTPUtils = require('../utils/otp');
 const { formatUtility } = require('../utils/responseFormatter');
 
@@ -842,64 +843,27 @@ class UtilityController {
   // Get all bank branches
   static async getBranches(req, res) {
     try {
-      // Mock data - in production, this would come from database
-      const branches = [
-        {
-          id: '1',
-          name: 'Chi nhánh Hồ Chí Minh - Trung tâm',
-          address: '123 Nguyễn Huệ, Quận 1, TP.HCM',
-          phone: '0283823456',
-          latitude: 10.7769,
-          longitude: 106.7009,
-          openingHours: '8:00 - 17:00',
-          services: ['Giao dịch', 'Tư vấn', 'ATM']
-        },
-        {
-          id: '2',
-          name: 'Chi nhánh Hà Nội - Hoàn Kiếm',
-          address: '456 Hoàng Kiếm, Quận Hoàn Kiếm, Hà Nội',
-          phone: '0243823456',
-          latitude: 21.0285,
-          longitude: 105.8542,
-          openingHours: '8:00 - 17:00',
-          services: ['Giao dịch', 'Tư vấn', 'ATM']
-        },
-        {
-          id: '3',
-          name: 'Chi nhánh Đà Nẵng',
-          address: '789 Lê Duẩn, Quận Hải Châu, Đà Nẵng',
-          phone: '0236382345',
-          latitude: 16.0544,
-          longitude: 108.2022,
-          openingHours: '8:00 - 17:00',
-          services: ['Giao dịch', 'Tư vấn', 'ATM']
-        },
-        {
-          id: '4',
-          name: 'Chi nhánh Hồ Chí Minh - Quận 7',
-          address: '321 Nguyễn Thị Thập, Quận 7, TP.HCM',
-          phone: '0283823457',
-          latitude: 10.7306,
-          longitude: 106.7178,
-          openingHours: '8:00 - 17:00',
-          services: ['Giao dịch', 'Tư vấn', 'ATM']
-        },
-        {
-          id: '5',
-          name: 'Chi nhánh Hà Nội - Cầu Giấy',
-          address: '159 Trần Duy Hưng, Quận Cầu Giấy, Hà Nội',
-          phone: '0243823457',
-          latitude: 21.0301,
-          longitude: 105.8019,
-          openingHours: '8:00 - 17:00',
-          services: ['Giao dịch', 'Tư vấn', 'ATM']
-        }
-      ];
+      // Query branches from database
+      const branches = await Branch.find({ isActive: true })
+        .select('name address phone latitude longitude openingHours services')
+        .lean();
+
+      // Format response to match expected format
+      const formattedBranches = branches.map(branch => ({
+        id: branch._id.toString(),
+        name: branch.name,
+        address: branch.address,
+        phone: branch.phone,
+        latitude: branch.latitude,
+        longitude: branch.longitude,
+        openingHours: branch.openingHours || '8:00 - 17:00',
+        services: branch.services || []
+      }));
 
       res.status(200).json({
         success: true,
         message: 'Branches retrieved successfully',
-        data: branches
+        data: formattedBranches
       });
     } catch (error) {
       console.error('Get branches error:', error);
@@ -932,61 +896,12 @@ class UtilityController {
         });
       }
 
-      // All branches (same as getBranches)
-      const branches = [
-        {
-          id: '1',
-          name: 'Chi nhánh Hồ Chí Minh - Trung tâm',
-          address: '123 Nguyễn Huệ, Quận 1, TP.HCM',
-          phone: '0283823456',
-          latitude: 10.7769,
-          longitude: 106.7009,
-          openingHours: '8:00 - 17:00',
-          services: ['Giao dịch', 'Tư vấn', 'ATM']
-        },
-        {
-          id: '2',
-          name: 'Chi nhánh Hà Nội - Hoàn Kiếm',
-          address: '456 Hoàng Kiếm, Quận Hoàn Kiếm, Hà Nội',
-          phone: '0243823456',
-          latitude: 21.0285,
-          longitude: 105.8542,
-          openingHours: '8:00 - 17:00',
-          services: ['Giao dịch', 'Tư vấn', 'ATM']
-        },
-        {
-          id: '3',
-          name: 'Chi nhánh Đà Nẵng',
-          address: '789 Lê Duẩn, Quận Hải Châu, Đà Nẵng',
-          phone: '0236382345',
-          latitude: 16.0544,
-          longitude: 108.2022,
-          openingHours: '8:00 - 17:00',
-          services: ['Giao dịch', 'Tư vấn', 'ATM']
-        },
-        {
-          id: '4',
-          name: 'Chi nhánh Hồ Chí Minh - Quận 7',
-          address: '321 Nguyễn Thị Thập, Quận 7, TP.HCM',
-          phone: '0283823457',
-          latitude: 10.7306,
-          longitude: 106.7178,
-          openingHours: '8:00 - 17:00',
-          services: ['Giao dịch', 'Tư vấn', 'ATM']
-        },
-        {
-          id: '5',
-          name: 'Chi nhánh Hà Nội - Cầu Giấy',
-          address: '159 Trần Duy Hưng, Quận Cầu Giấy, Hà Nội',
-          phone: '0243823457',
-          latitude: 21.0301,
-          longitude: 105.8019,
-          openingHours: '8:00 - 17:00',
-          services: ['Giao dịch', 'Tư vấn', 'ATM']
-        }
-      ];
+      // Query branches from database
+      const branches = await Branch.find({ isActive: true })
+        .select('name address phone latitude longitude openingHours services')
+        .lean();
 
-      // Calculate distance for each branch using Haversine formula
+      // Format branches and calculate distance
       const branchesWithDistance = branches.map(branch => {
         const distance = UtilityController.calculateDistance(
           userLat,
@@ -995,7 +910,14 @@ class UtilityController {
           branch.longitude
         );
         return {
-          ...branch,
+          id: branch._id.toString(),
+          name: branch.name,
+          address: branch.address,
+          phone: branch.phone,
+          latitude: branch.latitude,
+          longitude: branch.longitude,
+          openingHours: branch.openingHours || '8:00 - 17:00',
+          services: branch.services || [],
           distance: distance, // in kilometers
           distanceText: distance < 1 
             ? `${Math.round(distance * 1000)}m` 
