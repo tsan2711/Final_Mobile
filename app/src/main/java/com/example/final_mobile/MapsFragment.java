@@ -45,6 +45,10 @@ public class MapsFragment extends Fragment {
 
     private static final String TAG = "MapsFragment";
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
+    
+    // Fixed location: Đại học Tôn Đức Thắng, TP.HCM
+    private static final double FIXED_LATITUDE = 10.7325;
+    private static final double FIXED_LONGITUDE = 106.6994;
 
     private MapView mapView;
     private IMapController mapController;
@@ -118,11 +122,8 @@ public class MapsFragment extends Fragment {
         });
         
         fabMyLocation.setOnClickListener(v -> {
-            if (userLocation != null) {
-                moveCameraToLocation(new GeoPoint(userLocation.getLatitude(), userLocation.getLongitude()));
-            } else {
-                getCurrentLocation();
-            }
+            // Always go to fixed location (Đại học Tôn Đức Thắng)
+            setFixedLocation();
         });
     }
 
@@ -188,8 +189,14 @@ public class MapsFragment extends Fragment {
     }
 
     private void getCurrentLocation() {
+        // Use fixed location: Đại học Tôn Đức Thắng
+        setFixedLocation();
+        
+        // Optional: Try to get real GPS location first, fallback to fixed location
+        /*
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
+            setFixedLocation();
             return;
         }
 
@@ -219,20 +226,52 @@ public class MapsFragment extends Fragment {
                             // Get nearest branch
                             getNearestBranch(location.getLatitude(), location.getLongitude());
                         } else {
-                            Log.w(TAG, "Location is null");
-                            // Load branches without location
-                            loadBranches();
+                            Log.w(TAG, "Location is null, using fixed location");
+                            setFixedLocation();
                         }
                     })
                     .addOnFailureListener(e -> {
-                        Log.e(TAG, "Error getting location", e);
-                        Toast.makeText(getContext(), "Không thể lấy vị trí hiện tại", Toast.LENGTH_SHORT).show();
-                        // Load branches without location
-                        loadBranches();
+                        Log.e(TAG, "Error getting location, using fixed location", e);
+                        setFixedLocation();
                     });
         } catch (SecurityException e) {
-            Log.e(TAG, "Security exception getting location", e);
+            Log.e(TAG, "Security exception getting location, using fixed location", e);
+            setFixedLocation();
         }
+        */
+    }
+    
+    private void setFixedLocation() {
+        // Create a mock Location object for Đại học Tôn Đức Thắng
+        Location fixedLocation = new Location("fixed");
+        fixedLocation.setLatitude(FIXED_LATITUDE);
+        fixedLocation.setLongitude(FIXED_LONGITUDE);
+        fixedLocation.setAccuracy(10.0f);
+        
+        userLocation = fixedLocation;
+        GeoPoint userGeoPoint = new GeoPoint(FIXED_LATITUDE, FIXED_LONGITUDE);
+        
+        // Add or update user marker
+        if (userMarker != null) {
+            mapView.getOverlays().remove(userMarker);
+        }
+        userMarker = new Marker(mapView);
+        userMarker.setPosition(userGeoPoint);
+        userMarker.setTitle("Đại học Tôn Đức Thắng");
+        userMarker.setSnippet("Vị trí hiện tại của bạn");
+        if (ContextCompat.getDrawable(getContext(), android.R.drawable.ic_menu_mylocation) != null) {
+            userMarker.setIcon(ContextCompat.getDrawable(getContext(), android.R.drawable.ic_menu_mylocation));
+        }
+        userMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+        mapView.getOverlays().add(userMarker);
+        
+        // Move camera to fixed location
+        moveCameraToLocation(userGeoPoint);
+        
+        // Get nearest branch
+        getNearestBranch(FIXED_LATITUDE, FIXED_LONGITUDE);
+        
+        Log.d(TAG, "Using fixed location: Đại học Tôn Đức Thắng (" + FIXED_LATITUDE + ", " + FIXED_LONGITUDE + ")");
     }
 
     private void loadBranches() {
